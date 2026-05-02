@@ -601,7 +601,7 @@ if st.session_state.get("run", False):
             ax.text(mx+bw, my-0.6, f'B={B:.2f}', color='#FF3333', fontsize=8, ha='center')
             ax.text(mx+bw/2, my+bh+0.6, '⚖️ الميزان', color='#FFD700', fontsize=9, ha='center', fontweight='bold')
 
-            # لوحة الإثبات (تم الإصلاح)
+            # لوحة إثبات الاستدراج
             pSl = list(pS); pEl = list(pE); pxl = list(px)
             if pSl:
                 pax = ax.inset_axes([0.50,0.02,0.46,0.10])
