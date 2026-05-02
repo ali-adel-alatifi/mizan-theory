@@ -75,61 +75,81 @@ LANGUAGES = {
         "footer": "علي عادل العاطفي | Ali Adel Alatifi | 2026",
         "sidebar_author": "علي عادل العاطفي © 2026",
         "welcome": """
-        ### 👋 مرحباً في مختبر الميزان الشامل!
-        
-        **هذا النموذج المتكامل يشمل:**
-        - 🕌 أركان الإسلام كقوى أساسية
-        - 🏛️ أسس الحكم
-        - 🔆 14 حرفاً نورانياً
-        - ⚙️ 6 حروف محايدة
-        - 🌑 8 حروف ظلامية
-        
-        اضغط **▶️ تشغيل** للبدء!
-        """,
+### 👋 مرحباً في مختبر الميزان الشامل!
+
+**الحقيقة باختصار:**
+التوازن والاستقرار، الانهيار والصمود، في المادة والروح، في الطبيعة والأمة،
+في الفيزياء والكيمياء والبيولوجيا والأخلاق، هو نتيجة حتمية لمدى الإسلام،
+أي الاستجابة للقانون الأعظم (الدين القيم)، من خلال توازن الولاء والبراءة،
+لديهما كلاً بما يناسب فطرته.
+
+---
+
+#### 🏆 الحقيقة المركزية التي يجسدها هذا الكود:
+
+| المستوى | القانون | كيف يظهر في المحاكاة |
+|---------|---------|----------------------|
+| الذرة | توازن النواة والإلكترون | الإلكترون يدور باستقرار كلما زاد S |
+| الخلية | توازن الغشاء والنواة | الغشاء والنواة ينبضان بقوة كلما زاد S |
+| الفرد | توازن الولاء والبراءة | النجوم تغير لونها حسب S = W × B |
+| الأمة | متوسط إسلام الأفراد | W و B يتأثران بمتوسط النجوم |
+| الحضارة | الثبات نتيجة التوازن | الشمس تتسع وتلمع بزيادة S |
+| التمكين | أثر خارجي متأخر | الهالة E تتأخر عن S وتصبح شفافة |
+
+---
+
+**الإسلام = الاستجابة للقانون الأعظم = توازن الولاء والبراءة = الثبات والاستقرار في كل شيء، من الذرة إلى المجرة.** 🌌
+
+---
+
+#### 📖 ﴿وَالسَّمَاءَ رَفَعَهَا وَوَضَعَ الْمِيزَانَ﴾
+
+اضغط **▶️ تشغيل** للبدء!
+""",
         "balance_good": "✅ النظام في حالة توازن جيدة",
         "simulation_stopped": "✅ تم إيقاف المحاكاة",
         "help_title": "📖 دليل الحروف العربية الـ 28",
         "help_content": """
-        ### 🔆 الحروف النورانية (14 حرفاً)
-        | الحرف | القيمة | الرمز |
-        |-------|--------|------|
-        | أ | 1 | الوحدانية |
-        | ل | 30 | المُلك |
-        | م | 40 | الجمع |
-        | ر | 200 | اليقظة |
-        | ك | 20 | الأمر |
-        | هـ | 5 | الهوية |
-        | ي | 10 | الاستجابة |
-        | ع | 70 | الإدراك |
-        | ص | 90 | الصمد |
-        | ق | 100 | الميزان |
-        | ن | 50 | النور |
-        | س | 60 | السمع |
-        | ح | 8 | الحياة |
-        | ط | 9 | الطهارة |
-        
-        ### ⚙️ الحروف المحايدة (6 حروف – المشغلات)
-        - ف : فاء السببية
-        - و : واو العطف
-        - ب : باء الاستعانة
-        - ل : لام التعليل
-        - ت : تاء الفاعل
-        - ث : ثم العطف
-        
-        ### 🌑 الحروف الظلامية (8 حروف – قوى الضلال)
-        | الحرف | القيمة | القوة السالبة |
-        |-------|--------|---------------|
-        | ظ | 900 | الظلم |
-        | ض | 800 | الضلال |
-        | غ | 1000 | الغش |
-        | ذ | 700 | الذل |
-        | خ | 600 | الخيانة |
-        | ش | 300 | الشهوة |
-        | ز | 7 | الزور |
-        | ج | 3 | الجهل |
-        
-        تأليف: علي عادل العاطفي
-        """
+### 🔆 الحروف النورانية (14 حرفاً)
+| الحرف | القيمة | الرمز |
+|-------|--------|------|
+| أ | 1 | الوحدانية |
+| ل | 30 | المُلك |
+| م | 40 | الجمع |
+| ر | 200 | اليقظة |
+| ك | 20 | الأمر |
+| هـ | 5 | الهوية |
+| ي | 10 | الاستجابة |
+| ع | 70 | الإدراك |
+| ص | 90 | الصمد |
+| ق | 100 | الميزان |
+| ن | 50 | النور |
+| س | 60 | السمع |
+| ح | 8 | الحياة |
+| ط | 9 | الطهارة |
+
+### ⚙️ الحروف المحايدة (6 حروف – المشغلات)
+- ف : فاء السببية
+- و : واو العطف
+- ب : باء الاستعانة
+- ل : لام التعليل
+- ت : تاء الفاعل
+- ث : ثم العطف
+
+### 🌑 الحروف الظلامية (8 حروف – قوى الضلال)
+| الحرف | القيمة | القوة السالبة |
+|-------|--------|---------------|
+| ظ | 900 | الظلم |
+| ض | 800 | الضلال |
+| غ | 1000 | الغش |
+| ذ | 700 | الذل |
+| خ | 600 | الخيانة |
+| ش | 300 | الشهوة |
+| ز | 7 | الزور |
+| ج | 3 | الجهل |
+
+تأليف: علي عادل العاطفي
+"""
     },
     "en": {
         "title": "⚖️ The Mizan Theory – Interactive Workshop",
@@ -142,9 +162,37 @@ LANGUAGES = {
         "footer": "Ali Adel Alatifi | 2026",
         "sidebar_author": "Ali Adel Alatifi © 2026",
         "welcome": """
-        ### 👋 Welcome to the Mizan Lab!
-        Press **▶️ Run** to start!
-        """,
+### 👋 Welcome to the Mizan Lab!
+
+**The truth in brief:**
+Balance and stability, collapse and resilience, in matter and spirit, in nature and nation,
+in physics, chemistry, biology, and ethics, is the inevitable result of Islam,
+i.e., responding to the Supreme Law (the Right Religion), through the balance of loyalty and disavowal,
+each according to its nature.
+
+---
+
+#### 🏆 The Central Truth Embodied by This Code:
+
+| Level | Law | How It Appears in the Simulation |
+|-------|-----|----------------------------------|
+| Atom | Balance of nucleus and electron | The electron orbits stably as S increases |
+| Cell | Balance of membrane and nucleus | Membrane and nucleus pulse strongly as S increases |
+| Individual | Balance of loyalty and disavowal | Stars change color according to S = W × B |
+| Nation | Average Islam of individuals | W and B are affected by the average of the stars |
+| Civilization | Stability as a result of balance | The sun expands and shines brighter as S increases |
+| Empowerment | Delayed external effect | The E halo lags behind S and becomes transparent |
+
+---
+
+**Islam = Response to the Supreme Law = Balance of Loyalty and Disavowal = Stability in everything, from the atom to the galaxy.** 🌌
+
+---
+
+#### 📖 "And the heaven He raised and imposed the balance" (Quran 55:7)
+
+Press **▶️ Run** to start!
+""",
         "balance_good": "✅ System balanced",
         "simulation_stopped": "✅ Simulation stopped",
         "help_title": "📖 Guide",
@@ -588,11 +636,8 @@ elif st.session_state.init and 'latest_image' in st.session_state:
 if 'latest_image' in st.session_state:
     st.sidebar.download_button(T["download"], st.session_state.latest_image, "mizan.png", "image/png")
 
-# =============================================
-# 📥 تحميل + تذييل
-# =============================================
 st.markdown("---")
 with st.expander(T["help_title"]):
     st.markdown(T["help_content"])
 st.markdown(f"*{T['footer']}*")
-st.markdown("<p style='text-align:center;color:#666;'>🧪 مختبر الميزان التفاعلي v3.0</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center;color:#666;'>🧪 مختبر الميزان التفاعلي v3.0 – من الذرة إلى المجرة 🌌</p>", unsafe_allow_html=True)
