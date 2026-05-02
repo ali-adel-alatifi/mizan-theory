@@ -64,9 +64,10 @@ MIZAN_LETTERS = {
 # =============================================
 LANGUAGES = {
     "ar": {
-        "title": "⚖️ نظرية الميزان – الورشة التفاعلية",
+        "title": "⚖️ نظرية الميزان",
         "subtitle": "S = W × B | 28 حرفاً عربياً | الفيزياء والكيمياء والبيولوجيا والأخلاق",
-        "author": "من تأليف: علي عادل العاطفي",
+        "author": "علي عادل العاطفي",
+        "author_en": "Ali Adel Alatifi",
         "run": "▶️ تشغيل",
         "stop": "⏹️ إيقاف",
         "reset": "🔄 إعادة ضبط",
@@ -148,9 +149,10 @@ LANGUAGES = {
 """
     },
     "en": {
-        "title": "⚖️ The Mizan Theory – Interactive Workshop",
+        "title": "⚖️ The Mizan Theory",
         "subtitle": "S = W × B | 28 Arabic Letters | Physics, Chemistry, Biology & Ethics",
-        "author": "By: Ali Adel Alatifi",
+        "author": "Ali Adel Alatifi",
+        "author_en": "",
         "run": "▶️ Run",
         "stop": "⏹️ Stop",
         "reset": "🔄 Reset",
@@ -217,11 +219,25 @@ with col_lang:
         st.rerun()
 
 # =============================================
-# 🚀 الواجهة الرئيسية
+# 🚀 الواجهة الرئيسية (تصميم جديد فاخر)
 # =============================================
-st.title(T["title"])
-st.markdown(f"**{T['subtitle']}**")
-st.markdown(f"*{T['author']}*")
+st.markdown(f"""
+<div style='text-align: center; background: linear-gradient(135deg, #1a1a2e, #16213e); 
+            padding: 20px; border-radius: 15px; border: 2px solid #FFD700; margin-bottom: 20px;'>
+    <h1 style='color: #FFD700; font-size: 32px; margin: 0;'>
+        ⚖️ {T['title']} ⚖️
+    </h1>
+    <p style='color: #e0e0e0; font-size: 16px; margin: 10px 0 5px 0;'>
+        {T['subtitle']}
+    </p>
+    <p style='color: #FFD700; font-size: 18px; margin: 10px 0 0 0; font-weight: bold;'>
+        {T['author']}
+    </p>
+    <p style='color: #FFD700; font-size: 14px; margin: 5px 0 0 0; font-style: italic; opacity: 0.8;'>
+        {T.get('author_en', 'Ali Adel Alatifi')}
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 # =============================================
 # 🎛️ الشريط الجانبي
