@@ -90,7 +90,7 @@ LANGUAGES = {
         "simulation_stopped": "✅ تم إيقاف المحاكاة",
         "help_title": "📖 دليل الحروف العربية الـ 28",
         "help_content": """
-        ### 🔆 الحروف النورانية
+        ### 🔆 الحروف النورانية (14 حرفاً)
         | الحرف | القيمة | الرمز |
         |-------|--------|------|
         | أ | 1 | الوحدانية |
@@ -108,7 +108,7 @@ LANGUAGES = {
         | ح | 8 | الحياة |
         | ط | 9 | الطهارة |
         
-        ### ⚙️ الحروف المحايدة (المشغلات)
+        ### ⚙️ الحروف المحايدة (6 حروف – المشغلات)
         - ف : فاء السببية
         - و : واو العطف
         - ب : باء الاستعانة
@@ -116,7 +116,7 @@ LANGUAGES = {
         - ت : تاء الفاعل
         - ث : ثم العطف
         
-        ### 🌑 الحروف الظلامية
+        ### 🌑 الحروف الظلامية (8 حروف – قوى الضلال)
         | الحرف | القيمة | القوة السالبة |
         |-------|--------|---------------|
         | ظ | 900 | الظلم |
@@ -347,21 +347,21 @@ def calc_S(W, B, E, prayer, zakat, fasting, hajj, amr, nahy, adl, shura, light_v
 def check_warnings(W, B, S, E, ph, lang="ar"):
     w = []
     if E > S * 1.5:
-        w.append("⚠️ فجوة استدراج خطيرة" if lang=="ar" else "⚠️ Critical Istidraj gap")
+        w.append("⚠️ فجوة استدراج خطيرة")
     elif E > S * 1.2:
-        w.append("⚡ بداية استدراج" if lang=="ar" else "⚡ Beginning of Istidraj")
+        w.append("⚡ بداية استدراج")
     if abs(W - B) > 0.3:
-        w.append("⚖️ اختلال كبير في الميزان" if lang=="ar" else "⚖️ Major imbalance")
+        w.append("⚖️ اختلال كبير في الميزان")
     elif abs(W - B) > 0.2:
-        w.append("📊 ميلان في الميزان" if lang=="ar" else "📊 Slight tilt")
+        w.append("📊 ميلان في الميزان")
     if S < 0.2:
-        w.append("🔴 انهيار وشيك" if lang=="ar" else "🔴 Imminent collapse")
+        w.append("🔴 انهيار وشيك")
     elif S < 0.3:
-        w.append("🟠 حالة حرجة" if lang=="ar" else "🟠 Critical state")
+        w.append("🟠 حالة حرجة")
     if 'ISTIDRAJ' in ph:
-        w.append("💀 استدراج نشط" if lang=="ar" else "💀 Active Istidraj")
+        w.append("💀 استدراج نشط")
     elif 'RECOVERY' in ph:
-        w.append("🌱 مرحلة تعافي" if lang=="ar" else "🌱 Recovery phase")
+        w.append("🌱 مرحلة تعافي")
     return w
 
 # =============================================
@@ -569,14 +569,14 @@ if st.session_state.get("run", False):
             st.session_state.latest_image = buf
             plt.close(fig)
 
-            progress_text.text(f"{T['status_running']} | {ph} | S={S:.2f} | E={E:.2f}" if lang=="ar" else f"Running... | {ph} | S={S:.2f} | E={E:.2f}")
+            progress_text.text(f"قيد التشغيل... | {ph} | S={S:.2f} | E={E:.2f}")
             warns = check_warnings(W,B,S,E,ph,lang)
             if warns: warn_placeholder.warning(" | ".join(warns))
             else: warn_placeholder.success(T["balance_good"])
             time.sleep(0.08)
 
         except Exception as e:
-            st.error(f"Simulation error: {str(e)}")
+            st.error(f"خطأ في المحاكاة: {str(e)}")
             st.session_state.run = False
             break
 
@@ -588,6 +588,9 @@ elif st.session_state.init and 'latest_image' in st.session_state:
 if 'latest_image' in st.session_state:
     st.sidebar.download_button(T["download"], st.session_state.latest_image, "mizan.png", "image/png")
 
+# =============================================
+# 📥 تحميل + تذييل
+# =============================================
 st.markdown("---")
 with st.expander(T["help_title"]):
     st.markdown(T["help_content"])
