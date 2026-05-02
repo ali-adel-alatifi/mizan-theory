@@ -2,7 +2,6 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, FancyBboxPatch, RegularPolygon
-from matplotlib.colors import LinearSegmentedColormap
 import random
 import time
 from io import BytesIO
@@ -451,7 +450,7 @@ if st.session_state.init:
     else: st.success(T["balance_good"])
 
 # =============================================
-# 🎬 المحاكاة الحية – شاملة كل المستويات
+# 🎬 المحاكاة الحية
 # =============================================
 if st.session_state.get("run", False):
     placeholder = st.empty()
@@ -548,24 +547,18 @@ if st.session_state.get("run", False):
             fig, ax = plt.subplots(figsize=(16,12), facecolor='#000010')
             ax.set_xlim(0,28); ax.set_ylim(0,20); ax.axis('off')
 
-            # النواة S
             for r,a,c in [(0.5,0.98,'#FFF'),(1,0.65,'#FFD700'),(1.7,0.3,'#FFD700'),
                           (2.6,0.12,'#FFA500'),(3.8,0.05,'#FF6347'),(5.5,0.02,'#FF4500')]:
                 ax.add_patch(Circle((cx,cy), r*(0.5+2.8*S), color=c, alpha=a, zorder=15))
             ax.text(cx,cy,'S',color='#1a1000',fontsize=16,ha='center',va='center',fontweight='bold')
             ax.text(cx,cy-2.5,f'S={S:.2f}',color='#FFD700',fontsize=10,ha='center')
 
-            # هالة E
             ax.add_patch(Circle((cx,cy), 0.5+16*E, color='#00FFFF', alpha=0.25*(1-min(E,1))+0.04, zorder=7))
-
-            # غشاء
             ax.add_patch(Circle((cx,cy), 8.5, color='#00FF88', alpha=0.15, fill=False, lw=2.5, zorder=2))
 
-            # حلقات
             for r in [10.0,11.5,13.0]:
                 ax.add_patch(Circle((cx,cy), r, color='#FFD700', alpha=0.03, fill=False, lw=0.6, ls=':', zorder=0))
 
-            # قنوات W و B
             for i in range(6):
                 an = -np.pi/4 + i*(np.pi/2)/5
                 ax.add_patch(Circle((cx+8.5*np.cos(an), cy+8.5*np.sin(an)), 0.4, color='#FFFFFF', alpha=0.3+0.5*avgW, zorder=8))
@@ -573,13 +566,11 @@ if st.session_state.get("run", False):
                 an = np.pi - np.pi/4 + i*(np.pi/2)/5
                 ax.add_patch(Circle((cx+8.5*np.cos(an), cy+8.5*np.sin(an)), 0.4, color='#FF3333', alpha=0.25+0.35*avgB, zorder=8))
 
-            # كوكب W و B
             ax.add_patch(Circle((wx,wy), 0.2+0.6*W, color='#FFFFFF', alpha=1, zorder=13))
             ax.add_patch(Circle((bx,by), 0.2+0.6*B, color='#FF3333', alpha=0.8, zorder=13))
             ax.text(wx,wy+0.8,'W',color='#FFFFFF',fontsize=10,ha='center')
             ax.text(bx,by+0.8,'B',color='#FF3333',fontsize=10,ha='center')
 
-            # النجوم
             colors = [get_color(sw[i],sb[i]) for i in range(n_stars)]
             ax.scatter(sx, sy, s=35, c=colors, alpha=0.9, edgecolors='white', linewidths=0.4, zorder=5)
 
@@ -589,11 +580,10 @@ if st.session_state.get("run", False):
             ax.add_patch(Circle((3.5+er*np.cos(aa),4.0+er*np.sin(aa)), 0.04, color='white', alpha=0.95, zorder=8))
             ax.text(3.5,2.7,'⚛️ ذرة',color='#4488FF',fontsize=6,ha='center')
 
-            # 🧪 جزيء (كيمياء) – شكل سداسي بسيط
+            # 🧪 جزيء (كيمياء)
             chem_x, chem_y = 9.5, 4.0
-            ax.add_patch(RegularPolygon((chem_x, chem_y), numVertices=6, radius=0.35+0.25*S, 
+            ax.add_patch(RegularPolygon((chem_x, chem_y), numVertices=6, radius=0.35+0.25*S,
                                         orientation=np.pi/6, facecolor='#FFA500', alpha=0.7, zorder=7))
-            ax.plot(chem_x, chem_y, 'o', color='white', markersize=4)
             ax.text(chem_x, chem_y-0.9, '🧪 جزيء', color='#FFA500', fontsize=6, ha='center')
 
             # 🧫 خلية (بيولوجيا)
@@ -611,23 +601,27 @@ if st.session_state.get("run", False):
             ax.text(mx+bw, my-0.6, f'B={B:.2f}', color='#FF3333', fontsize=8, ha='center')
             ax.text(mx+bw/2, my+bh+0.6, '⚖️ الميزان', color='#FFD700', fontsize=9, ha='center', fontweight='bold')
 
-            # لوحة إثبات الاستدراج
-            pax = ax.inset_axes([0.50,0.02,0.46,0.10])
-            pax.set_xlim(0,400); pax.set_ylim(0,1.05)
-            pax.set_title('S (ذهب) يقود E (سماوي) – قانون الاستدراج', color='white', fontsize=7)
-            pax.tick_params(colors='white',labelsize=4); pax.grid(True,alpha=0.12)
-            if list(pS): 
-                pax.plot(list(px), list(pS), color='#FFD700', lw=2, label='S')
-                pax.plot(list(px), list(pE), color='#00FFFF', lw=1.5, alpha=0.85, label='E')
-            pax.legend(facecolor='#000',edgecolor='white',labelcolor='white',fontsize=5)
+            # لوحة الإثبات (تم الإصلاح)
+            pSl = list(pS); pEl = list(pE); pxl = list(px)
+            if pSl:
+                pax = ax.inset_axes([0.50,0.02,0.46,0.10])
+                pax.set_xlim(0, max(400, len(pxl)))
+                pax.set_ylim(0, 1.05)
+                pax.set_title('S (ذهب) يقود E (سماوي) – قانون الاستدراج', color='white', fontsize=7)
+                pax.tick_params(colors='white', labelsize=4)
+                pax.grid(True, alpha=0.12)
+                pax.plot(pxl, pSl, color='#FFD700', lw=2, label='S')
+                pax.plot(pxl, pEl, color='#00FFFF', lw=1.5, alpha=0.85, label='E')
+                pax.legend(facecolor='#000', edgecolor='white', labelcolor='white', fontsize=5)
 
-            # خريطة الحرارة (S=W×B)
-            heat_ax = ax.inset_axes([0.02,0.02,0.20,0.18])
+            # خريطة حرارة (S=W×B)
             hfig = create_heatmap(sw, sb)
             hbuf = BytesIO()
             hfig.savefig(hbuf, format='png', dpi=80, facecolor='#000010')
             hbuf.seek(0)
-            heat_ax.imshow(plt.imread(hbuf))
+            img_arr = plt.imread(hbuf)
+            heat_ax = ax.inset_axes([0.02,0.02,0.20,0.18])
+            heat_ax.imshow(img_arr)
             heat_ax.axis('off')
             plt.close(hfig)
 
