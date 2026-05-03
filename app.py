@@ -74,14 +74,12 @@ T = {
 }
 T = T.get(lang, T["ar"])
 
-# --- اختيار اللغة ---
 col_lang, col_title = st.columns([1, 4])
 with col_lang:
     lang_options = {"ar": "🇸🇦 العربية", "en": "🇬🇧 English"}
     selected_lang = st.selectbox("اللغة", options=list(lang_options.keys()), format_func=lambda x: lang_options[x], index=list(lang_options.keys()).index(lang), key="lang_selector")
     if selected_lang != lang: st.session_state.lang = selected_lang; st.rerun()
 
-# --- تصميم الواجهة الفاخرة ---
 st.markdown(f"""
 <div style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%); padding: 40px 20px; border-radius: 20px; margin-bottom: 30px; border: 1px solid #FFD700; box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);">
     <div style="text-align: center; margin-bottom: 30px;">
@@ -91,13 +89,11 @@ st.markdown(f"""
         </h1>
         <span style="font-size: 48px;">⚖️</span>
     </div>
-    
     <div style="background: rgba(255, 215, 0, 0.05); border-right: 3px solid #FFD700; border-left: 3px solid #FFD700; padding: 20px 30px; margin: 20px 0; border-radius: 10px;">
         <p style="color: #e0e0e0; font-size: 18px; line-height: 1.8; text-align: center; font-style: italic;">
             "{T['quote']}"
         </p>
     </div>
-    
     <div style="text-align: center; margin-top: 20px;">
         <p style="color: #FFD700; font-size: 22px; margin: 0; font-weight: bold;">{T['author']}</p>
         <p style="color: #aaaaaa; font-size: 14px; margin: 5px 0 15px 0;">{T['subtitle']}</p>
@@ -107,14 +103,8 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- الشريط الجانبي ---
 with st.sidebar:
-    st.markdown("""
-    <div style='text-align:center;padding:15px;background:linear-gradient(135deg,#0a0a0a,#1a1a2e);border-radius:10px;margin-bottom:10px;border:1px solid #FFD700;'>
-        <h2 style='color:#FFD700;margin:0;'>⚖️ الميزان</h2>
-        <p style='color:#e0e0e0;font-size:12px;'>S = W × B</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("""<div style='text-align:center;padding:15px;background:linear-gradient(135deg,#0a0a0a,#1a1a2e);border-radius:10px;margin-bottom:10px;border:1px solid #FFD700;'><h2 style='color:#FFD700;margin:0;'>⚖️ الميزان</h2><p style='color:#e0e0e0;font-size:12px;'>S = W × B</p></div>""", unsafe_allow_html=True)
     st.markdown("---")
     st.subheader("🕌 أركان الإسلام")
     prayer = st.slider("🟣 الصلاة", 0.0, 1.0, 0.8, 0.01, key="p")
@@ -126,7 +116,6 @@ with st.sidebar:
     nahy = st.slider("🚫 النهي عن المنكر", 0.0, 1.0, 0.5, 0.01, key="na")
     adl = st.slider("⚖️ العدل", 0.0, 1.0, 0.6, 0.01, key="ad")
     shura = st.slider("🤝 الشورى", 0.0, 1.0, 0.5, 0.01, key="sh")
-    
     st.header("🔤 الحروف العربية الـ 28")
     with st.expander("🔆 النورانية (14)", expanded=False):
         light_vals = {}
@@ -140,14 +129,12 @@ with st.sidebar:
         dark_vals = {}
         for letter, data in MIZAN_LETTERS["dark"].items():
             dark_vals[letter] = st.slider(f"{letter} ({data['label']})", 0.0, 1.0, 0.2, 0.01, help=data['aya'], key=f"d_{letter}")
-            
     st.subheader("⚙️ معاملات")
     W_init = st.slider("W الابتدائي", 0.0, 1.0, 0.55, 0.01, key="wi")
     B_init = st.slider("B الابتدائي", 0.0, 1.0, 0.52, 0.01, key="bi")
     N_STARS = st.slider("النجوم", 100, 600, 300, 50, key="ns")
     cycle_speed = st.slider("سرعة الدورة", 0.001, 0.05, 0.008, 0.001, key="cs")
     delay_frames = st.slider("تأخير التمكين", 5, 50, 22, 1, key="df")
-    
     c1, c2, c3 = st.columns(3)
     if c1.button(T["run"], use_container_width=True): st.session_state.run = True
     if c2.button(T["stop"], use_container_width=True): st.session_state.run = False
@@ -156,7 +143,6 @@ with st.sidebar:
             if k not in ("lang",): del st.session_state[k]
         st.rerun()
 
-# --- الدوال المساعدة ---
 def get_color(w, b):
     try:
         w=float(w); b=float(b)
@@ -346,4 +332,56 @@ if st.session_state.get("run",False):
             ax.scatter(sx,sy,s=35,c=colors,alpha=0.9,edgecolors='white',linewidths=0.4,zorder=5)
             aa+=0.12; er=0.5+0.4*S
             ax.add_patch(Circle((3.5,4.0),0.15+0.25*S,color='#4488FF',alpha=0.8,zorder=7))
-            ax.add_patch(Circle((3.5+er*np.cos(aa),4.0+er*np.sin(aa)),0.04,color='white',alpha=0.95,zord
+            ax.add_patch(Circle((3.5+er*np.cos(aa),4.0+er*np.sin(aa)),0.04,color='white',alpha=0.95,zorder=8))
+            ax.text(3.5,2.7,'ذرة',color='#4488FF',fontsize=6,ha='center')
+            cx2,cy2=9.5,4.0
+            ax.add_patch(RegularPolygon((cx2,cy2),numVertices=6,radius=0.35+0.25*S,orientation=np.pi/6,facecolor='#FFA500',alpha=0.7,zorder=7))
+            ax.text(cx2,cy2-0.9,'جزيء',color='#FFA500',fontsize=6,ha='center')
+            ax.add_patch(Circle((24.5,4.0),0.35+0.45*S,color='#00FF88',alpha=0.35,zorder=7,ec='#00FF88',lw=1))
+            ax.add_patch(Circle((24.5,4.0),0.1+0.15*S,color='white',alpha=0.8,zorder=8))
+            ax.text(24.5,2.7,'خلية',color='#00FF88',fontsize=6,ha='center')
+            mx,my=0.5,16.5; bw=3.0; bh=0.4
+            ax.add_patch(FancyBboxPatch((mx,my),bw,bh,boxstyle="round,pad=0.15",facecolor='#1a1a2e',alpha=0.8,zorder=20))
+            if W>0: ax.add_patch(FancyBboxPatch((mx,my),W*bw/2,bh,boxstyle="round,pad=0.1",facecolor='#FFF',alpha=0.9,zorder=21))
+            if B>0: ax.add_patch(FancyBboxPatch((mx+bw/2,my),B*bw/2,bh,boxstyle="round,pad=0.1",facecolor='#F33',alpha=0.9,zorder=21))
+            if W+B>0: ax.plot(mx+(W/(W+B))*bw,my+bh/2,'v',color='#FFD700',markersize=12,markeredgecolor='white',zorder=22)
+            ax.text(mx,my-0.6,f'W={W:.2f}',color='white',fontsize=8,ha='center')
+            ax.text(mx+bw,my-0.6,f'B={B:.2f}',color='#F33',fontsize=8,ha='center')
+            ax.text(mx+bw/2,my+bh+0.6,'الميزان',color='#FFD700',fontsize=9,ha='center',fontweight='bold')
+            pSl=list(pS); pEl=list(pE); pxl=list(px)
+            if pSl:
+                pax=ax.inset_axes([0.50,0.02,0.46,0.10])
+                pax.set_xlim(0,max(400,len(pxl))); pax.set_ylim(0,1.05)
+                pax.set_title('S يقود E – الاستدراج',color='white',fontsize=7)
+                pax.tick_params(colors='white',labelsize=4); pax.grid(True,alpha=0.12)
+                pax.plot(pxl,pSl,color='#FFD700',lw=2,label='S'); pax.plot(pxl,pEl,color='#00FFFF',lw=1.5,label='E')
+                pax.legend(facecolor='#000',edgecolor='white',labelcolor='white',fontsize=5)
+            hfig=create_heatmap(sw,sb)
+            hbuf=BytesIO(); hfig.savefig(hbuf,format='png',dpi=80,facecolor='#000010'); hbuf.seek(0)
+            heat_ax=ax.inset_axes([0.02,0.02,0.20,0.18])
+            heat_ax.imshow(plt.imread(hbuf)); heat_ax.axis('off'); plt.close(hfig)
+            ax.text(14,1.2,f'{ph} | S={S:.2f} | E={E:.2f}',color='white',fontsize=12,ha='center',fontweight='bold')
+            plt.tight_layout(pad=0)
+            placeholder.pyplot(fig)
+            buf=BytesIO(); fig.savefig(buf,format='png',dpi=100,facecolor='#000010'); buf.seek(0)
+            st.session_state.latest_image=buf; plt.close(fig)
+            progress_text.text(f"قيد التشغيل... | {ph} | S={S:.2f} | E={E:.2f}")
+            warns=check_warnings(W,B,S,E,ph)
+            if warns: warn_placeholder.warning(" | ".join(warns))
+            else: warn_placeholder.success(T["balance_good"])
+            time.sleep(0.08)
+        except Exception as e:
+            st.error(f"خطأ: {str(e)}")
+            st.session_state.run=False
+            break
+    st.success(T["simulation_stopped"])
+
+elif st.session_state.init and 'latest_image' in st.session_state:
+    st.image(st.session_state.latest_image,caption="آخر حالة",use_column_width=True)
+
+if 'latest_image' in st.session_state:
+    st.sidebar.download_button(T["download"],st.session_state.latest_image,"mizan.png","image/png")
+
+st.markdown("---")
+with st.expander(T["help_title"]): st.markdown(T["help_content"])
+st.markdown(f"<p style='text-align:center;color:#666;'>🧪 مختبر الميزان v5.0 – من الذرة إلى المجرة 🌌</p>", unsafe_allow_html=True)
