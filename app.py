@@ -1,18 +1,12 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle, FancyBboxPatch
+from matplotlib.patches import Circle
 from matplotlib.colors import LinearSegmentedColormap
 import random, time
-from io import BytesIO
 from collections import deque
 import warnings
 warnings.filterwarnings('ignore')
-
-# =============================================
-# ⚖️ الدِّينُ الْقَيِّم – النسخة الذهبية للجوال
-# S = W × B | Author: Ali Adel Alatifi
-# =============================================
 
 st.set_page_config(
     page_title="الدين القيم",
@@ -21,9 +15,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# =============================================
-# 🎨 CSS محسن للجوال
-# =============================================
 st.markdown("""
 <style>
     .stApp { background: #0a0a1a; }
@@ -42,15 +33,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# =============================================
-# 🏛️ العنوان
-# =============================================
 st.markdown('<p class="big-title">⚖️ الدِّينُ الْقَيِّم ⚖️</p>', unsafe_allow_html=True)
 st.markdown('<p class="sub-title">S = W × B | قانون التوازن الكوني</p>', unsafe_allow_html=True)
 
-# =============================================
-# 🎮 أزرار التحكم (دائماً في الأعلى)
-# =============================================
+# ===================== أزرار التحكم =====================
 c1, c2, c3 = st.columns(3)
 with c1:
     if st.button("▶️ تشغيل", use_container_width=True):
@@ -66,9 +52,7 @@ with c3:
         st.session_state.run = False
         st.rerun()
 
-# =============================================
-# 📊 المؤشرات العلوية
-# =============================================
+# ===================== مؤشرات =====================
 if 'init' in st.session_state and st.session_state.init:
     m1, m2, m3, m4 = st.columns(4)
     with m1:
@@ -80,63 +64,67 @@ if 'init' in st.session_state and st.session_state.init:
     with m4:
         st.markdown(f'<div class="metric-box"><p class="metric-val" style="color:#00FFFF;">{st.session_state.E:.2f}</p><p class="metric-lbl">💫 E</p></div>', unsafe_allow_html=True)
 
-# =============================================
-# 🎛️ جميع المتغيرات – منظمة في أقسام قابلة للطي
-# =============================================
-with st.expander("🕌 أركان الإسلام", expanded=False):
+# ===================== جميع المتغيرات (مفتوحة افتراضياً) =====================
+# استخدام st.session_state للتحكم في ظهور/اختفاء كل الإعدادات
+if 'show_all_settings' not in st.session_state:
+    st.session_state.show_all_settings = False
+
+# زر واحد لفتح/إغلاق كل الإعدادات المتقدمة
+if st.button("🔽 إظهار/إخفاء كل الإعدادات المتقدمة", use_container_width=True):
+    st.session_state.show_all_settings = not st.session_state.show_all_settings
+    st.rerun()
+
+# حالة الزر الحالية
+show = st.session_state.show_all_settings
+
+# تعريف كل المتغيرات بقيم افتراضية (حتى لو كانت مخفية)
+# هذا يمنع أخطاء "المتغير غير معرف"
+prayer = 0.8; zakat = 0.6; fasting = 0.7; hajj = 0.5
+amr = 0.5; nahy = 0.5; adl = 0.6; shura = 0.5
+taawun_birr = 0.5; taawun_taqwa = 0.5; tawasi_haqq = 0.5; tawasi_sabr = 0.5
+nahy_marouf_e = 0.2; amr_munkar_e = 0.2; taawun_ithm = 0.2; taawun_udwan = 0.2; tawasi_batil = 0.2; adam_sabr = 0.2
+riba = 0.2; ghish = 0.2; kadhib = 0.2
+cycle_speed = 0.12; delay_frames = 22; N_STARS = 60
+
+if show:
+    st.markdown("---")
+    st.markdown("### 🎛️ جميع الإعدادات المتقدمة")
+    
     col_a, col_b = st.columns(2)
     with col_a:
         prayer = st.slider("الصلاة 🟣", 0.0, 1.0, 0.8, 0.05, key="p")
         zakat = st.slider("الزكاة 🟡", 0.0, 1.0, 0.6, 0.05, key="z")
-    with col_b:
         fasting = st.slider("الصوم 🟠", 0.0, 1.0, 0.7, 0.05, key="f")
         hajj = st.slider("الحج 🔵", 0.0, 1.0, 0.5, 0.05, key="h")
-
-with st.expander("🏛️ أسس الحكم", expanded=False):
-    col_c, col_d = st.columns(2)
-    with col_c:
+        st.markdown("---")
         amr = st.slider("الأمر بالمعروف 📢", 0.0, 1.0, 0.5, 0.05, key="amr")
         nahy = st.slider("النهي عن المنكر 🚫", 0.0, 1.0, 0.5, 0.05, key="nahy")
-    with col_d:
         adl = st.slider("العدل ⚖️", 0.0, 1.0, 0.6, 0.05, key="adl")
         shura = st.slider("الشورى 🤝", 0.0, 1.0, 0.5, 0.05, key="shura")
-
-with st.expander("🛡️ آليات الإصلاح", expanded=False):
-    col_e, col_f = st.columns(2)
-    with col_e:
+    with col_b:
         taawun_birr = st.slider("التعاون على البر", 0.0, 1.0, 0.5, 0.05, key="tb")
         tawasi_haqq = st.slider("التواصي بالحق", 0.0, 1.0, 0.5, 0.05, key="th")
-    with col_f:
         taawun_taqwa = st.slider("التعاون على التقوى", 0.0, 1.0, 0.5, 0.05, key="tt")
         tawasi_sabr = st.slider("التواصي بالصبر", 0.0, 1.0, 0.5, 0.05, key="ts")
-
-with st.expander("💀 آليات الإفساد", expanded=False):
-    col_g, col_h = st.columns(2)
-    with col_g:
+        st.markdown("---")
         nahy_marouf_e = st.slider("النهي عن المعروف", 0.0, 1.0, 0.2, 0.05, key="nm")
         amr_munkar_e = st.slider("الأمر بالمنكر", 0.0, 1.0, 0.2, 0.05, key="amr_e")
         taawun_ithm = st.slider("التعاون على الإثم", 0.0, 1.0, 0.2, 0.05, key="ti")
-    with col_h:
         taawun_udwan = st.slider("التعاون على العدوان", 0.0, 1.0, 0.2, 0.05, key="tu")
         tawasi_batil = st.slider("التواصي بالباطل", 0.0, 1.0, 0.2, 0.05, key="tbat")
         adam_sabr = st.slider("عدم الصبر", 0.0, 1.0, 0.2, 0.05, key="as")
-
-with st.expander("⚠️ الأمراض الأخلاقية", expanded=False):
-    col_i, col_j = st.columns(2)
-    with col_i:
+        st.markdown("---")
         riba = st.slider("الربا 💸", 0.0, 1.0, 0.2, 0.05, key="riba")
         ghish = st.slider("الغش 🎭", 0.0, 1.0, 0.2, 0.05, key="ghish")
-    with col_j:
         kadhib = st.slider("الكذب 🤥", 0.0, 1.0, 0.2, 0.05, key="kadhib")
+        st.markdown("---")
+        cycle_speed = st.slider("سرعة الدورة (ث)", 0.02, 0.3, 0.12, 0.01, key="spd")
+        delay_frames = st.slider("تأخير التمكين", 5, 40, 22, 1, key="dly")
+        N_STARS = st.slider("عدد النجوم", 40, 150, 60, 10, key="nst")
+else:
+    st.info("💡 اضغط على الزر أعلاه 🔽 لإظهار الإعدادات المتقدمة")
 
-with st.expander("⚙️ إعدادات المحاكاة", expanded=False):
-    cycle_speed = st.slider("سرعة الدورة (ث)", 0.02, 0.3, 0.12, 0.01, key="spd")
-    delay_frames = st.slider("تأخير التمكين", 5, 40, 22, 1, key="dly")
-    N_STARS = st.slider("عدد النجوم", 40, 150, 60, 10, key="nst")
-
-# =============================================
-# 🚨 تحذيرات
-# =============================================
+# ===================== تحذيرات =====================
 if st.session_state.get('init', False):
     S = st.session_state.S
     E = st.session_state.E
@@ -147,25 +135,20 @@ if st.session_state.get('init', False):
     elif S < 0.2:
         st.error("🔴 خطر الانهيار")
 
-# =============================================
-# دوال مساعدة (متكاملة من الكود الأصلي)
-# =============================================
+# ===================== دوال مساعدة =====================
 def apply_ethics(sw, sb, neighbors_W, neighbors_B,
                  amr, nahy, taawun_birr, taawun_taqwa, tawasi_haqq, tawasi_sabr,
                  nahy_marouf_e, amr_munkar_e, taawun_ithm, taawun_udwan, tawasi_batil, adam_sabr):
     w_boost = 0.0; b_boost = 0.0
     resistance_w = 0.0; resistance_b = 0.0
-
     w_boost += amr * 0.015; b_boost += nahy * 0.015
     if neighbors_W > 0.5: w_boost += taawun_birr * 0.02
     if neighbors_B > 0.5: b_boost += taawun_taqwa * 0.02
     resistance_w += tawasi_haqq * 0.1; resistance_b += tawasi_sabr * 0.1
-
     w_boost -= nahy_marouf_e * 0.015; b_boost -= amr_munkar_e * 0.015
     if neighbors_W < 0.5: w_boost -= taawun_ithm * 0.02
     if neighbors_B < 0.5: b_boost -= taawun_udwan * 0.02
     resistance_w -= tawasi_batil * 0.1; resistance_b -= adam_sabr * 0.1
-
     resistance_w = max(0, resistance_w); resistance_b = max(0, resistance_b)
     sw += w_boost; sb += b_boost
     return sw, sb, resistance_w, resistance_b
@@ -183,23 +166,14 @@ def calculate_S_full(W, B, E, prayer, zakat, fasting, hajj,
     pillars_boost = (prayer + zakat + fasting + hajj) / 4
     S_base *= (0.5 + 0.5 * pillars_boost)
     protection = (amr * W + nahy * B) / 2
-    S_base *= (0.8 + 0.4 * protection)
-    S_base *= (0.9 + 0.2 * adl)
-    S_base *= (0.85 + 0.3 * shura)
-    if E > S_base:
-        riba_effect = riba * (E - S_base) * 0.3
-        S_base -= riba_effect
+    S_base *= (0.8 + 0.4 * protection) * (0.9 + 0.2 * adl) * (0.85 + 0.3 * shura)
+    if E > S_base: S_base -= riba * (E - S_base) * 0.3
     W_weakened = W * (1 - kadhib * 0.2)
     S_final = W_weakened * B
-    S_final *= (0.5 + 0.5 * pillars_boost)
-    S_final *= (0.8 + 0.4 * protection)
-    S_final *= (0.9 + 0.2 * adl)
-    S_final *= (0.85 + 0.3 * shura)
+    S_final *= (0.5 + 0.5 * pillars_boost) * (0.8 + 0.4 * protection) * (0.9 + 0.2 * adl) * (0.85 + 0.3 * shura)
     return np.clip(S_final, 0.001, 1.0)
 
-# =============================================
-# تهيئة الحالة
-# =============================================
+# ===================== تهيئة =====================
 if 'init' not in st.session_state: st.session_state.init = False
 if 'run' not in st.session_state: st.session_state.run = False
 
@@ -212,25 +186,18 @@ if not st.session_state.init:
     st.session_state.sy = np.random.uniform(0, 10, n)
     st.session_state.sw = np.random.uniform(0.1, 1.0, n)
     st.session_state.sb = np.random.uniform(0.1, 1.0, n)
-    st.session_state.res_w = np.zeros(n)
-    st.session_state.res_b = np.zeros(n)
+    st.session_state.res_w = np.zeros(n); st.session_state.res_b = np.zeros(n)
     st.session_state.W = 0.55; st.session_state.B = 0.52
     st.session_state.E = 0.3; st.session_state.S = 0.55 * 0.52
     st.session_state.ph = "استقرار"; st.session_state.ca = 0.0
     st.session_state.eb = deque([0.55*0.52]*30, maxlen=30)
-    st.session_state.pS = deque(maxlen=150)
-    st.session_state.pE = deque(maxlen=150)
+    st.session_state.pS = deque(maxlen=150); st.session_state.pE = deque(maxlen=150)
     st.session_state.px = deque(maxlen=150)
     st.session_state.init = True
 
-# =============================================
-# 🎨 منطقة الرسم
-# =============================================
+# ===================== رسم =====================
 plot_placeholder = st.empty()
 
-# =============================================
-# ⚡ المحاكاة الحية الكاملة
-# =============================================
 if st.session_state.get("run", False):
     while st.session_state.get("run", False):
         try:
@@ -316,7 +283,6 @@ if st.session_state.get("run", False):
             st.session_state.res_w, st.session_state.res_b = res_w, res_b
             st.session_state.pS, st.session_state.pE, st.session_state.px = pS, pE, px
 
-            # رسم
             fig, ax = plt.subplots(figsize=(8,6), facecolor='#0a0a1a')
             ax.set_facecolor('#0a0a1a')
             colors = [get_mizan_color(sw[i], sb[i]) for i in range(n)]
@@ -359,4 +325,4 @@ elif st.session_state.init:
     plt.close(fig)
 
 st.markdown("---")
-st.markdown("<p style='text-align:center;color:gray;font-size:0.65em;'>© 2026 | النسخة الذهبية الكاملة</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center;color:gray;font-size:0.65em;'>© 2026 علي عادل العاطفي | النسخة النهائية</p>", unsafe_allow_html=True)
