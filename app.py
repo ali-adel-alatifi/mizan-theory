@@ -1,3 +1,9 @@
+# =============================================
+# © 2026 علي عادل العاطفي (Ali Adel Alatifi)
+# جميع الحقوق محفوظة. لا يجوز استخدام هذا الكود
+# تجارياً أو تعديله بدون إذن كتابي مسبق.
+# للحصول على إذن: ali.adel.alatifi@gmail.com
+# =============================================
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
