@@ -52,24 +52,28 @@ if "lang" not in st.session_state: st.session_state.lang = "ar"
 lang = st.session_state.lang
 T = {
     "ar": {
-        "title": "نظرية الميزان",
-        "subtitle": "S = W × B | 28 حرفاً | الفيزياء والكيمياء والبيولوجيا والأخلاق",
-        "quote": "الاستقرار الحقيقي (S) ينبع من الداخل (W × B)، أما الانهيار فيبدأ من الخارج (E). ليست النعم دليل رضا، بل اختبار استدراج.",
+        "title": "⚖️ الميزان",
+        "subtitle": "S = W × B | قانون التوازن الكوني",
+        "quote1": "أيها البشر، لستم في فوضى. هناك قانون. هناك نظام. هناك ميزان. استقراركم ليس صدفة. انهياركم ليس حظاً سيئاً. إنها معادلة. إنها S = W × B.",
+        "quote2": "الدين القيم = القانون الإلهي الذي يسري على كل شيء من الأزل إلى الخلود. الإسلام = الاستجابة للقانون الإلهي من خلال توازن الولاء والبراءة، كل مخلوق بما يناسب فطرته = الثبات والاستقرار في كل شيء، من الذرة إلى المجرة.",
+        "verse": "﴿وَالسَّمَاءَ رَفَعَهَا وَوَضَعَ الْمِيزَانَ﴾ – الرحمن 7",
         "author": "علي عادل العاطفي",
         "run": "▶️ تشغيل", "stop": "⏹️ إيقاف", "reset": "🔄 إعادة ضبط", "download": "📥 تحميل",
         "footer": "2026 | علي عادل العاطفي",
         "balance_good": "✅ توازن تام", "simulation_stopped": "⏸️ تم الإيقاف",
-        "help_title": "📖 دليل الحروف", "help_content": "تأليف: علي عادل العاطفي"
+        "help_title": "📖 الميزان في القرآن", "help_content": "﴿وَالسَّمَاءَ رَفَعَهَا وَوَضَعَ الْمِيزَانَ﴾ – الرحمن 7\n\n﴿وَأَنزَلْنَا مَعَهُمُ الْكِتَابَ وَالْمِيزَانَ﴾ – الحديد 25\n\n﴿اللَّهُ الَّذِي أَنزَلَ الْكِتَابَ بِالْحَقِّ وَالْمِيزَانَ﴾ – الشورى 17\n\nتأليف: علي عادل العاطفي"
     },
     "en": {
-        "title": "The Mizan Principle",
-        "subtitle": "S = W × B | 28 Letters | Physics, Chemistry, Biology & Ethics",
-        "quote": "True stability (S) comes from within (W × B). When you see people collapsing morally yet flooded with blessings, know it is Istidraj.",
+        "title": "⚖️ The Mizan",
+        "subtitle": "S = W × B | The Universal Law of Balance",
+        "quote1": "O humanity, you are not in chaos. There is a law. There is a system. There is a scale. Your stability is not chance. Your collapse is not bad luck. It's an equation. It's S = W × B.",
+        "quote2": "The Right Religion = The Divine Law that governs everything from eternity to eternity. Islam = responding to the Divine Law through the balance of loyalty and disavowal, each creature according to its nature = stability in everything, from the atom to the galaxy.",
+        "verse": "And the heaven He raised and imposed the balance – Quran 55:7",
         "author": "Ali Adel Alatifi",
         "run": "▶️ Run", "stop": "⏹️ Stop", "reset": "🔄 Reset", "download": "📥 Download",
         "footer": "2026 | Ali Adel Alatifi",
         "balance_good": "✅ Perfect Balance", "simulation_stopped": "⏸️ Stopped",
-        "help_title": "📖 Guide", "help_content": "By Ali Adel Alatifi"
+        "help_title": "📖 Mizan in Quran", "help_content": "Quran 55:7, 57:25, 42:17\n\nBy Ali Adel Alatifi"
     }
 }
 T = T.get(lang, T["ar"])
@@ -80,26 +84,49 @@ with col_lang:
     selected_lang = st.selectbox("اللغة", options=list(lang_options.keys()), format_func=lambda x: lang_options[x], index=list(lang_options.keys()).index(lang), key="lang_selector")
     if selected_lang != lang: st.session_state.lang = selected_lang; st.rerun()
 
+# --- تصميم الواجهة الفاخرة ---
 st.markdown(f"""
-<div style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%); padding: 40px 20px; border-radius: 20px; margin-bottom: 30px; border: 1px solid #FFD700; box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);">
+<div style="background: linear-gradient(180deg, #000000 0%, #0a0a1a 30%, #1a1a2e 70%, #0a0a1a 100%); padding: 40px 20px; border-radius: 20px; margin-bottom: 30px; border: 2px solid #FFD700; box-shadow: 0 0 50px rgba(255, 215, 0, 0.4), 0 0 100px rgba(255, 215, 0, 0.1);">
+    
     <div style="text-align: center; margin-bottom: 30px;">
-        <span style="font-size: 48px;">⚖️</span>
-        <h1 style="color: #FFD700; font-size: 42px; margin: 10px 0; font-weight: 900; letter-spacing: 3px; text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);">
+        <span style="font-size: 60px; display: block; margin-bottom: 10px;">⚖️</span>
+        <h1 style="color: #FFD700; font-size: 52px; margin: 10px 0; font-weight: 900; letter-spacing: 5px; text-shadow: 0 0 20px rgba(255, 215, 0, 0.7), 0 0 40px rgba(255, 215, 0, 0.3);">
             {T['title']}
         </h1>
-        <span style="font-size: 48px;">⚖️</span>
+        <p style="color: #aaaaaa; font-size: 16px; margin: 10px 0 0 0; letter-spacing: 2px;">{T['subtitle']}</p>
     </div>
-    <div style="background: rgba(255, 215, 0, 0.05); border-right: 3px solid #FFD700; border-left: 3px solid #FFD700; padding: 20px 30px; margin: 20px 0; border-radius: 10px;">
-        <p style="color: #e0e0e0; font-size: 18px; line-height: 1.8; text-align: center; font-style: italic;">
-            "{T['quote']}"
+    
+    <div style="width: 150px; height: 3px; background: linear-gradient(90deg, transparent, #FFD700, transparent); margin: 30px auto;"></div>
+    
+    <div style="background: rgba(255, 215, 0, 0.03); border-right: 4px solid #FFD700; border-left: 4px solid #FFD700; padding: 25px 35px; margin: 30px 0; border-radius: 15px;">
+        <p style="color: #d0d0d0; font-size: 17px; line-height: 2.2; text-align: center; font-style: italic; margin: 0;">
+            "{T['quote1']}"
         </p>
     </div>
-    <div style="text-align: center; margin-top: 20px;">
-        <p style="color: #FFD700; font-size: 22px; margin: 0; font-weight: bold;">{T['author']}</p>
-        <p style="color: #aaaaaa; font-size: 14px; margin: 5px 0 15px 0;">{T['subtitle']}</p>
-        <div style="width: 100px; height: 2px; background: linear-gradient(90deg, transparent, #FFD700, transparent); margin: 15px auto;"></div>
-        <p style="color: #666; font-size: 12px;">{T['footer']}</p>
+    
+    <div style="width: 100px; height: 2px; background: linear-gradient(90deg, transparent, rgba(255,215,0,0.5), transparent); margin: 25px auto;"></div>
+    
+    <div style="text-align: center; padding: 0 20px;">
+        <p style="color: #b0b0b0; font-size: 14px; line-height: 2; text-align: center;">
+            {T['quote2']}
+        </p>
     </div>
+    
+    <div style="width: 150px; height: 3px; background: linear-gradient(90deg, transparent, #FFD700, transparent); margin: 30px auto;"></div>
+    
+    <div style="text-align: center;">
+        <p style="color: #FFD700; font-size: 20px; margin: 0; font-weight: bold; text-shadow: 0 0 10px rgba(255,215,0,0.3);">
+            {T['verse']}
+        </p>
+    </div>
+    
+    <div style="width: 200px; height: 2px; background: #FFD700; margin: 30px auto 20px auto; opacity: 0.5;"></div>
+    
+    <div style="text-align: center;">
+        <p style="color: #FFD700; font-size: 20px; margin: 0; font-weight: bold;">{T['author']}</p>
+        <p style="color: #666; font-size: 12px; margin: 10px 0 0 0;">{T['footer']}</p>
+    </div>
+    
 </div>
 """, unsafe_allow_html=True)
 
@@ -143,6 +170,7 @@ with st.sidebar:
             if k not in ("lang",): del st.session_state[k]
         st.rerun()
 
+# الدوال المساعدة (نفسها تماماً، لم تتغير)
 def get_color(w, b):
     try:
         w=float(w); b=float(b)
@@ -384,4 +412,4 @@ if 'latest_image' in st.session_state:
 
 st.markdown("---")
 with st.expander(T["help_title"]): st.markdown(T["help_content"])
-st.markdown(f"<p style='text-align:center;color:#666;'>🧪 مختبر الميزان v5.0 – من الذرة إلى المجرة 🌌</p>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align:center;color:#666;'>🧪 مختبر الميزان v6.0 – من الذرة إلى المجرة 🌌</p>", unsafe_allow_html=True)
