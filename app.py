@@ -9,19 +9,140 @@ warnings.filterwarnings('ignore')
 
 st.set_page_config(page_title="الدين القيم", page_icon="⚖️", layout="wide")
 
+# ====================== تصميم فاخر ======================
 st.markdown("""
 <style>
-    .stApp { background: #0a0a2e; }
-    .big-title { font-size: 2.2em; font-weight: 900; color: #FFD700; text-align: center; }
-    .sub-title { font-size: 1em; color: #CCCCCC; text-align: center; }
-    .stButton > button { border-radius: 8px; height: 2.5em; background: #1a1a3e; color: white; border: 1px solid #FFD700; }
-    hr { border-color: #FFD700; }
+    /* تدرج خلفي فاخر */
+    .stApp {
+        background: linear-gradient(160deg, #0a0a2e 0%, #0d0d28 30%, #0f0f1a 100%);
+    }
+    
+    /* عنوان رئيسي بتأثير ذهبي */
+    .golden-title {
+        font-size: 2.5em;
+        font-weight: 900;
+        text-align: center;
+        margin: 10px 0 0 0;
+        background: linear-gradient(180deg, #FFE566 0%, #FFD700 40%, #DAA520 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: none;
+        letter-spacing: 3px;
+    }
+    .sub-title {
+        font-size: 1em;
+        color: #CCCCCC;
+        text-align: center;
+        margin: 0 0 20px 0;
+    }
+    
+    /* أزرار ذهبية */
+    .stButton > button {
+        border-radius: 10px;
+        font-weight: bold;
+        height: 2.6em;
+        background: linear-gradient(180deg, #1a1a3e 0%, #0d0d28 100%);
+        color: #FFD700;
+        border: 1.5px solid #DAA520;
+        transition: all 0.3s;
+    }
+    .stButton > button:hover {
+        background: linear-gradient(180deg, #DAA520 0%, #FFD700 100%);
+        color: #000;
+        border-color: #FFE566;
+    }
+    
+    /* بطاقات المؤشرات */
+    .metric-card {
+        background: rgba(10,10,46,0.8);
+        border-radius: 12px;
+        padding: 12px 5px;
+        text-align: center;
+        border: 1px solid rgba(218,165,32,0.3);
+        box-shadow: 0 0 15px rgba(218,165,32,0.1);
+    }
+    .metric-val { font-size: 1.5em; font-weight: bold; margin: 0; }
+    .metric-lbl { font-size: 0.7em; color: #aaa; margin: 0; }
+    
+    /* موسعات ذهبية */
+    [data-testid="stExpander"] details {
+        background: rgba(10,10,40,0.6);
+        border: 1px solid rgba(218,165,32,0.4);
+        border-radius: 10px;
+        margin-bottom: 8px;
+        box-shadow: 0 0 10px rgba(218,165,32,0.05);
+    }
+    [data-testid="stExpander"] summary {
+        color: #FFD700;
+        font-weight: bold;
+        font-size: 1em;
+    }
+    
+    /* خطوط عامة */
+    html, body, [class*="css"] {
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+    }
+    hr { border-color: rgba(218,165,32,0.3); }
+    #MainMenu, footer, header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<p class="big-title">⚖️ الدِّينُ الْقَيِّم ⚖️</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-title">S = W × B | قانون التوازن الكوني</p>', unsafe_allow_html=True)
+# ====================== العنوان الجليل ======================
+st.markdown('<p class="golden-title">⚖️ الدِّينُ الْقَيِّم ⚖️</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub-title">S = W × B | قَانُونُ التَّوَازُنِ الْكَوْنِيّ</p>', unsafe_allow_html=True)
 
+# ====================== رسالة الترحيب والتعريفات ======================
+with st.expander("📜 رسالة الترحيب – افتح للقراءة", expanded=False):
+    tab_intro, tab_guide = st.tabs(["📖 النظرية", "❓ كيف تقرأ المشهد"])
+    
+    with tab_intro:
+        st.markdown("""
+        <div style="text-align: center; font-size: 1em; line-height: 2; color: #CCCCCC;">
+        > "هل يوجد قانون واحد يحكم الذرة والحضارة؟<br>
+        > هذا هو نموذج الميزان الذي يثبت أن <b style="color: #FFD700;">S = W × B</b>"
+        
+        ---
+        
+        <b style="color: #FFD700;">الدين القيم</b> = قانون السببية الكوني، وهو الحق لأن واضعه الحق،
+        وهو القيم لأنه من القيوم نفسه. هو القانون الأعظم، إنه "الدين القيم"
+        الذي هو أصل الوجود وغايته.
+        
+        إنه <b style="color: #FFD700;">"الميزان"</b> الذي قامت به السماوات والأرض،
+        والذي يدور حوله كل شيء، من الأزل إلى الخلود.
+        
+        ---
+        
+        <b style="color: #FFD700;">الإسلام</b> = الاستجابة المثلى للقانون الإلهي من خلال توازن الولاء والبراءة،
+        كل مخلوق بما يناسب فطرته = الثبات والاستقرار في كل شيء.
+        
+        ---
+        
+        ﴿فَأَقِمْ وَجْهَكَ لِلدِّينِ حَنِيفًا ۚ فِطْرَتَ اللَّهِ الَّتِي فَطَرَ النَّاسَ عَلَيْهَا﴾ — الروم 30
+        
+        ---
+        
+        <b>© علي عادل العاطفي | Ali Adel Alatifi | 2026</b>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with tab_guide:
+        st.markdown("""
+        ### 🔍 دليل قراءة المشهد الكوني
+        
+        - **كل نقطة (نجمة)**: تمثل كياناً (فرداً أو مجتمعاً صغيراً).
+        - **🟡 اللون الذهبي**: توازن مثالي (الولاء W والبراءة B مرتفعان معاً).
+        - **⚪ اللون الأبيض/الرمادي**: غلبة الولاء (W) مع ضعف البراءة (B).
+        - **🔴 اللون الأحمر**: غلبة البراءة (B) مع ضعف الولاء (W).
+        - **🩷 اللون الوردي/البرتقالي**: منطقة الخطر (كلاهما منخفض).
+        
+        - **الدائرة الذهبية المتوهجة حول المركز**: تمثل قوة الاستقرار (S).
+        - **القرص السماوي (الأزرق)**: يمثل التمكين (E). إذا اتسع بينما يضيق الذهبي، فهذا هو **الاستدراج**.
+        
+        - **الميزان في الأعلى**: يوضح نسبة W (أبيض) إلى B (أحمر).
+        - **لوحة الإثبات أسفل الرسم**: الخط الذهبي هو S (الاستقرار)، والخط السماوي هو E (التمكين). في الاستدراج، ينخفض S أولاً ثم يتبعه E بعد فجوة زمنية.
+        """)
+
+# ====================== أزرار التحكم ======================
 col1, col2, col3, col4 = st.columns(4)
 with col1:
     if st.button("▶️ تشغيل", use_container_width=True): st.session_state.run = True
@@ -40,6 +161,19 @@ with col4:
 
 st.markdown("---")
 
+# ====================== مؤشرات S, W, B, E ======================
+if 'init' in st.session_state and st.session_state.init:
+    m1, m2, m3, m4 = st.columns(4)
+    with m1:
+        st.markdown(f'<div class="metric-card"><p class="metric-val" style="color:#FFD700;">{st.session_state.S:.3f}</p><p class="metric-lbl">⚖️ استقرار S</p></div>', unsafe_allow_html=True)
+    with m2:
+        st.markdown(f'<div class="metric-card"><p class="metric-val" style="color:#FFF;">{st.session_state.W:.3f}</p><p class="metric-lbl">🤍 ولاء W</p></div>', unsafe_allow_html=True)
+    with m3:
+        st.markdown(f'<div class="metric-card"><p class="metric-val" style="color:#FF5252;">{st.session_state.B:.3f}</p><p class="metric-lbl">❤️ براءة B</p></div>', unsafe_allow_html=True)
+    with m4:
+        st.markdown(f'<div class="metric-card"><p class="metric-val" style="color:#00FFFF;">{st.session_state.E:.3f}</p><p class="metric-lbl">💫 تمكين E</p></div>', unsafe_allow_html=True)
+
+# ====================== جميع المتغيرات ======================
 st.markdown("### 🕌 أركان الإسلام")
 col_a, col_b = st.columns(2)
 with col_a:
@@ -93,6 +227,7 @@ N_STARS = st.slider("عدد النجوم", 50, 300, 150, 10, key="nst")
 
 st.markdown("---")
 
+# ====================== دوال ======================
 def get_color(w, b):
     if w >= 0.7 and b >= 0.7: return '#FFD700'
     if w >= 0.55 and b < 0.45: return '#E0E0E0'
@@ -112,6 +247,7 @@ def calc_S(W, B, E, p, z, f, h, amr, nahy, adl, shura, riba, ghish, kadhib):
     Sf *= (0.5 + 0.5 * pb) * (0.8 + 0.4 * pr) * (0.9 + 0.2 * adl) * (0.85 + 0.3 * shura)
     return np.clip(Sf, 0.001, 1.0)
 
+# ====================== تهيئة ======================
 if 'init' not in st.session_state: st.session_state.init = False
 if not st.session_state.init:
     np.random.seed(42); random.seed(42)
@@ -133,6 +269,7 @@ if not st.session_state.init:
 
 plot_placeholder = st.empty()
 
+# ====================== المحاكاة ======================
 if st.session_state.get("run", False):
     while st.session_state.run:
         try:
@@ -234,7 +371,7 @@ if st.session_state.get("run", False):
             if pSl:
                 pax = ax.inset_axes([0.4, 0.02, 0.55, 0.15])
                 pax.set_xlim(0, max(400, len(pxl))); pax.set_ylim(0, 1.05)
-                pax.set_title('📈 لوحة الإثبات', color='white', fontsize=8)
+                pax.set_title('📈 لوحة الإثبات: S يقود E (الاستدراج)', color='white', fontsize=8)
                 pax.tick_params(colors='white', labelsize=5); pax.grid(True, alpha=0.3)
                 pax.plot(pxl, pSl, color='#FFD700', lw=2, label='S')
                 pax.plot(pxl, pEl, color='#00FFFF', lw=1.5, label='E')
@@ -259,4 +396,4 @@ else:
         plt.close(fig)
 
 st.markdown("---")
-st.markdown("<p style='text-align:center;color:gray;'>© 2026 علي عادل العاطفي | V30</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center;color:gray;font-size:0.8em;'>© 2026 علي عادل العاطفي | النسخة الذهبية المطوّرة</p>", unsafe_allow_html=True)
