@@ -50,11 +50,13 @@ MIZAN_LETTERS = {
 if "lang" not in st.session_state: st.session_state.lang = "ar"
 lang = st.session_state.lang
 
-# نصوص مبسطة
-TITLE = "⚖️ الميزان"
-SUBTITLE = "S = W × B | قانون التوازن الكوني"
+# --- النصوص الجديدة ---
+MAIN_TITLE = "⚖️ الميزان"
+MAIN_SUBTITLE = "S = W × B | قانون التوازن الكوني"
+HOOK = "هل يوجد قانون واحد يحكم الذرة والحضارة؟ هذا هو نموذج الميزان الذي يثبت أن S = W × B"
+DESCRIPTION = "محاكاة نظرية الميزان (S = W × B) – نموذج تفاعلي يحاكي صراع النور والظلام في الحضارات"
+ESSENCE = "هو الحق كما وصفه الحق سبحانه، وهو القيم لأنه من القيوم نفسه. هو القانون الأعظم، إنه 'الدين القيم' الذي هو أصل الوجود وغايته. إنه القانون الذي أزال الله به العدم، وأوجد به الخلق، وأجرى به السنن، وسيكون به الجزاء. إنه 'الميزان' الذي قامت به السماوات والأرض، والذي يدور حوله كل شيء، من الأزل إلى الخلود."
 QUOTE = "أيها البشر، لستم في فوضى. هناك قانون. هناك نظام. هناك ميزان. استقراركم ليس صدفة. انهياركم ليس حظاً سيئاً. إنها معادلة. إنها S = W × B."
-LAW = "الدين القيم = القانون الإلهي الذي يسري على كل شيء من الأزل إلى الخلود. الإسلام = الاستجابة للقانون الإلهي من خلال توازن الولاء والبراءة، كل مخلوق بما يناسب فطرته = الثبات والاستقرار في كل شيء، من الذرة إلى المجرة."
 VERSE = "﴿وَالسَّمَاءَ رَفَعَهَا وَوَضَعَ الْمِيزَانَ﴾ – الرحمن 7"
 AUTHOR = "علي عادل العاطفي"
 FOOTER = "2026 | علي عادل العاطفي"
@@ -65,14 +67,18 @@ with col_lang:
     selected_lang = st.selectbox("اللغة", options=list(lang_options.keys()), format_func=lambda x: lang_options[x], index=0, key="lang_selector")
     if selected_lang != lang: st.session_state.lang = selected_lang; st.rerun()
 
-# --- تصميم بسيط ومضمون ---
+# --- التصميم ---
 st.markdown("---")
-st.header(TITLE)
-st.caption(SUBTITLE)
+st.header(MAIN_TITLE)
+st.caption(MAIN_SUBTITLE)
+st.markdown("---")
+st.subheader(HOOK)
+st.caption(DESCRIPTION)
 st.markdown("---")
 st.markdown(f"*{QUOTE}*")
 st.markdown("---")
-st.info(LAW)
+st.info(ESSENCE)
+st.markdown("---")
 st.markdown(f"**{VERSE}**")
 st.markdown("---")
 st.subheader(AUTHOR)
