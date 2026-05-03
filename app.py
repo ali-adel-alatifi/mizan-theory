@@ -1,134 +1,190 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle, FancyBboxPatch
-from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.patches import Circle
 import random, time
-from io import BytesIO
 from collections import deque
 import warnings
 warnings.filterwarnings('ignore')
 
 # =============================================
-# ⚖️ الدِّينُ الْقَيِّم – قَانُونُ التَّوَازُنِ الْكَوْنِيّ
-# S = W × B | Author: Ali Adel Alatifi
+# ⚖️ الدِّينُ الْقَيِّم – للجوال
 # =============================================
 
 st.set_page_config(
-    page_title="الدين القيم – قانون التوازن الكوني",
+    page_title="الدين القيم",
     page_icon="⚖️",
-    layout="wide",
-    initial_sidebar_state="collapsed" # مغلق للجوال
+    layout="centered", # الأفضل للجوال
+    initial_sidebar_state="collapsed"
 )
 
 # =============================================
-# 🎨 CSS – تصميم موحد للجوال وسطح المكتب
+# 🎨 CSS قوي لتحسين عرض الجوال
 # =============================================
 st.markdown("""
 <style>
-    .stApp { background: linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 100%); }
-    .main-title { font-size: 2em; font-weight: 900; color: #FFD700; text-align: center; margin: 0; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
-    .sub-title { font-size: 1em; color: #FFD700; text-align: center; margin: 0 0 15px 0; }
-    .metric-box { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 10px 5px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-    .metric-val { font-size: 1.5em; font-weight: bold; margin: 0; }
-    .metric-lbl { font-size: 0.7em; color: #aaa; margin: 0; }
-    .stButton>button { border-radius: 8px; font-weight: bold; height: 3em; width: 100%; border: 1px solid rgba(255,255,255,0.2); }
-    .stButton>button:active { background-color: #FFD700; color: black; }
+    /* خلفية داكنة */
+    .stApp {
+        background: #0a0a1a;
+    }
+    /* عنوان رئيسي */
+    .main-title {
+        font-size: 1.8em;
+        font-weight: 900;
+        color: #FFD700;
+        text-align: center;
+        margin: 5px 0 0 0;
+        text-shadow: 0 0 10px rgba(255,215,0,0.6);
+    }
+    .sub-title {
+        font-size: 0.9em;
+        color: #CCCCCC;
+        text-align: center;
+        margin: 0 0 15px 0;
+    }
+    /* أزرار التحكم */
+    .stButton>button {
+        border-radius: 12px;
+        font-weight: bold;
+        height: 3.2em;
+        width: 100%;
+        font-size: 1.1em;
+        background-color: #1a1a2e;
+        color: white;
+        border: 2px solid #FFD700;
+        transition: all 0.3s;
+    }
+    .stButton>button:active {
+        background-color: #FFD700;
+        color: black;
+        transform: scale(0.95);
+    }
+    /* أشرطة التمرير */
+    .stSlider>div>div>div>div {
+        background: #FFD700;
+    }
+    /* بطاقات المؤشرات */
+    .metric-card {
+        background: rgba(255,255,255,0.06);
+        border-radius: 12px;
+        padding: 12px 5px;
+        text-align: center;
+        border: 1px solid rgba(255,215,0,0.2);
+        margin: 3px 0;
+    }
+    .metric-value {
+        font-size: 1.6em;
+        font-weight: bold;
+        margin: 0;
+        line-height: 1.2;
+    }
+    .metric-label {
+        font-size: 0.65em;
+        color: #aaa;
+        margin: 0;
+    }
+    /* إخفاء عناصر Streamlit الافتراضية */
     #MainMenu, footer, header {visibility: hidden;}
-    .block-container { padding: 10px 5px 5px 5px; }
-    /* تحسين أشرطة التمرير */
-    .stSlider>div>div>div>div { background: #FFD700; }
+    .block-container {
+        padding: 10px 5px 10px 5px;
+    }
+    /* تحسين التبويبات */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 2px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        font-size: 0.8em;
+        padding: 8px 10px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # =============================================
-# 🏛️ رأس الصفحة – العنوان الجليل
+# 🏛️ عنوان التطبيق
 # =============================================
 st.markdown('<p class="main-title">⚖️ الدِّينُ الْقَيِّم ⚖️</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-title">S = W × B | قَانُونُ التَّوَازُنِ الْكَوْنِيّ</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub-title">S = W × B | قانون التوازن الكوني</p>', unsafe_allow_html=True)
 
 # =============================================
-# 🎮 أزرار التحكم – دائماً مرئية في الأعلى
+# 🎮 أزرار التحكم – في الأعلى دائماً
 # =============================================
-col_play, col_pause, col_reset = st.columns(3)
-with col_play:
-    if st.button("▶️ تشغيل", key="play", use_container_width=True):
-        st.session_state.run = True
-with col_pause:
-    if st.button("⏹️ إيقاف", key="pause", use_container_width=True):
-        st.session_state.run = False
-with col_reset:
-    if st.button("🔄 إعادة", key="reset", use_container_width=True):
-        st.session_state.init = False
-        st.rerun()
+# نستخدم st.columns لوضع الأزرار جنباً إلى جنب
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    play_btn = st.button("▶️ تشغيل", key="play", use_container_width=True)
+with col2:
+    pause_btn = st.button("⏹️ إيقاف", key="pause", use_container_width=True)
+with col3:
+    reset_btn = st.button("🔄 إعادة", key="reset", use_container_width=True)
+
+# معالجة ضغطات الأزرار
+if play_btn:
+    st.session_state.run = True
+    st.rerun()
+if pause_btn:
+    st.session_state.run = False
+    st.rerun()
+if reset_btn:
+    st.session_state.init = False
+    st.session_state.run = False
+    st.rerun()
 
 # =============================================
-# 📑 علامات التبويب – تنظيم المحتوى
+# 📊 مؤشرات S, W, B, E (مصغرة وجميلة)
 # =============================================
-tab1, tab2, tab3, tab4 = st.tabs(["⚖️ الكون", "🎛️ الإعدادات", "📜 الرسالة", "❓ الدليل"])
+if 'init' not in st.session_state: st.session_state.init = False
+if 'run' not in st.session_state: st.session_state.run = False
+
+if st.session_state.init:
+    m1, m2, m3, m4 = st.columns(4)
+    with m1:
+        st.markdown(f'<div class="metric-card"><p class="metric-value" style="color:#FFD700;">{st.session_state.S:.2f}</p><p class="metric-label">⚖️ S</p></div>', unsafe_allow_html=True)
+    with m2:
+        st.markdown(f'<div class="metric-card"><p class="metric-value" style="color:#FFF;">{st.session_state.W:.2f}</p><p class="metric-label">🤍 W</p></div>', unsafe_allow_html=True)
+    with m3:
+        st.markdown(f'<div class="metric-card"><p class="metric-value" style="color:#FF5252;">{st.session_state.B:.2f}</p><p class="metric-label">❤️ B</p></div>', unsafe_allow_html=True)
+    with m4:
+        st.markdown(f'<div class="metric-card"><p class="metric-value" style="color:#00FFFF;">{st.session_state.E:.2f}</p><p class="metric-label">💫 E</p></div>', unsafe_allow_html=True)
+
+# =============================================
+# 📑 تبويبات: الإعدادات + الكون
+# =============================================
+tab1, tab2 = st.tabs(["⚖️ الكون", "🎛️ الإعدادات"])
 
 with tab2:
-    # تنظيم الإعدادات في أعمدة لتوفير المساحة
+    st.markdown("**🕌 الأركان**")
     col_a, col_b = st.columns(2)
     with col_a:
-        st.markdown("**🕌 الأركان**")
-        prayer = st.slider("الصلاة 🟣", 0.0, 1.0, 0.8, 0.05, key="p")
-        zakat = st.slider("الزكاة 🟡", 0.0, 1.0, 0.6, 0.05, key="z")
-        fasting = st.slider("الصوم 🟠", 0.0, 1.0, 0.7, 0.05, key="f")
-        hajj = st.slider("الحج 🔵", 0.0, 1.0, 0.5, 0.05, key="h")
-        
-        st.markdown("**🦠 الأمراض**")
-        riba = st.slider("الربا 💸", 0.0, 1.0, 0.2, 0.05, key="riba")
-        ghish = st.slider("الغش 🎭", 0.0, 1.0, 0.2, 0.05, key="ghish")
-        kadhib = st.slider("الكذب 🤥", 0.0, 1.0, 0.2, 0.05, key="kadhib")
-        
+        prayer = st.slider("الصلاة", 0.0, 1.0, 0.8, 0.05, key="p")
+        zakat = st.slider("الزكاة", 0.0, 1.0, 0.6, 0.05, key="z")
     with col_b:
-        st.markdown("**🏛️ الحكم**")
-        amr = st.slider("الأمر بالمعروف 📢", 0.0, 1.0, 0.5, 0.05, key="amr")
-        nahy = st.slider("النهي عن المنكر 🚫", 0.0, 1.0, 0.5, 0.05, key="nahy")
-        adl = st.slider("العدل ⚖️", 0.0, 1.0, 0.6, 0.05, key="adl")
-        shura = st.slider("الشورى 🤝", 0.0, 1.0, 0.5, 0.05, key="shura")
-        
-        st.markdown("**⚡ المحاكاة**")
-        cycle_speed = st.slider("سرعة الدورة", 0.05, 0.3, 0.12, 0.01, key="spd")
-        delay_frames = st.slider("تأخير التمكين", 5, 40, 22, 1, key="dly")
-        N_STARS = st.slider("عدد النجوم", 50, 200, 80, 10, key="nst")
+        fasting = st.slider("الصوم", 0.0, 1.0, 0.7, 0.05, key="f")
+        hajj = st.slider("الحج", 0.0, 1.0, 0.5, 0.05, key="h")
 
-with tab3:
-    st.markdown("""
-    <div style="text-align: center; font-size: 1em; line-height: 1.8; color: #CCCCCC;">
-    <b style="color: #FFD700;">الدين القيم</b> = قانون السببية الكوني، وهو الحق لأن واضعه الحق.
-    إنه "الميزان" الذي قامت به السماوات والأرض، والذي يدور حوله كل شيء، من الأزل إلى الخلود.
-    <br><br>
-    <b style="color: #FFD700;">الإسلام</b> = الاستجابة المثلى للقانون الإلهي من خلال توازن الولاء والبراءة.
-    <br><br>
-    ﴿فَأَقِمْ وَجْهَكَ لِلدِّينِ حَنِيفًا ۚ فِطْرَتَ اللَّهِ الَّتِي فَطَرَ النَّاسَ عَلَيْهَا﴾ — الروم 30
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("**🏛️ الحكم**")
+    col_c, col_d = st.columns(2)
+    with col_c:
+        amr = st.slider("الأمر بالمعروف", 0.0, 1.0, 0.5, 0.05, key="amr")
+        nahy = st.slider("النهي عن المنكر", 0.0, 1.0, 0.5, 0.05, key="nahy")
+    with col_d:
+        adl = st.slider("العدل", 0.0, 1.0, 0.6, 0.05, key="adl")
+        shura = st.slider("الشورى", 0.0, 1.0, 0.5, 0.05, key="shura")
 
-with tab4:
-    st.markdown("""
-    ### ❓ كيف تقرأ المشهد؟
-    - **النجوم (النقاط)** : كيانات (أفراد/مجتمعات).
-    - **اللون الذهبي**: توازن مثالي (W و B مرتفعان).
-    - **اللون الأحمر**: براءة مهيمنة. **اللون الأبيض**: ولاء مهيمن.
-    - **الدائرة الذهبية المتوهجة**: قوة الاستقرار S.
-    - **القرص الأزرق**: التمكين E (قد يكون استدراجاً).
-    
-    ### 🧪 جرب بنفسك
-    1. ارفع "الربا" إلى 0.9 ← سترى التمكين E يلمع بينما يهوي الاستقرار S (هذا هو الاستدراج).
-    2. ارفع "العدل" إلى 1.0 ← سترى الكون يهدأ ويتجمع نحو المركز.
-    """)
+    st.markdown("**🦠 الأمراض**")
+    col_e, col_f = st.columns(2)
+    with col_e:
+        riba = st.slider("الربا", 0.0, 1.0, 0.2, 0.05, key="riba")
+        ghish = st.slider("الغش", 0.0, 1.0, 0.2, 0.05, key="ghish")
+    with col_f:
+        kadhib = st.slider("الكذب", 0.0, 1.0, 0.2, 0.05, key="kadhib")
 
-# =============================================
-# 🎛️ الشريط الجانبي (للمتغيرات المتقدمة فقط)
-# =============================================
-with st.sidebar:
-    st.markdown("### 🧬 متغيرات متقدمة")
-    taawun_birr = st.slider("التعاون على البر", 0.0, 1.0, 0.5, 0.05)
-    tawasi_sabr = st.slider("التواصي بالصبر", 0.0, 1.0, 0.5, 0.05)
-    taawun_ithm = st.slider("التعاون على الإثم", 0.0, 1.0, 0.2, 0.05)
-    adam_sabr = st.slider("عدم الصبر", 0.0, 1.0, 0.2, 0.05)
+    st.markdown("**⚡ المحاكاة**")
+    cycle_speed = st.slider("سرعة الدورة (ث)", 0.02, 0.3, 0.12, 0.01, key="spd")
+    delay_frames = st.slider("تأخير التمكين", 5, 40, 22, 1, key="dly")
+
+with tab1:
+    plot_placeholder = st.empty()
 
 # =============================================
 # دوال مساعدة
@@ -137,8 +193,7 @@ def get_color(w, b):
     if w >= 0.55 and b >= 0.55: return '#FFD700'
     elif w >= 0.55 and b < 0.45: return '#FFFFFF'
     elif w < 0.45 and b >= 0.55: return '#FF3333'
-    elif w < 0.45 and b < 0.45: return '#FFB6C1'
-    return '#FFF8DC' if w > b else '#FFA07A'
+    return '#FFF8DC'
 
 def calc_S(W, B, E, prayer, zakat, fasting, hajj, amr, nahy, adl, shura, riba, ghish, kadhib):
     S_base = W * B
@@ -147,60 +202,42 @@ def calc_S(W, B, E, prayer, zakat, fasting, hajj, amr, nahy, adl, shura, riba, g
     protection = (amr * W + nahy * B) / 2
     S_base *= (0.8 + 0.4 * protection) * (0.9 + 0.2 * adl) * (0.85 + 0.3 * shura)
     if E > S_base: S_base -= riba * (E - S_base) * 0.3
-    W_weak = W * (1 - kadhib * 0.2)
-    S_final = W_weak * B
-    S_final *= (0.5 + 0.5 * pillars) * (0.8 + 0.4 * protection) * (0.9 + 0.2 * adl) * (0.85 + 0.3 * shura)
-    return np.clip(S_final, 0.001, 1.0)
+    return np.clip(S_base, 0.001, 1.0)
 
 # =============================================
 # تهيئة الحالة
 # =============================================
-if 'run' not in st.session_state: st.session_state.run = False
-if 'init' not in st.session_state: st.session_state.init = False
-
 if not st.session_state.init:
     np.random.seed(42); random.seed(42)
-    cx, cy = 5, 5
-    st.session_state.cx = cx; st.session_state.cy = cy
+    N_STARS = 70
+    st.session_state.cx, st.session_state.cy = 5, 5
     st.session_state.sx = np.random.uniform(0, 10, N_STARS)
     st.session_state.sy = np.random.uniform(0, 10, N_STARS)
     st.session_state.sw = np.random.uniform(0.1, 1.0, N_STARS)
     st.session_state.sb = np.random.uniform(0.1, 1.0, N_STARS)
-    st.session_state.W = 0.55; st.session_state.B = 0.52
-    st.session_state.E = 0.3; st.session_state.S = 0.55 * 0.52
-    st.session_state.ph = "استقرار"; st.session_state.ca = 0.0
-    st.session_state.eb = deque([0.55 * 0.52] * 30, maxlen=30)
+    st.session_state.W = 0.55
+    st.session_state.B = 0.52
+    st.session_state.E = 0.3
+    st.session_state.S = 0.55 * 0.52
+    st.session_state.ph = "استقرار"
+    st.session_state.ca = 0.0
+    st.session_state.eb = deque([0.55*0.52]*30, maxlen=30)
     st.session_state.pS = deque(maxlen=200)
     st.session_state.pE = deque(maxlen=200)
-    st.session_state.px = deque(maxlen=200); st.session_state.pc = 0
+    st.session_state.px = deque(maxlen=200)
     st.session_state.init = True
 
 # =============================================
-# 📊 مؤشرات علوية
+# 🚨 تحذيرات الحالة
 # =============================================
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    st.markdown(f'<div class="metric-box"><p class="metric-val" style="color:#FFD700;">{st.session_state.S:.3f}</p><p class="metric-lbl">⚖️ استقرار (S)</p></div>', unsafe_allow_html=True)
-with col2:
-    st.markdown(f'<div class="metric-box"><p class="metric-val" style="color:#FFF;">{st.session_state.W:.3f}</p><p class="metric-lbl">🤍 ولاء (W)</p></div>', unsafe_allow_html=True)
-with col3:
-    st.markdown(f'<div class="metric-box"><p class="metric-val" style="color:#FF5252;">{st.session_state.B:.3f}</p><p class="metric-lbl">❤️ براءة (B)</p></div>', unsafe_allow_html=True)
-with col4:
-    st.markdown(f'<div class="metric-box"><p class="metric-val" style="color:#00FFFF;">{st.session_state.E:.3f}</p><p class="metric-lbl">💫 تمكين (E)</p></div>', unsafe_allow_html=True)
-
-# =============================================
-# 🚨 تحذيرات
-# =============================================
-S, E, W, B = st.session_state.S, st.session_state.E, st.session_state.W, st.session_state.B
-if E > S * 1.5: st.error("⚠️ فجوة استدراج خطيرة!")
-elif E > S * 1.2: st.warning("⚡ بداية استدراج")
-elif S < 0.2: st.error("🔴 خطر الانهيار")
-
-# =============================================
-# 🎨 منطقة الرسم (في علامة تبويب الكون)
-# =============================================
-with tab1:
-    plot_placeholder = st.empty()
+if st.session_state.init:
+    S, E = st.session_state.S, st.session_state.E
+    if E > S * 1.5:
+        st.error("⚠️ فجوة استدراج خطيرة!")
+    elif E > S * 1.2:
+        st.warning("⚡ بداية استدراج")
+    elif S < 0.2:
+        st.error("🔴 خطر الانهيار")
 
 # =============================================
 # ⚡ المحاكاة الحية
@@ -217,11 +254,10 @@ if st.session_state.get("run", False):
             sb = st.session_state.sb.copy()
             eb = st.session_state.eb
             pS, pE, px = st.session_state.pS, st.session_state.pE, st.session_state.px
-            cx, cy = 5, 5
 
-            # دورة حضارية
             ca += 0.1; sv = np.sin(ca)
             target_S = 0.5 + 0.45 * sv
+            
             if sv > 0.5: ph = 'استقرار تام'
             elif sv > 0: ph = 'صعود'
             elif sv > -0.5: ph = 'انهيار'
@@ -229,68 +265,52 @@ if st.session_state.get("run", False):
             if 0.3 < sv < 0.35: ph = '⚠️ استدراج'
             if -0.35 < sv < -0.3: ph = '🌱 تعافي'
 
-            # تحديث النجوم
             n = len(sw)
             for i in range(n):
-                # تأثير الأركان
-                sw[i] += prayer * 0.005 + hajj * 0.003
-                sb[i] += fasting * 0.005 + zakat * 0.003
+                sw[i] += prayer*0.005 + hajj*0.003
+                sb[i] += fasting*0.005 + zakat*0.003
+                sw[i] += amr*0.008
+                sb[i] += nahy*0.008
                 
-                # تأثير الحكم
-                sw[i] += amr * 0.01
-                sb[i] += nahy * 0.01
+                sw[i] += (target_S - sw[i])*0.02 + np.random.uniform(-0.02,0.02)
+                sb[i] += (target_S - sb[i])*0.02 + np.random.uniform(-0.02,0.02)
                 
-                # تأثير متقدم (الشريط الجانبي)
-                sw[i] += taawun_birr * 0.01
-                sb[i] += tawasi_sabr * 0.01
-                sw[i] -= taawun_ithm * 0.01
-                sb[i] -= adam_sabr * 0.01
-                
-                # حركة طبيعية نحو التوازن
-                sw[i] += (target_S - sw[i]) * 0.02 + np.random.uniform(-0.02, 0.02)
-                sb[i] += (target_S - sb[i]) * 0.02 + np.random.uniform(-0.02, 0.02)
-                
-                # تأثير الشورى (التجمع)
-                dist = np.sqrt((sx[i] - sx)**2 + (sy[i] - sy)**2)
+                dist = np.sqrt((sx[i]-sx)**2 + (sy[i]-sy)**2)
                 close = (dist < 1.5) & (np.arange(n) != i)
                 if np.any(close):
-                    sw[i] += (np.mean(sw[close]) - sw[i]) * shura * 0.04
-                    sb[i] += (np.mean(sb[close]) - sb[i]) * shura * 0.04
+                    sw[i] += (np.mean(sw[close]) - sw[i])*shura*0.03
+                    sb[i] += (np.mean(sb[close]) - sb[i])*shura*0.03
                 
                 sw[i] = np.clip(sw[i], 0.01, 1.0)
                 sb[i] = np.clip(sb[i], 0.01, 1.0)
 
-            # صدمات عشوائية
-            shock_p = 0.005 * (1 - adl * 0.8)
-            if random.random() < shock_p:
+            # صدمات
+            if random.random() < 0.005*(1-adl*0.8):
                 aff = np.random.choice(n, size=int(n*0.2), replace=False)
-                sw[aff] *= np.random.uniform(0.6, 0.9)
-                sb[aff] *= np.random.uniform(0.6, 0.9)
+                sw[aff] *= np.random.uniform(0.6,0.9)
+                sb[aff] *= np.random.uniform(0.6,0.9)
 
-            # تحديث المتغيرات العالمية
             avgW, avgB = np.mean(sw), np.mean(sb)
-            W += (avgW - W) * 0.04; B += (avgB - B) * 0.04
-            W, B = np.clip(W, 0.01, 1.0), np.clip(B, 0.01, 1.0)
+            W += (avgW-W)*0.04; B += (avgB-B)*0.04
+            W, B = np.clip(W,0.01,1.0), np.clip(B,0.01,1.0)
             
             S = calc_S(W, B, E, prayer, zakat, fasting, hajj, amr, nahy, adl, shura, riba, ghish, kadhib)
             eb.append(S)
             
-            dly = int(delay_frames)
-            Et = list(eb)[-dly] if len(eb) > dly else S
-            E += 0.03 * (Et - E)
+            Et = list(eb)[-delay_frames] if len(eb) > delay_frames else S
+            E += 0.03*(Et - E)
             
             W = W - 0.01*E + 0.02/(S+0.1)
             B = B - 0.008*E + 0.005*(1-B)*W*(1-W)
-            W, B = np.clip(W, 0.01, 1.0), np.clip(B, 0.01, 1.0)
+            W, B = np.clip(W,0.01,1.0), np.clip(B,0.01,1.0)
             S = calc_S(W, B, E, prayer, zakat, fasting, hajj, amr, nahy, adl, shura, riba, ghish, kadhib)
             
             pS.append(S); pE.append(E); px.append(len(px))
             
             # حركة النجوم
-            ins = 1 - np.mean(sw * sb)
-            sx += np.random.uniform(-0.05, 0.05, n) * ins
-            sy += np.random.uniform(-0.05, 0.05, n) * ins
-            sx, sy = np.clip(sx, 0, 10), np.clip(sy, 0, 10)
+            sx += np.random.uniform(-0.04,0.04,n)
+            sy += np.random.uniform(-0.04,0.04,n)
+            sx, sy = np.clip(sx,0,10), np.clip(sy,0,10)
 
             # حفظ
             st.session_state.W, st.session_state.B = W, B
@@ -300,29 +320,29 @@ if st.session_state.get("run", False):
             st.session_state.sw, st.session_state.sb = sw, sb
             st.session_state.pS, st.session_state.pE, st.session_state.px = pS, pE, px
 
-            # ---------- الرسم (حجم مناسب للجوال وسطح المكتب) ----------
-            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5), facecolor='#0a0a1a')
+            # الرسم – بحجم مثالي للجوال
+            fig, ax = plt.subplots(figsize=(8, 6), facecolor='#0a0a1a')
+            ax.set_facecolor('#0a0a1a')
             
-            # المشهد الكوني
-            ax1.set_facecolor('#0a0a1a')
             colors = [get_color(sw[i], sb[i]) for i in range(n)]
-            ax1.scatter(sx, sy, c=colors, s=40, alpha=0.85, edgecolors='white', linewidth=0.3)
-            ax1.add_patch(Circle((cx, cy), 2*S, color='#FFD700', alpha=0.2, zorder=0))
-            ax1.add_patch(Circle((cx, cy), 1.5*E, color='#00FFFF', alpha=0.12, zorder=0))
-            ax1.text(cx, cy, '⚖️', fontsize=20, ha='center', va='center')
-            ax1.set_xlim(0, 10); ax1.set_ylim(0, 10); ax1.axis('off')
-            ax1.set_title(f'{ph} | S={S:.2f}', color='white', fontsize=13, fontweight='bold')
+            ax.scatter(sx, sy, c=colors, s=60, alpha=0.9, edgecolors='white', linewidth=0.4)
+            ax.add_patch(Circle((5,5), 2*S, color='#FFD700', alpha=0.25))
+            ax.add_patch(Circle((5,5), 1.5*E, color='#00FFFF', alpha=0.15))
+            ax.text(5, 5, '⚖️', fontsize=24, ha='center', va='center', color='#FFD700')
+            ax.set_xlim(0,10); ax.set_ylim(0,10); ax.axis('off')
+            ax.set_title(f'{ph} | S={S:.2f} | E={E:.2f}', color='white', fontsize=14, fontweight='bold')
             
-            # لوحة الإثبات
+            # لوحة الإثبات في الأسفل
+            ax2 = ax.inset_axes([0.1, -0.25, 0.8, 0.25])
             ax2.set_facecolor('#111122')
             pSl, pEl, pxl = list(pS), list(pE), list(px)
-            ax2.plot(pxl, pSl, color='#FFD700', lw=2, label='S (الاستقرار)')
-            ax2.plot(pxl, pEl, color='#00FFFF', lw=2, label='E (التمكين)')
-            ax2.legend(facecolor='#111122', edgecolor='white', labelcolor='white', fontsize=9)
-            ax2.set_ylim(0, 1.05); ax2.set_title('📈 لوحة الإثبات: S يقود E', color='white', fontsize=13)
-            ax2.tick_params(colors='white', labelsize=8); ax2.grid(True, alpha=0.2)
+            ax2.plot(pxl, pSl, color='#FFD700', lw=2, label='S')
+            ax2.plot(pxl, pEl, color='#00FFFF', lw=2, label='E')
+            ax2.legend(loc='upper right', fontsize=6, facecolor='#111122', edgecolor='white', labelcolor='white')
+            ax2.set_ylim(0,1.05); ax2.tick_params(colors='white', labelsize=6)
+            ax2.grid(True, alpha=0.15)
             
-            plt.tight_layout(pad=2)
+            plt.tight_layout(pad=1.5)
             plot_placeholder.pyplot(fig)
             plt.close(fig)
             
@@ -333,21 +353,19 @@ if st.session_state.get("run", False):
             st.session_state.run = False
             break
     st.success("⏸️ تم إيقاف المحاكاة")
-else:
-    # عرض ثابت
+elif st.session_state.init:
     with tab1:
-        if st.session_state.init:
-            fig, ax = plt.subplots(figsize=(8, 4), facecolor='#0a0a1a')
-            ax.set_facecolor('#0a0a1a')
-            colors = [get_color(st.session_state.sw[i], st.session_state.sb[i]) for i in range(len(st.session_state.sw))]
-            ax.scatter(st.session_state.sx, st.session_state.sy, c=colors, s=40, alpha=0.85, edgecolors='white', linewidth=0.3)
-            ax.add_patch(Circle((5, 5), 2*st.session_state.S, color='#FFD700', alpha=0.2))
-            ax.text(5, 5, '⚖️', fontsize=25, ha='center', va='center')
-            ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.axis('off')
-            ax.set_title('اضغط ▶️ تشغيل للبدء', color='white', fontsize=15)
-            plot_placeholder.pyplot(fig)
-            plt.close(fig)
+        fig, ax = plt.subplots(figsize=(6, 4), facecolor='#0a0a1a')
+        ax.set_facecolor('#0a0a1a')
+        colors = [get_color(st.session_state.sw[i], st.session_state.sb[i]) for i in range(len(st.session_state.sw))]
+        ax.scatter(st.session_state.sx, st.session_state.sy, c=colors, s=60, alpha=0.9, edgecolors='white', linewidth=0.4)
+        ax.add_patch(Circle((5,5), 2*st.session_state.S, color='#FFD700', alpha=0.25))
+        ax.text(5, 5, '⚖️', fontsize=30, ha='center', va='center', color='#FFD700')
+        ax.set_xlim(0,10); ax.set_ylim(0,10); ax.axis('off')
+        ax.set_title('اضغط ▶️ تشغيل للبدء', color='white', fontsize=16)
+        plot_placeholder.pyplot(fig)
+        plt.close(fig)
 
 # تذييل
 st.markdown("---")
-st.markdown("<p style='text-align:center;color:gray;font-size:0.8em;'>© 2026 علي عادل العاطفي | v13.0 – النسخة الهجينة</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center;color:gray;font-size:0.7em;'>© 2026 علي عادل العاطفي | v14 – للجوال</p>", unsafe_allow_html=True)
