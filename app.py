@@ -401,6 +401,7 @@ with tab2:
             <div style="background: rgba(10,10,46,0.8); border-radius: 15px; padding: 20px; border: 2px solid {q_colors[quadrant]}; margin: 10px 0; text-align: center;">
                 <p style="font-size: 2em; font-weight: bold; color: {q_colors[quadrant]};">{q_names[quadrant]}</p>
                 <p>إحداثياتك: <b>L = {L:.2f}</b> | <b>D = {D:.2f}</b></p>
+<p style="font-size: 1.2em; margin-top: 10px;">⚖️ ثباتك الوجودي (العروة الوثقى): <b>S = L × D = {L*D:.2f}</b></p>
                 <p>الدرجة الخام: L = {L_score} / {max_score} | D = {D_score} / {max_score}</p>
                 <p>{q_advice[quadrant]}</p>
             </div>
