@@ -101,16 +101,7 @@ with st.sidebar:
 # =============================================
 # 🧮 دوال المحاكاة
 # =============================================
-
-# --- الدالة الجديدة لألوان النجوم (الحالات الوجودية الأربعة) ---
 def get_color(w, b):
-    """
-    تحدد لون النجمة بناءً على حالتها الوجودية في معادلة الميزان S = W × B:
-    - الأبيض: الراهب أو الصوفي (ولاء بلا براءة)
-    - الذهبي: المؤمن (ولاء وبراءة)
-    - الأحمر: الكافر (براءة بلا ولاء)
-    - الوردي: المنافق (لا ولاء ولا براءة)
-    """
     if w >= 0.6 and b >= 0.6:
         return '#FFD700'  # ذهبي: مؤمن (W و B عاليتان)
     elif w >= 0.6 and b < 0.4:
@@ -120,7 +111,6 @@ def get_color(w, b):
     elif w < 0.4 and b < 0.4:
         return '#FFB6C1'  # وردي: منافق (W و B منهارتان)
     else:
-        # حالات وسطية
         if w > b: return '#FFF8DC'
         elif b > w: return '#FFA07A'
         else: return '#FFBF00'
@@ -156,9 +146,9 @@ if not st.session_state.init:
     st.session_state.eb = deque([0.286]*30, maxlen=30)
     st.session_state.pS = deque(maxlen=400); st.session_state.pE = deque(maxlen=400)
     st.session_state.px = deque(maxlen=400); st.session_state.pc = 0
-    # عدادات الآخرة (الميزان الخفي)
-    st.session_state.hasanat = 0.0
-    st.session_state.sayyiat = 0.0
+    # بدأنا من قيمة أولية ليكون التغير مرئياً
+    st.session_state.hasanat = 10.0
+    st.session_state.sayyiat = 5.0
     st.session_state.init = True
 
 # =============================================
@@ -175,7 +165,6 @@ if st.session_state.init:
     with m4:
         st.markdown(f'<div class="metric-box"><p class="metric-val" style="color:#00FFFF;">{st.session_state.E:.3f}</p><p class="metric-lbl">💫 E</p></div>', unsafe_allow_html=True)
     with m5:
-        # عداد الآخرة (الميزان الخفي)
         mizan_akhira = st.session_state.hasanat - st.session_state.sayyiat
         color = "#FFD700" if mizan_akhira >= 0 else "#FF3333"
         st.markdown(f'<div class="metric-box"><p class="metric-val" style="color:{color};">{mizan_akhira:.3f}</p><p class="metric-lbl">📜 الميزان الأخروي</p></div>', unsafe_allow_html=True)
@@ -238,9 +227,9 @@ if st.session_state.get("run", False):
             pS.append(S); pE.append(E); px.append(len(px))
             if len(px) > 400: pS.popleft(); pE.popleft(); px.popleft()
 
-            # --- تحديث عداد الآخرة (الميزان الخفي) ---
-            st.session_state.hasanat += np.mean(sw) * 0.01  # الحسنات تتراكم مع زيادة W
-            st.session_state.sayyiat += (1 - np.mean(sb)) * 0.01  # السيئات تتراكم مع انهيار B
+            # --- تحديث عداد الآخرة (أسرع بكثير) ---
+            st.session_state.hasanat += np.mean(sw) * 0.1  # تضاعف المعدل 10 مرات
+            st.session_state.sayyiat += (1 - np.mean(sb)) * 0.1  # تضاعف المعدل 10 مرات
 
             aW += 0.02 + random.uniform(-0.025, 0.025) * (1 - W)**2
             aB += 0.02 + random.uniform(-0.025, 0.025) * (1 - B)**2
@@ -274,13 +263,14 @@ if st.session_state.get("run", False):
             ax.text(bx, by-1.2, 'B', color='#F33', fontsize=12, ha='center')
             pSl, pEl, pxl = list(pS), list(pE), list(px)
             if pSl:
-                pax = ax.inset_axes([0.35, 0.02, 0.60, 0.15])
+                # --- لوحة الإثبات مكبرة وواضحة ---
+                pax = ax.inset_axes([0.3, 0.02, 0.65, 0.18])  # تم تكبيرها
                 pax.set_xlim(0, 400); pax.set_ylim(0, 1.05)
-                pax.set_title('S leads E — Istidraj', color='white', fontsize=9, fontweight='bold')
-                pax.tick_params(colors='white', labelsize=6); pax.grid(True, alpha=0.3)
-                pax.plot(pxl, pSl, color='#FFD700', lw=2.5, label='S')
-                pax.plot(pxl, pEl, color='#00FFFF', lw=2, label='E')
-                pax.legend(facecolor='#000', edgecolor='white', labelcolor='white', fontsize=7)
+                pax.set_title('📈 لوحة الإثبات: S (الذهب) يقود E (السماوي) — الاستدراج', color='white', fontsize=10, fontweight='bold')
+                pax.tick_params(colors='white', labelsize=7); pax.grid(True, alpha=0.3)
+                pax.plot(pxl, pSl, color='#FFD700', lw=2.5, label='S (الاستقرار)')
+                pax.plot(pxl, pEl, color='#00FFFF', lw=2, label='E (التمكين)')
+                pax.legend(facecolor='#000', edgecolor='white', labelcolor='white', fontsize=8)
             ax.text(14, 1.2, f'{ph} | S={S:.2f} | E={E:.2f}', color='white', fontsize=14, ha='center', fontweight='bold')
             plt.tight_layout(pad=0)
             plot_placeholder.pyplot(fig)
