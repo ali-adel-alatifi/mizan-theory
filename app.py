@@ -311,11 +311,12 @@ with tab1:
         st.download_button("📥 تحميل صورة المشهد", st.session_state.latest_image, "mizan_scene.png", "image/png")
 
 # =============================================
-# 🧭 تبويب البوصلة الكونية
+# 🧭 تبويب البوصلة الكونية (19 سؤالاً)
 # =============================================
 with tab2:
     st.header("🧭 البوصلة الكونية")
     st.subheader("اختبار الإحداثيات الوجودية – اكتشف موقعك في فضاء الولاء والبراء")
+    st.caption("10 أسئلة للولاء + 9 أسئلة للبراء = 19 سؤالاً | أقصى درجة = 57")
 
     if 'compass_answers' not in st.session_state:
         st.session_state.compass_answers = {}
@@ -328,6 +329,10 @@ with tab2:
             {"id": "L4", "q": "أولويتي عند تعارض المصالح:", "a": [("رضا الله فوق كل شيء", 3), ("مصلحتي الشخصية", 1), ("أبحث عن حل وسط", 0), ("مصلحتي أولاً ولو بمعصية", -1)]},
             {"id": "L5", "q": "علاقاتي مع الآخرين تقوم على:", "a": [("مرضاة الله وخدمة الخلق", 3), ("المصالح المتبادلة", 1), ("العاطفة والمزاج", 0), ("الاستغلال والمنفعة", -1)]},
             {"id": "L6", "q": "انتمائي الحقيقي هو لـ:", "a": [("الله ودينه وأمته", 3), ("بلدي وعائلتي فقط", 1), ("نفسي ومصالحي", 0), ("لا أنتمي لأحد", -1)]},
+            {"id": "L7", "q": "عند سماع الأذان أشعر بـ:", "a": [("شوق للصلاة وسرعة في التلبية", 3), ("التزام روتيني دون مشاعر", 1), ("تثاقل وكسل", 0), ("انزعاج أو تجاهل", -1)]},
+            {"id": "L8", "q": "علاقتي بالقرآن الكريم:", "a": [("أتلو وأتدبر يومياً", 3), ("أقرأ أحياناً", 1), ("أستمع فقط", 0), ("لا أقرأ ولا أستمع", -1)]},
+            {"id": "L9", "q": "في أوقات الشدة والابتلاء:", "a": [("ألجأ إلى الله بالدعاء والصبر", 3), ("أصبر ولكن بقلق", 1), ("أتذمر وأشكو", 0), ("أيأس وألعن حظي", -1)]},
+            {"id": "L10", "q": "ذكري للموت والآخرة:", "a": [("كثير الذكر وموقن باللقاء", 3), ("أذكره أحياناً", 1), ("نادراً ما أفكر فيه", 0), ("لا أؤمن به أو أشك فيه", -1)]},
         ],
         "D": [
             {"id": "D1", "q": "مشاعري تجاه المعاصي:", "a": [("كراهية وبغض", 3), ("خوف من العواقب فقط", 1), ("لا مشاعر خاصة", 0), ("رغبة وميل", -1)]},
@@ -336,33 +341,41 @@ with tab2:
             {"id": "D4", "q": "عندما أخطئ:", "a": [("أتوب فوراً وأتدارك", 3), ("أتوب إذا تذكرت", 1), ("لا أبالي", 0), ("أستمتع وأكرر", -1)]},
             {"id": "D5", "q": "في تعاملي مع الظالمين:", "a": [("أبرأ منهم ولا أعاونهم", 3), ("أتعامل لمصلحتي فقط", 1), ("أتعامل طالما لم يضروني", 0), ("أتعاون معهم", -1)]},
             {"id": "D6", "q": "موقفي من الأفكار المخالفة للدين:", "a": [("أرفضها وأحذر منها", 3), ("أتجاهلها", 1), ("أستمع لها بلا موقف", 0), ("أتقبلها وأعتنقها", -1)]},
+            {"id": "D7", "q": "عند مشاهدة مشهد فاضح أو محرم:", "a": [("أغض بصري فوراً وأستغفر", 3), ("أشيح بوجهي لكني أختلس", 1), ("أشاهد وأنا نادم", 0), ("أشاهد باستمتاع", -1)]},
+            {"id": "D8", "q": "في بيئة يكثر فيها الغيبة والنميمة:", "a": [("أنكر عليهم أو أنصرف", 3), ("أصمت ولا أشارك", 1), ("أستمع دون تعليق", 0), ("أشارك وأستمتع", -1)]},
+            {"id": "D9", "q": "عند وسوسة الشيطان لي بالمعصية:", "a": [("أستعيذ بالله وأقاوم", 3), ("أتردد ثم أغلب نفسي", 1), ("أضعف بسرعة", 0), ("أستسلم فوراً", -1)]},
         ]
     }
 
-    st.markdown("### 📝 أجب عن الأسئلة التالية بصدق")
+    st.markdown("### 📝 أجب عن الأسئلة التالية بصدق (19 سؤالاً)")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("#### 🤍 أسئلة الولاء (L)")
+        st.markdown(f"#### 🤍 أسئلة الولاء (L) – {len(questions['L'])} أسئلة")
         for q in questions["L"]:
             ans = st.radio(f"**{q['q']}**", [a[0] for a in q['a']], key=q['id'], index=None)
             if ans:
                 st.session_state.compass_answers[q['id']] = [a[1] for a in q['a'] if a[0] == ans][0]
 
     with col2:
-        st.markdown("#### ❤️ أسئلة البراء (D)")
+        st.markdown(f"#### ❤️ أسئلة البراء (D) – {len(questions['D'])} أسئلة")
         for q in questions["D"]:
             ans = st.radio(f"**{q['q']}**", [a[0] for a in q['a']], key=q['id'], index=None)
             if ans:
                 st.session_state.compass_answers[q['id']] = [a[1] for a in q['a'] if a[0] == ans][0]
 
-    if len(st.session_state.compass_answers) == 12:
-        L_score = sum([st.session_state.compass_answers[f"L{i}"] for i in range(1, 7)])
-        D_score = sum([st.session_state.compass_answers[f"D{i}"] for i in range(1, 7)])
+    total_questions = len(questions["L"]) + len(questions["D"])
+
+    if len(st.session_state.compass_answers) == total_questions:
+        L_score = sum([st.session_state.compass_answers[f"L{i}"] for i in range(1, len(questions["L"]) + 1)])
+        D_score = sum([st.session_state.compass_answers[f"D{i}"] for i in range(1, len(questions["D"]) + 1)])
         
-        L = L_score / 18
-        D = D_score / 18
+        # أقصى درجة = عدد الأسئلة الكلي × 3 = 19 × 3 = 57
+        max_score = total_questions * 3
+        
+        L = L_score / max_score
+        D = D_score / max_score
 
         if L > 0 and D > 0: quadrant = "Q1"
         elif L < 0 and D > 0: quadrant = "Q2"
@@ -388,6 +401,7 @@ with tab2:
             <div style="background: rgba(10,10,46,0.8); border-radius: 15px; padding: 20px; border: 2px solid {q_colors[quadrant]}; margin: 10px 0; text-align: center;">
                 <p style="font-size: 2em; font-weight: bold; color: {q_colors[quadrant]};">{q_names[quadrant]}</p>
                 <p>إحداثياتك: <b>L = {L:.2f}</b> | <b>D = {D:.2f}</b></p>
+                <p>الدرجة الخام: L = {L_score} / {max_score} | D = {D_score} / {max_score}</p>
                 <p>{q_advice[quadrant]}</p>
             </div>
             """, unsafe_allow_html=True)
@@ -418,6 +432,7 @@ with tab2:
         if st.button("🔄 إعادة الاختبار"):
             st.session_state.compass_answers = {}
             st.rerun()
+
 
 # =============================================
 # 📖 تبويب كتاب الميزان
