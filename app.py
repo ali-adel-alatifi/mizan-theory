@@ -361,8 +361,8 @@ with tab2:
         L_score = sum([st.session_state.compass_answers[f"L{i}"] for i in range(1, 7)])
         D_score = sum([st.session_state.compass_answers[f"D{i}"] for i in range(1, 7)])
         
-        L = L_score / 12
-        D = D_score / 12
+        L = L_score / 18
+        D = D_score / 18
 
         if L > 0 and D > 0: quadrant = "Q1"
         elif L < 0 and D > 0: quadrant = "Q2"
