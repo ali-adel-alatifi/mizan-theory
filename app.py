@@ -3,13 +3,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="المختبر المتكامل - نهائي", layout="wide")
-st.title("🌌 المختبر المتكامل: محاكي الاستخلاف + نموذج العوامل + تشخيص الدولة")
+st.title("🌌 المختبر المتكامل: محاكي الاستخلاف + نموذج العوامل + تشخيص الدولة + مخطط التعافي")
 
+# ==============================================
+# السطر الذي أشرت إليه: قائمة الأوضاع الخمسة
+# ==============================================
 mode = st.sidebar.radio("اختر المحاكاة:", [
     "📡 محاكي الاستخلاف (الأمة ككل)",
     "🔬 نموذج العوامل (الأفراد)",
     "🌐 المختبر المتكامل",
-    "🏛️ مختبر تشخيص الدولة"
+    "🏛️ مختبر تشخيص الدولة",
+    "📈 مُخطط التعافي"
 ])
 
 # ==============================================
@@ -70,20 +74,13 @@ def diagnose_country(rule_of_law, corruption, family_stability, debt_to_gdp, pol
     return W, B, S, status, advice
 
 # ==============================================
-# واجهة كل وضع
+# وضع 1: محاكي الاستخلاف (الأمة ككل)
 # ==============================================
-if mode in ["📡 محاكي الاستخلاف (الأمة ككل)", "🌐 المختبر المتكامل"]:
-    # السيناريوهات الجاهزة (للوضعين الكليين)
-    scenario = st.sidebar.selectbox("🎭 سيناريو جاهز", ["مخصص", "أمة صاعدة (قوة إيمانية)", "أمة على حافة الهاوية (تيه وترف)", "مجتمع منقسم (أتقياء ومنافقون)"])
-    
-    if scenario == "أمة صاعدة (قوة إيمانية)":
-        W0, B0, E0, lag = 0.9, 0.9, 0.1, 25
-    elif scenario == "أمة على حافة الهاوية (تيه وترف)":
-        W0, B0, E0, lag = 0.3, 0.2, 0.9, 15
-    elif scenario == "مجتمع منقسم (أتقياء ومنافقون)":
-        W0, B0, E0, lag = 0.5, 0.5, 0.5, 10
-
 if mode == "📡 محاكي الاستخلاف (الأمة ككل)":
+    scenario = st.sidebar.selectbox("🎭 سيناريو جاهز", ["مخصص", "أمة صاعدة (قوة إيمانية)", "أمة على حافة الهاوية (تيه وترف)", "مجتمع منقسم (أتقياء ومنافقون)"])
+    if scenario == "أمة صاعدة (قوة إيمانية)": W0, B0, E0, lag = 0.9, 0.9, 0.1, 25
+    elif scenario == "أمة على حافة الهاوية (تيه وترف)": W0, B0, E0, lag = 0.3, 0.2, 0.9, 15
+    elif scenario == "مجتمع منقسم (أتقياء ومنافقون)": W0, B0, E0, lag = 0.5, 0.5, 0.5, 10
     st.sidebar.subheader("📊 إعدادات")
     years = st.sidebar.slider("سنوات المحاكاة", 50, 500, 200, 50)
     if scenario == "مخصص":
@@ -109,6 +106,9 @@ if mode == "📡 محاكي الاستخلاف (الأمة ككل)":
     ax.set_title('مسار الأمة في (W, B)'); plt.colorbar(sc, ax=ax, label='الزمن')
     plt.tight_layout(); st.pyplot(fig)
 
+# ==============================================
+# وضع 2: نموذج العوامل (الأفراد)
+# ==============================================
 elif mode == "🔬 نموذج العوامل (الأفراد)":
     st.sidebar.subheader("📊 إعدادات")
     years = st.sidebar.slider("سنوات المحاكاة", 50, 500, 200, 50)
@@ -133,7 +133,14 @@ elif mode == "🔬 نموذج العوامل (الأفراد)":
     plt.tight_layout(); st.pyplot(fig)
     st.info(f"نسبة الأتقياء: {np.sum(saints)/len(W)*100:.1f}% | نسبة المنافقين: {np.sum(hypos)/len(W)*100:.1f}% | متوسط S: {hS[-1]:.3f}")
 
+# ==============================================
+# وضع 3: المختبر المتكامل
+# ==============================================
 elif mode == "🌐 المختبر المتكامل":
+    scenario = st.sidebar.selectbox("🎭 سيناريو جاهز", ["مخصص", "أمة صاعدة (قوة إيمانية)", "أمة على حافة الهاوية (تيه وترف)", "مجتمع منقسم (أتقياء ومنافقون)"])
+    if scenario == "أمة صاعدة (قوة إيمانية)": W0, B0, E0, lag = 0.9, 0.9, 0.1, 25
+    elif scenario == "أمة على حافة الهاوية (تيه وترف)": W0, B0, E0, lag = 0.3, 0.2, 0.9, 15
+    elif scenario == "مجتمع منقسم (أتقياء ومنافقون)": W0, B0, E0, lag = 0.5, 0.5, 0.5, 10
     st.sidebar.subheader("📊 إعدادات")
     years = st.sidebar.slider("سنوات المحاكاة", 50, 500, 200, 50)
     if scenario == "مخصص":
@@ -164,6 +171,9 @@ elif mode == "🌐 المختبر المتكامل":
         st.pyplot(fig)
     st.info(f"نسبة الأتقياء: {np.sum(saints)/len(W_f)*100:.1f}% | نسبة المنافقين: {np.sum(hypos)/len(W_f)*100:.1f}% | متوسط S الكلي: {hS[-1]:.3f}")
 
+# ==============================================
+# وضع 4: مختبر تشخيص الدولة
+# ==============================================
 elif mode == "🏛️ مختبر تشخيص الدولة":
     st.header("🏛️ مختبر تشخيص الدولة")
     st.markdown("أدخل بيانات تقريبية عن أي دولة لترى أين تقع على خريطة الاستدراج.")
@@ -193,3 +203,86 @@ elif mode == "🏛️ مختبر تشخيص الدولة":
         ax.text(B+0.05, W+0.05, 'موقع الدولة', fontsize=12)
         ax.set_title('موقع الدولة في فضاء (W, B)')
         st.pyplot(fig)
+
+# ==============================================
+# وضع 5: مُخطط التعافي (الجديد)
+# ==============================================
+elif mode == "📈 مُخطط التعافي":
+    st.header("📈 مُخطط التعافي")
+    st.markdown("""
+    هذه الأداة تضع لك **خارطة طريق** للخروج من منطقة الخطر.
+    أدخل قيم W و B الحالية، والمستهدفة، وشاهد كيف تتغير المنحنيات.
+    """)
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        W_current = st.slider("W الحالي", 0.0, 1.0, 0.3, 0.05)
+        B_current = st.slider("B الحالي", 0.0, 1.0, 0.2, 0.05)
+    with col2:
+        W_target = st.slider("W المستهدف", 0.5, 1.0, 0.8, 0.05)
+        B_target = st.slider("B المستهدف", 0.5, 1.0, 0.8, 0.05)
+    
+    strategy = st.radio("اختر استراتيجية التعافي:", [
+        "رفع W أولاً (إصلاح الإيمان)",
+        "رفع B أولاً (إصلاح البراءة)",
+        "رفعهما معًا (متوازن)"
+    ])
+    
+    if strategy == "رفع W أولاً (إصلاح الإيمان)":
+        rate_W, rate_B = 0.015, 0.005
+    elif strategy == "رفع B أولاً (إصلاح البراءة)":
+        rate_W, rate_B = 0.005, 0.015
+    else:
+        rate_W, rate_B = 0.01, 0.01
+    
+    if st.button("احسب خارطة التعافي", type="primary"):
+        recovery_years = 100
+        W = np.zeros(recovery_years); B = np.zeros(recovery_years); S = np.zeros(recovery_years)
+        W[0], B[0] = W_current, B_current; S[0] = W[0] * B[0]
+        
+        for t in range(1, recovery_years):
+            W[t] = W[t-1] + rate_W * (W_target - W[t-1])
+            B[t] = B[t-1] + rate_B * (B_target - B[t-1])
+            W[t] = max(0.0, min(1.0, W[t])); B[t] = max(0.0, min(1.0, B[t]))
+            S[t] = W[t] * B[t]
+        
+        safe_year = None
+        for t in range(recovery_years):
+            if S[t] >= 0.6:
+                safe_year = t
+                break
+        
+        fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+        ax = axes[0]
+        ax.plot(S, 'g-', linewidth=2, label='S (الثبات)')
+        ax.plot(W, 'darkgreen', linestyle='--', label='W (الولاء)')
+        ax.plot(B, 'darkred', linestyle='--', label='B (البراءة)')
+        ax.axhline(y=0.6, color='orange', linestyle=':', linewidth=2, label='منطقة الأمان (S=0.6)')
+        if safe_year:
+            ax.axvline(x=safe_year, color='blue', linestyle=':', linewidth=2, label=f'الوصول للأمان (عام {safe_year})')
+        ax.set_title('خارطة التعافي')
+        ax.set_xlabel('السنوات'); ax.set_ylabel('القيمة')
+        ax.legend(); ax.grid(True, alpha=0.3); ax.set_ylim(0, 1.05)
+        
+        ax = axes[1]
+        ax.axhline(0.5, color='gray', ls=':'); ax.axvline(0.5, color='gray', ls=':')
+        ax.plot(B, W, 'b-', linewidth=2)
+        ax.scatter(B[0], W[0], s=200, c='red', edgecolors='black', linewidth=2, zorder=5, label='البداية')
+        ax.scatter(B[-1], W[-1], s=200, c='green', edgecolors='black', linewidth=2, zorder=5, label='النهاية')
+        ax.set_xlim(0,1); ax.set_ylim(0,1); ax.set_xlabel('B (البراءة)'); ax.set_ylabel('W (الولاء)')
+        ax.set_title('مسار التعافي في فضاء (W, B)')
+        ax.legend(); ax.grid(True, alpha=0.3)
+        plt.tight_layout(); st.pyplot(fig)
+        
+        if safe_year:
+            st.success(f"✅ يمكنك الوصول إلى منطقة الأمان خلال **{safe_year} سنة** باتباع هذه الاستراتيجية.")
+        else:
+            st.error("⚠️ الاستراتيجية الحالية غير كافية للوصول إلى منطقة الأمان خلال 100 سنة. جرب استراتيجية أقوى.")
+        
+        st.info(f"""
+        **ملخص الاستراتيجية:**
+        - W الحالي: {W_current:.2f} → W المستهدف: {W_target:.2f}
+        - B الحالي: {B_current:.2f} → B المستهدف: {B_target:.2f}
+        - S الحالي: {S[0]:.2f} → S النهائي: {S[-1]:.2f}
+        - الاستراتيجية: {strategy}
+        """)
