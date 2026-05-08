@@ -29,14 +29,140 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
 # =============================================
-# Main Title
+# Module 0: The Unified Cosmic Lab (All-in-One Scene)
 # =============================================
-st.title("🌌 The Cosmic Command Center")
-st.markdown("### The Mizan Theory Platform – S = W × B | Author: Ali Adel Alatifi")
-st.markdown("---")
+if module == "🏠 Main Command Center":
+    st.header("🌌 The Unified Cosmic Lab – All in One Scene")
+    st.markdown("One scene containing: The Akhirah Balance, Atom, Cell, Molecules, Civilization Cycle, and the Battle Heatmap.")
 
+    # Settings
+    col1, col2 = st.columns(2)
+    with col1:
+        W_init = st.slider("Initial W (Loyalty)", 0.1, 1.0, 0.6, 0.05, key="uni_W")
+    with col2:
+        B_init = st.slider("Initial B (Disavowal)", 0.1, 1.0, 0.6, 0.05, key="uni_B")
+
+    years = st.slider("Simulation Years", 20, 200, 100, 10, key="uni_years")
+
+    if st.button("🚀 Launch the Unified Cosmic Lab", type="primary", use_container_width=True):
+        # =============================================
+        # 1. Run the Civilization Simulation
+        # =============================================
+        W_s, B_s, S_s, E_s = run_standard_simulation(W_init, B_init, 0.3, years)
+
+        # =============================================
+        # 2. Calculate Akhirah Balance
+        # =============================================
+        hasanat = np.cumsum(W_s * 0.15)
+        sayyiat = np.cumsum((1 - B_s) * 0.15)
+        akhirah_balance = hasanat - sayyiat
+
+        # =============================================
+        # 3. Simulate Agent Stars (Ethics)
+        # =============================================
+        N_STARS = 300
+        np.random.seed(42)
+        star_w = np.random.uniform(0.3, 0.9, N_STARS)
+        star_b = np.random.uniform(0.3, 0.9, N_STARS)
+        star_x = np.random.uniform(-13, 13, N_STARS)
+        star_y = np.random.uniform(-9, 9, N_STARS)
+
+        # =============================================
+        # 4. Simulate Molecules (Chemistry)
+        # =============================================
+        N_CHEM = 50
+        chem_x = np.random.uniform(-6, 6, N_CHEM)
+        chem_y = np.random.uniform(-4, 4, N_CHEM)
+        chem_w = np.random.uniform(0.2, 0.9, N_CHEM)
+        chem_b = np.random.uniform(0.2, 0.9, N_CHEM)
+
+        # =============================================
+        # 5. Build the Grand Unified Figure
+        # =============================================
+        fig, axes = plt.subplots(2, 3, figsize=(22, 14))
+        fig.patch.set_facecolor('#000010')
+
+        # --- Chart 1: The Civilization Cycle & Akhirah (Top Left) ---
+        ax1 = axes[0, 0]
+        ax1.set_facecolor('#0a0a1a')
+        time_axis = np.arange(years)
+        ax1.plot(time_axis, S_s, 'g-', linewidth=2, label='S (Stability)')
+        ax1.plot(time_axis, E_s, 'b--', linewidth=2, label='E (Empowerment)')
+        # Normalize akhirah balance for plotting
+        max_bal = max(abs(akhirah_balance.max()), abs(akhirah_balance.min()), 1)
+        ax1.plot(time_axis, akhirah_balance / max_bal, 'gold', linewidth=2, label='Akhirah Balance (Norm.)')
+        max_S = np.argmax(S_s); max_E = np.argmax(E_s)
+        if max_S < max_E:
+            ax1.axvspan(max_S, max_E, alpha=0.2, color='red', label='Istidraj Zone')
+        ax1.set_title('Civilization Cycle & Hidden Akhirah Scale', color='white')
+        ax1.legend(fontsize=7); ax1.grid(True, alpha=0.2); ax1.tick_params(colors='white')
+
+        # --- Chart 2: The Atom (Physics) (Top Middle) ---
+        ax2 = axes[0, 1]
+        ax2.set_facecolor('#000010')
+        theta = np.linspace(0, 10 * np.pi, 500)
+        r_base = 1.0
+        for t_idx in range(0, years, max(1, years // 5)):
+            alpha = 0.1 + 0.15 * (t_idx / years)
+            r = r_base + 0.3 * np.sin(theta + t_idx * 0.1)
+            ax2.plot(r * np.cos(theta), r * np.sin(theta), color='cyan', linewidth=0.3, alpha=alpha)
+        S_final = W_s[-1] * B_s[-1]
+        ax2.scatter(0, 0, s=300 + 200 * S_final, c='gold', edgecolors='white', linewidth=1.5, zorder=10)
+        ax2.set_xlim(-2, 2); ax2.set_ylim(-2, 2); ax2.set_aspect('equal')
+        ax2.set_title('The Atom: Electron (W) around Nucleus (B)', color='white')
+        ax2.axis('off')
+
+        # --- Chart 3: The Cell (Biology) & Molecules (Chemistry) (Top Right) ---
+        ax3 = axes[0, 2]
+        ax3.set_facecolor('#000010')
+        cell_radius = 0.6 + 0.4 * S_final
+        cell = plt.Circle((0, 0), cell_radius, color='lime', alpha=0.3, zorder=5, ec='lime', lw=1.5)
+        ax3.add_patch(cell)
+        nucleus = plt.Circle((0, 0), 0.2, color='white', alpha=0.8, zorder=6)
+        ax3.add_patch(nucleus)
+        # Molecules
+        for i in range(N_CHEM):
+            cw, cb = chem_w[i], chem_b[i]
+            color = 'gold' if cw > 0.6 and cb > 0.6 else 'gray'
+            size = 15 + 10 * (cw * cb)
+            ax3.scatter(chem_x[i], chem_y[i], s=size, c=color, alpha=0.7, edgecolors='white', linewidths=0.3, zorder=7)
+        ax3.set_xlim(-3, 3); ax3.set_ylim(-3, 3); ax3.set_aspect('equal')
+        ax3.set_title('The Cell & Molecules: Life at the Mizan Level', color='white')
+        ax3.axis('off')
+
+        # --- Chart 4: The Final Akhirah Scale (Bottom Left) ---
+        ax4 = axes[1, 0]
+        ax4.set_facecolor('#0a0a1a')
+        ax4.barh(['Hasanat', 'Sayyiat'], [hasanat[-1], sayyiat[-1]], color=['green', 'red'], height=0.4)
+        ax4.set_title(f'Final Akhirah Scale (Balance: {hasanat[-1] - sayyiat[-1]:.1f})', color='white')
+        ax4.tick_params(colors='white'); ax4.grid(True, alpha=0.2, axis='x')
+
+        # --- Chart 5: The Battle Heatmap (Bottom Middle) ---
+        ax5 = axes[1, 1]
+        ax5.set_facecolor('#0a0a1a')
+        heat_data = np.array([W_s, B_s, S_s, E_s])
+        ax5.imshow(heat_data, aspect='auto', cmap='RdYlGn', vmin=0, vmax=1)
+        ax5.set_yticks([0, 1, 2, 3])
+        ax5.set_yticklabels(['W', 'B', 'S', 'E'], color='white')
+        ax5.set_title('The Battle Heatmap (Green = Light, Red = Darkness)', color='white')
+
+        # --- Chart 6: The Agent Stars (Ethics) (Bottom Right) ---
+        ax6 = axes[1, 2]
+        ax6.set_facecolor('#000010')
+        colors_stars = []
+        for i in range(N_STARS):
+            if star_w[i] > 0.6 and star_b[i] > 0.6: colors_stars.append('gold')
+            elif star_w[i] < 0.4 and star_b[i] < 0.4: colors_stars.append('red')
+            else: colors_stars.append('gray')
+        ax6.scatter(star_x, star_y, c=colors_stars, s=20, alpha=0.8, edgecolors='white', linewidths=0.2)
+        ax6.set_xlim(-14, 14); ax6.set_ylim(-10, 10); ax6.set_aspect('equal')
+        ax6.set_title('The Ethical Stars: Gold = Saints, Red = Hypocrites', color='white')
+        ax6.axis('off')
+
+        plt.suptitle('⚖️ THE UNIFIED COSMIC LAB – THE MIZAN THEORY OF EVERYTHING ⚖️', color='gold', fontsize=16, y=1.01)
+        plt.tight_layout()
+        st.pyplot(fig)
 # =============================================
 # Core Simulation Engine (Standard)
 # =============================================
@@ -90,12 +216,17 @@ st.sidebar.title("🧭 Command Modules")
 module = st.sidebar.radio(
     "Select Module:",
     [
-        "🏠 Main Command Center",
-        "🧠 The Strategic Advisor",
-        "🌍 National Dashboard",
-        "👥 Society Lab",
-        "⚔️ Civilizations Clash"
+        "🏠 Main Command Center",        # 0. الموجودة
+        "🧠 The Strategic Advisor",      # 1. الموجودة
+        "🌍 National Dashboard",         # 2. الموجودة
+        "👥 Society Lab",                # 3. الموجودة
+        "⚔️ Civilizations Clash",       # 4. الموجودة
+        "🧭 The Existential Compass",    # 5. البوصلة الوجودية (جديد)
+        "📜 The Akhirah Balance",        # 6. ميزان الآخرة (جديد)
+        "⚛️ Physics & Biology Lab",     # 7. مختبر الفيزياء والكيمياء والبيولوجيا (جديد)
+        "🔥 The Battle Heatmap"          # 8. خريطة حرارة المعركة (جديد)
     ]
+)
 )
 
 st.sidebar.markdown("---")
@@ -700,4 +831,74 @@ elif module == "⚔️ Civilizations Clash":
 # Footer
 # =============================================
 st.markdown("---")
+# =============================================
+# Module 5: The Existential Compass
+# =============================================
+elif module == "🧭 The Existential Compass":
+    st.header("🧭 The Existential Compass")
+    st.markdown("Discover your position in the W-B space. Answer 10 questions honestly.")
+    
+    # Questions for W (Loyalty) and B (Disavowal)
+    questions = {
+        "W": [
+            "Do you feel a deep love for God and a desire to worship Him?",
+            "Do you regularly perform the five daily prayers with presence of heart?",
+            "Do you give charity and help the needy for the sake of God?",
+            "Do you feel a strong connection to the Muslim community?",
+            "Do you seek forgiveness and repent when you sin?"
+        ],
+        "B": [
+            "Do you feel anger or rejection towards falsehood and injustice?",
+            "Do you avoid situations that compromise your values?",
+            "Do you speak out against wrongdoing, even if it's difficult?",
+            "Do you feel a sense of independence from the dominance of corrupt systems?",
+            "Do you actively strive to purify your heart from love of this world?"
+        ]
+    }
+    
+    # Sliders for answers
+    W_score = 0
+    B_score = 0
+    
+    st.subheader("Loyalty Questions (W)")
+    for q in questions["W"]:
+        val = st.slider(q, 0, 10, 5, 1)
+        W_score += val
+    
+    st.subheader("Disavowal Questions (B)")
+    for q in questions["B"]:
+        val = st.slider(q, 0, 10, 5, 1)
+        B_score += val
+    
+    # Calculate
+    W_val = W_score / 50.0
+    B_val = B_score / 50.0
+    S_val = W_val * B_val
+    
+    # Determine quadrant
+    if W_val >= 0.5 and B_val >= 0.5:
+        quadrant, color = "The Believer (Q1) – The Firm Handhold", "green"
+    elif W_val < 0.5 and B_val >= 0.5:
+        quadrant, color = "The Harsh (Q2) – Disavowal without Loyalty", "orange"
+    elif W_val < 0.5 and B_val < 0.5:
+        quadrant, color = "The Hypocrite (Q3) – Danger Zone", "red"
+    else:
+        quadrant, color = "The Weak (Q4) – Loyalty without Disavowal", "blue"
+    
+    # Display
+    col1, col2, col3 = st.columns(3)
+    col1.metric("W (Loyalty)", f"{W_val:.2f}")
+    col2.metric("B (Disavowal)", f"{B_val:.2f}")
+    col3.metric("S (Stability)", f"{S_val:.2f}")
+    st.markdown(f"### Your Position: **{quadrant}**")
+    
+    # Visualize
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.axhline(0.5, color='gray', ls=':')
+    ax.axvline(0.5, color='gray', ls=':')
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+    ax.set_xlabel('B (Disavowal)'); ax.set_ylabel('W (Loyalty)')
+    ax.scatter(B_val, W_val, s=500, c=color, edgecolors='black', linewidth=2)
+    ax.set_title('Your Position in the (W, B) Space')
+    st.pyplot(fig)
 st.markdown("*The Cosmic Command Center – Mizan Theory Platform v7.0 – Ali Adel Alatifi*")
