@@ -1,277 +1,328 @@
-"""
-==========================================================================
-🌌 THE COSMIC COMMAND CENTER – THE MIZAN THEORY PLATFORM
-==========================================================================
-Author:     Ali Adel Alatifi
-License:    MIT License
-Platform:   Streamlit
-Description: The complete platform for simulating the Divine Equation S = W × B.
-Includes: Strategic Advisor, National Dashboard, Society Lab, and Civilizations Clash.
-==========================================================================
-"""
-
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Circle, FancyBboxPatch, RegularPolygon
 import random
+import time
+from io import BytesIO
+from collections import deque
+import warnings
+warnings.filterwarnings('ignore')
 
 # =============================================
-# Page Configuration
+# إعداد الصفحة
 # =============================================
 st.set_page_config(
-    page_title="The Cosmic Command Center – Ali Adel Alatifi",
-    page_icon="🌌",
+    page_title="الْمَنْصَةُ الذَّهَبِيَّةُ – The Golden Platform",
+    page_icon="⚖️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # =============================================
-# 🧠 THE UNIFIED COSMIC ENGINE
+# 🌐 نظام الترجمة ثنائي اللغة
+# =============================================
+if "lang" not in st.session_state:
+    st.session_state.lang = "ar"
+
+LANG = st.session_state.lang
+
+T = {
+    "platform_title": {"ar": "الْمَنْصَةُ الذَّهَبِيَّةُ", "en": "The Golden Platform"},
+    "platform_subtitle": {"ar": "مُخْتَبَرُ نَظَرِيَّةِ الْمِيزَان", "en": "The Mizan Theory Lab"},
+    "enter_lab": {"ar": "🚀 ادْخُلْ إِلَى الْمُخْتَبَرِ", "en": "🚀 Enter the Lab"},
+    "welcome_quote": {
+        "ar": '"هَلْ يُوجَدُ قَانُونٌ وَاحِدٌ يَحْكُمُ الذَّرَّةَ وَالْحَضَارَةَ؟ هَذَا هُوَ نَمُوذَجُ الْمِيزَانِ الَّذِي يُثْبِتُ أَنَّ S = W × B"',
+        "en": '"Is there a single law governing the atom and civilization? This is the Mizan Model that proves S = W × B"'
+    },
+    "tab_believe": {"ar": "🛡️ آمِن", "en": "🛡️ Believe"},
+    "tab_advisor": {"ar": "🧠 اسْتَشِرْ", "en": "🧠 Consult"},
+    "tab_observe": {"ar": "🧍 رَاقِبْ", "en": "🧍 Observe"},
+    "tab_judge": {"ar": "🌍 احْكُمْ", "en": "🌍 Judge"},
+    "tab_understand": {"ar": "📚 افْهَمْ", "en": "📚 Understand"},
+    "control_panel": {"ar": "🧭 لَوْحَةُ التَّحَكُّمِ", "en": "🧭 Control Panel"},
+    "param_w": {"ar": "W (الْوَلَاءُ)", "en": "W (Loyalty)"},
+    "param_b": {"ar": "B (الْبَرَاءَةُ)", "en": "B (Disavowal)"},
+    "param_e": {"ar": "E (التَّمْكِينُ)", "en": "E (Empowerment)"},
+    "param_lag": {"ar": "فَجْوَةُ الِاسْتِدْرَاجِ", "en": "Istidraj Gap"},
+    "dashboard": {"ar": "لَوْحَةُ الْمُؤَشِّرَاتِ", "en": "Dashboard"},
+    "metric_w_label": {"ar": "🤍 W", "en": "🤍 W"},
+    "metric_b_label": {"ar": "❤️ B", "en": "❤️ B"},
+    "metric_s_label": {"ar": "⚖️ S", "en": "⚖️ S"},
+    "metric_e_label": {"ar": "💫 E", "en": "💫 E"},
+    "footer": {"ar": "© 2026 علي عادل العاطفي | الْمَنْصَةُ الذَّهَبِيَّةُ", "en": "© 2026 Ali Adel Alatifi | The Golden Platform"},
+    "language_selector": {"ar": "اللُّغَةُ", "en": "Language"},
+    "advisor_title": {"ar": "🧠 الْمُسْتَشَارُ الْفَائِقُ", "en": "🧠 The Super Advisor"},
+    "advisor_subtitle": {"ar": "اسْأَلْ عَنْ أَيِّ شَيْءٍ فِي نَظَرِيَّةِ الْمِيزَانِ. الْمُسْتَشَارُ يَعْتَمِدُ عَلَى الذَّكَاءِ الِاصْطِنَاعِيِّ.", "en": "Ask about anything in the Mizan Theory. The advisor uses AI."},
+    "ask_placeholder": {"ar": "مِثَال: مَا هُوَ الِاسْتِدْرَاجُ؟", "en": "E.g., What is Istidraj?"},
+    "analyzing": {"ar": "🧠 الْمُسْتَشَارُ يُحَلِّلُ...", "en": "🧠 Analyzing..."},
+    "simulation_note": {"ar": "📊 تَمَّ تَشْغِيلُ مُحَاكَاةٍ حَيَّةٍ:", "en": "📊 Live simulation run:"},
+    "launch_clash": {"ar": "🚀 أَطْلِقْ صِرَاعَ الْحَضَارَاتِ", "en": "🚀 Launch Clash"},
+    "clash_success": {"ar": "الْبَقَاءُ لِلْأَقْوَى مِيزَانًا.", "en": "Survival of the fittest Mizan."},
+    "personal_title": {"ar": "🧍 الْمُخْتَبَرُ الْفَرْدِيُّ", "en": "🧍 Personal Lab"},
+    "personal_subtitle": {"ar": "اِكْتَشِفْ مِيزَانَكَ.", "en": "Discover your Mizan."},
+    "library_title": {"ar": "📚 الْمَكْتَبَةُ", "en": "📚 Library"},
+    "select_tool": {"ar": "اخْتَرْ أَدَاةً:", "en": "Select a tool:"},
+}
+
+def t(key):
+    return T.get(key, {}).get(LANG, key)
+
+# =============================================
+# الدالة الأم: المُشغِّل الكوني
 # =============================================
 def cosmic_engine(W0, B0, E0, years=200, lag=25):
-    """
-    The single, unified engine for all modules.
-    It runs the standard Mizan simulation S = W × B.
-    """
-    W = np.zeros(years)
-    B = np.zeros(years)
-    S = np.zeros(years)
-    E = np.zeros(years)
-    
-    W[0], B[0], E[0] = W0, B0, E0
-    S[0] = W0 * B0
-    
+    W = np.zeros(years); B = np.zeros(years); S = np.zeros(years); E = np.zeros(years)
+    W[0], B[0], E[0] = W0, B0, E0; S[0] = W0 * B0
     for t in range(1, years):
-        H = 10 / (S[t-1] + 0.1)
-        
-        dW = (0.08 * H) - (0.05 * E[t-1]) - (0.04 * (1 - B[t-1]))
-        W[t] = np.clip(W[t-1] + dW, 0.01, 1.0)
-        
-        dB = (-0.04 * E[t-1]) + (0.01 * (1 - B[t-1]) * W[t-1] * (1 - W[t-1]))
-        B[t] = np.clip(B[t-1] + dB, 0.01, 1.0)
-        
+        W[t] = max(0.01, min(1.0, W[t-1] - 0.05 * E[t-1]))
+        B[t] = max(0.01, min(1.0, B[t-1] - 0.04 * E[t-1]))
         S[t] = W[t] * B[t]
-        
         past_idx = t - lag
         S_past = S[past_idx] if past_idx >= 0 else S[t]
-        dE = 0.05 * (S_past - E[t-1])
-        E[t] = np.clip(E[t-1] + dE, 0.01, 1.0)
-    
+        E[t] = max(0.01, min(1.0, E[t-1] + 0.05 * (S_past - E[t-1])))
     return W, B, S, E
 
-# =============================================
-# 🧭 SIDEBAR – Command Modules
-# =============================================
-st.sidebar.title("🧭 Command Modules")
-module = st.sidebar.radio(
-    "Select Module:",
-    [
-        "🏠 Main Command Center",
-        "🧠 The Strategic Advisor",
-        "🌍 National Dashboard",
-        "👥 Society Lab",
-        "⚔️ Civilizations Clash",
-        "🧭 The Existential Compass",
-        "📜 The Akhirah Balance",
-        "⚛️ Physics & Biology Lab",
-        "🔥 The Battle Heatmap"
-    ]
-)
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("*Cosmic Platform v8.0 – Ali Adel Alatifi*")
+def get_mizan_color(w, b):
+    if w >= 0.7 and b >= 0.7: return '#FFD700'
+    elif w >= 0.5 and b < 0.4: return '#E0E0E0'
+    elif w < 0.4 and b >= 0.5: return '#FF5252'
+    elif w < 0.4 and b < 0.4: return '#FFB6C1'
+    else: return '#888888'
 
 # =============================================
-# MODULE 0: THE COSMIC OVERVIEW
+# 🧠 الْمُسْتَشَارُ الْفَائِقُ (The Super Advisor)
 # =============================================
-if module == "🏠 Main Command Center":
-    st.header("🏠 The Cosmic Overview")
-    st.markdown("""
-    ### 🌌 The Mizan Theory – The Equation of Everything
+def get_super_advisor_response(user_query, lang="ar"):
+    """
+    يستخدم GPT-4o للإجابة. إذا لم يتوفر المفتاح، يستخدم قاعدة المعرفة المحلية.
+    """
+    # رسالة النظام: خلاصة معرفتنا
+    system_prompt = """
+    You are the "Super Advisor" of "The Mizan Theory" by Ali Adel Alatifi.
+    Core theory: The cosmic law of causality (Al-Deen Al-Qayyim) and the dynamic response (Al-Islam Al-Hanif).
+    Equation: S = W × B (Stability = Loyalty × Disavowal).
+    Istidraj: E (material empowerment) lags behind S (moral stability) and collapses suddenly.
+    Applies to: Physics (gravity=W, repulsion=B), Biology (immune system: W=self, B=non-self), History (civilization cycles).
+    Quranic classification: Believer (+W,+B), Disbeliever (-W,+B), Hypocrite (0,0), Polytheist (+W,-B).
+    Answer based on this knowledge. Connect to the equation always.
+    """
     
-    This is the ultimate control room. From here, you can access all modules:
+    # محاولة استخدام GPT-4o أولاً
+    try:
+        import openai
+        client = openai.OpenAI(api_key=st.secrets.get("OPENAI_API_KEY", ""))
+        if st.secrets.get("OPENAI_API_KEY"):
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_query}
+                ],
+                temperature=0.7,
+                max_tokens=800
+            )
+            return response.choices[0].message.content
+    except:
+        pass
     
-    1.  **🧠 The Strategic Advisor**: Ask any question and receive intelligent answers.
-    2.  **🌍 National Dashboard**: Diagnose any nation's position on the Istidraj Map.
-    3.  **👥 Society Lab**: Watch 500 individuals interact in a virtual society.
-    4.  **⚔️ Civilizations Clash**: A virtual world of 6 nations competing.
-    
-    ---
-    ### 📊 The Core Equation: S = W × B
-    **S** = Existential Stability. **W** = Loyalty to God. **B** = Disavowal of False Deities.
-    """)
-    
-    # Interactive Demo
-    col1, col2, col3 = st.columns(3)
-    with col1: W_demo = st.slider("W (Loyalty)", 0.0, 1.0, 0.8, 0.05, key="demo_W")
-    with col2: B_demo = st.slider("B (Disavowal)", 0.0, 1.0, 0.8, 0.05, key="demo_B")
-    with col3: st.metric("S (Stability)", f"{W_demo * B_demo:.2f}")
-
-    if st.button("🚀 Run Quick Simulation", use_container_width=True):
-        W_s, B_s, S_s, E_s = cosmic_engine(W_demo, B_demo, 0.3, 150)
-        fig, ax = plt.subplots(figsize=(10, 4))
-        ax.plot(S_s, 'g-', label='S (Stability)')
-        ax.plot(E_s, 'b--', label='E (Empowerment)')
-        max_S = np.argmax(S_s); max_E = np.argmax(E_s)
-        if max_S < max_E:
-            ax.axvspan(max_S, max_E, alpha=0.2, color='red', label=f'Istidraj Gap ({max_E - max_S} years)')
-        ax.legend(); ax.grid(True, alpha=0.3); ax.set_ylim(0, 1.05)
-        st.pyplot(fig)
-
-# =============================================
-# MODULE 1: THE STRATEGIC ADVISOR
-# =============================================
-elif module == "🧠 The Strategic Advisor":
-    st.header("🧠 The Strategic Advisor")
-    st.markdown("Ask any question and receive an intelligent answer with a live simulation.")
-    
-    user_q = st.text_input("✍️ Ask any question:", placeholder="Example: What is monotheism? How to overcome anxiety?")
-
-    # Simple Knowledge Base
+    # الرجوع إلى قاعدة المعرفة المحلية
     knowledge = {
-        "monotheism": "Monotheism (Tawhid) is the foundation of Islam. In the Mizan Theory, it is the 'Alif' (A=1), the origin of everything.",
-        "prayer": "Prayer (Salat) is the daily 'charging station' for Loyalty (W). It is the pillar of the faith.",
-        "anxiety": "Anxiety is a state of 'low Stability' (S). The cure is to increase W (Trust in God) and B (Disavowal from fearing creation).",
-        "civilization": "All civilizations follow the Mizan cycle: Rise (High W&B), Peak, Istidraj (W&B collapse), and Collapse.",
+        "istidraj": "Istidraj is a divine law where material empowerment (E) lags behind moral stability (S). When S collapses, E remains high for a period, deceiving people, then suddenly collapses. Quran: {So when they forgot that by which they had been reminded, We opened to them the doors of every good thing until, when they rejoiced, We seized them suddenly} [Al-An'am:44].",
+        "mizan": "The Mizan Equation: S = W × B. Stability is achieved only by combining loyalty to God (W) and disavowal of false deities (B). The relationship is multiplicative: if either is zero, stability is null. Quran: {Whoever disbelieves in false deities and believes in Allah has grasped the firm handhold} [Al-Baqarah:256].",
+        "fitrah": "Fitrah is the primordial nature, the original operating system. Quran: {The Fitrah of Allah upon which He created mankind} [Ar-Rum:30]. Prophet: 'Every child is born upon Fitrah.'",
+        "ibrahim": "Prophet Abraham is the perfect model: W=1 (willing to sacrifice his son), B=1 (smashed idols, declared innocence). Result: Khaleel (intimate friend) and Imam (leader).",
     }
     
-    if user_q:
-        response = "I couldn't find a specific answer, but I can run a simulation based on your query."
-        W0, B0 = 0.5, 0.5
-        q = user_q.lower()
-        for kw, ans in knowledge.items():
-            if kw in q:
-                response = ans
-                break
-        if "istidraj" in q or "collapse" in q: W0, B0 = 0.3, 0.3
-        if "rise" in q or "faith" in q: W0, B0 = 0.9, 0.9
-        
-        st.success(response)
-        W_s, B_s, S_s, E_s = cosmic_engine(W0, B0, 0.3, 100)
-        fig, ax = plt.subplots(figsize=(8, 3))
-        ax.plot(S_s, 'g-', label='S'); ax.plot(E_s, 'b--', label='E')
-        ax.legend(); ax.grid(True, alpha=0.3); ax.set_ylim(0, 1.05)
-        st.pyplot(fig)
+    query_lower = user_query.lower()
+    for key, answer in knowledge.items():
+        if key in query_lower:
+            return answer
+    
+    return "I couldn't find a specific answer in my local knowledge base. For a more comprehensive answer, please configure the GPT-4o API key in the app secrets, or try asking about: Istidraj, Mizan, Fitrah, or Prophet Abraham."
 
 # =============================================
-# MODULE 2: NATIONAL DASHBOARD
+# 🏠 واجهة الترحيب
 # =============================================
-elif module == "🌍 National Dashboard":
-    st.header("🌍 National Dashboard – The Digital Twin")
-    st.markdown("Diagnose any nation's position on the Istidraj Map.")
+if 'entered' not in st.session_state:
+    st.session_state.entered = False
+
+if not st.session_state.entered:
+    st.markdown(f"""
+    <div style="text-align: center; background: linear-gradient(180deg, #000000 0%, #0a1a0a 30%, #1a2e1a 70%, #0a1a0a 100%); 
+    padding: 40px 15px; border-radius: 20px; border: 3px solid #FFD700; margin: 30px 0;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.7);">
+        <span style="font-size: 60px; display: block;">⚖️</span>
+        <h1 style="color: #FFD700; font-size: 2em; margin: 15px 0; font-weight: 900;">
+            {t('platform_title')}
+        </h1>
+        <span style="font-size: 40px; display: block;">🧪</span>
+        <h2 style="color: #FFD700; font-size: 1.3em; margin: 10px 0;">{t('platform_subtitle')}</h2>
+        <p style="color: #e0e0e0; font-size: 1em; margin: 20px 10px; line-height: 1.8; font-style: italic;">
+            {t('welcome_quote')}
+        </p>
+        <p style="color: #FFD700; font-size: 1.2em; margin: 20px 0 0 0; font-weight: bold;">علي عادل العاطفي</p>
+        <p style="color: #FFD700; font-size: 0.9em; margin: 5px 0 0 0; font-style: italic; opacity: 0.8;">Ali Adel Alatifi | 2026</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
-    with col1:
-        st.subheader("W (Loyalty)")
-        rule_of_law = st.slider("Rule of Law", 0.0, 1.0, 0.5)
-        education = st.slider("Education & Values", 0.0, 1.0, 0.5)
+    col1, col2, col3 = st.columns([1,2,1])
     with col2:
-        st.subheader("B (Disavowal)")
-        corruption = st.slider("Control of Corruption", 0.0, 1.0, 0.5)
-        justice = st.slider("Justice & Equality", 0.0, 1.0, 0.5)
+        if st.button(t('enter_lab'), use_container_width=True, type="primary"):
+            st.session_state.entered = True
+            st.rerun()
+    st.stop()
+
+# =============================================
+# الشريط الجانبي
+# =============================================
+with st.sidebar:
+    st.markdown(f"## {t('control_panel')}")
     
-    W0 = (rule_of_law + education) / 2
-    B0 = (corruption + justice) / 2
-    S0 = W0 * B0
+    lang_option = st.selectbox(
+        t('language_selector'),
+        options=["🇸🇦 العربية", "🇬🇧 English"],
+        index=0 if LANG == "ar" else 1
+    )
+    new_lang = "ar" if "العربية" in lang_option else "en"
+    if new_lang != LANG:
+        st.session_state.lang = new_lang
+        st.rerun()
     
+    st.markdown("---")
+    
+    st.subheader("⚙️ " + ("مُعَامَلَاتُ الْمِيزَانِ" if LANG == "ar" else "Mizan Parameters"))
+    W_global = st.slider(t('param_w'), 0.0, 1.0, 0.7, 0.05)
+    B_global = st.slider(t('param_b'), 0.0, 1.0, 0.6, 0.05)
+    E_global = st.slider(t('param_e'), 0.0, 1.0, 0.3, 0.05)
+    lag_global = st.slider(t('param_lag'), 5, 50, 22, 1)
+    
+    st.markdown("---")
+    st.markdown(f"*{t('footer')}*")
+
+# =============================================
+# الألسنة
+# =============================================
+tabs = st.tabs([t('tab_believe'), t('tab_advisor'), t('tab_observe'), t('tab_judge'), t('tab_understand')])
+
+# --- تبويب 0: آمِن ---
+with tabs[0]:
+    st.header("🛡️ " + ("مَرْكَزُ الْقِيَادَةِ" if LANG == "ar" else "Command Center"))
+    W_s, B_s, S_s, E_s = cosmic_engine(W_global, B_global, E_global, 200, lag_global)
+    
+    st.subheader(t('dashboard'))
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric(t('metric_w_label'), f"{W_global:.2f}")
+    col2.metric(t('metric_b_label'), f"{B_global:.2f}")
+    col3.metric(t('metric_s_label'), f"{W_global * B_global:.2f}")
+    col4.metric(t('metric_e_label'), f"{E_global:.2f}")
+    
+    st.markdown("---")
+    
+    fig, ax = plt.subplots(figsize=(10, 5), facecolor='#0a0a1a')
+    ax.set_facecolor('#0a0a1a')
+    ax.plot(S_s, 'g-', linewidth=2, label='S')
+    ax.plot(E_s, 'b--', linewidth=2, label='E')
+    max_S_idx = np.argmax(S_s); max_E_idx = np.argmax(E_s)
+    if max_S_idx < max_E_idx:
+        ax.axvspan(max_S_idx, max_E_idx, alpha=0.3, color='red', label=f'Gap ({max_E_idx - max_S_idx}y)')
+    ax.set_title('Civilization Cycle' if LANG == "en" else 'دَوْرَةُ الْحَضَارَةِ', color='white')
+    ax.legend(facecolor='#0a0a1a', edgecolor='white', labelcolor='white')
+    ax.grid(True, alpha=0.2); ax.set_ylim(0, 1.05); ax.tick_params(colors='white')
+    st.pyplot(fig)
+
+# --- تبويب 1: المستشار الفائق ---
+with tabs[1]:
+    st.header(t('advisor_title'))
+    st.markdown(t('advisor_subtitle'))
+    
+    user_q = st.text_input("✍️ " + ("سُؤَالُكَ:" if LANG == "ar" else "Your question:"), 
+                           placeholder=t('ask_placeholder'))
+    
+    if user_q:
+        with st.spinner(t('analyzing')):
+            answer = get_super_advisor_response(user_q, LANG)
+            st.markdown(f"### 💡 " + ("الْجَوَابُ:" if LANG == "ar" else "Answer:"))
+            st.markdown(answer)
+            
+            # تشغيل محاكاة حية
+            w0, b0, e0 = 0.7, 0.6, 0.3
+            if "istidraj" in user_q.lower() or "استدراج" in user_q.lower():
+                w0, b0, e0 = 0.3, 0.3, 0.9
+            W_sim, B_sim, S_sim, E_sim = cosmic_engine(w0, b0, e0, 100, lag_global)
+            
+            st.markdown(t('simulation_note'))
+            fig, ax = plt.subplots(figsize=(10, 3), facecolor='#0a0a1a')
+            ax.set_facecolor('#0a0a1a')
+            ax.plot(S_sim, 'g-', linewidth=2, label='S')
+            ax.plot(E_sim, 'b--', linewidth=2, label='E')
+            ax.legend(facecolor='#0a0a1a', edgecolor='white', labelcolor='white')
+            ax.grid(True, alpha=0.2); ax.set_ylim(0, 1.05); ax.tick_params(colors='white')
+            st.pyplot(fig)
+
+# --- تبويب 2: راقب ---
+with tabs[2]:
+    st.header(t('personal_title'))
+    st.markdown(t('personal_subtitle'))
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        w1 = st.slider("الصَّلَاةُ" if LANG == "ar" else "Prayer", 0.0, 1.0, 0.8, 0.05)
+        w2 = st.slider("بِرُّ الْوَالِدَيْنِ" if LANG == "ar" else "Parents", 0.0, 1.0, 0.8, 0.05)
+    with c2:
+        b1 = st.slider("غَضُّ الْبَصَرِ" if LANG == "ar" else "Lower Gaze", 0.0, 1.0, 0.7, 0.05)
+        b2 = st.slider("اجْتِنَابُ الْغِيبَةِ" if LANG == "ar" else "No Backbiting", 0.0, 1.0, 0.6, 0.05)
+    with c3:
+        w3 = st.slider("الذِّكْرُ" if LANG == "ar" else "Dhikr", 0.0, 1.0, 0.6, 0.05)
+        b3 = st.slider("الشُّبُهَاتُ" if LANG == "ar" else "Dubious", 0.0, 1.0, 0.9, 0.05)
+    
+    W_p = (w1+w2+w3)/3; B_p = (b1+b2+b3)/3; S_p = W_p * B_p
     col1, col2, col3 = st.columns(3)
-    col1.metric("W", f"{W0:.2f}"); col2.metric("B", f"{B0:.2f}"); col3.metric("S", f"{S0:.2f}")
-    
-    if st.button("🚀 Forecast Future", use_container_width=True):
-        W_s, B_s, S_s, E_s = cosmic_engine(W0, B0, 0.5, 100)
-        fig, ax = plt.subplots(figsize=(8, 4))
-        ax.plot(S_s, 'g-', label='S'); ax.plot(E_s, 'b--', label='E')
-        ax.legend(); ax.grid(True, alpha=0.3); ax.set_ylim(0, 1.05)
-        st.pyplot(fig)
+    col1.metric("W", f"{W_p:.2f}"); col2.metric("B", f"{B_p:.2f}"); col3.metric("S", f"{S_p:.2f}")
+    if S_p > 0.7: st.success("🟢 " + ("آمِن" if LANG == "ar" else "Safe"))
+    elif S_p > 0.4: st.warning("🟡 " + ("هَشّ" if LANG == "ar" else "Fragile"))
+    else: st.error("🔴 " + ("خَطَر" if LANG == "ar" else "Danger"))
 
-# =============================================
-# MODULE 3: SOCIETY LAB
-# =============================================
-elif module == "👥 Society Lab":
-    st.header("👥 Society Lab – Agent-Based Model")
-    st.markdown("Watch agents interact in a virtual society governed by S = W × B.")
-    
-    pop_size = st.slider("Population", 50, 300, 150)
-    if st.button("▶️ Start Society Simulation", use_container_width=True):
-        # Simple agent model
-        W = np.random.uniform(0.3, 0.9, pop_size)
-        B = np.random.uniform(0.3, 0.9, pop_size)
-        
-        for step in range(50):
-            for i in range(pop_size):
-                # Influence random neighbor
-                j = random.randint(0, pop_size-1)
-                W[i] += 0.02 * (W[j] - W[i])
-                B[i] += 0.02 * (B[j] - B[i])
-                W[i], B[i] = np.clip(W[i], 0.01, 1.0), np.clip(B[i], 0.01, 1.0)
-        
-        colors = []
-        for i in range(pop_size):
-            if W[i] > 0.6 and B[i] > 0.6: colors.append('gold')
-            elif W[i] < 0.4 and B[i] < 0.4: colors.append('red')
-            else: colors.append('gray')
-        
-        fig, ax = plt.subplots(figsize=(10, 6))
-        ax.scatter(np.random.uniform(0, 30, pop_size), np.random.uniform(0, 30, pop_size), c=colors, s=40)
-        ax.set_title('Society After 50 Years'); st.pyplot(fig)
+# --- تبويب 3: احكم ---
+with tabs[3]:
+    st.header("🌍 " + ("لَوْحَةُ الْأُمَمِ" if LANG == "ar" else "Nations Board"))
+    nations = {
+        ("أُمَّةُ الْإِيمَانِ" if LANG == "ar" else "Faith"): (0.9, 0.9, 0.1, "gold"),
+        ("أُمَّةُ التَّرَفِ" if LANG == "ar" else "Luxury"): (0.3, 0.2, 0.9, "orange"),
+        ("الظَّالِمَةُ" if LANG == "ar" else "Tyrant"): (0.1, 0.9, 0.8, "red"),
+        ("الْعِلْمِ" if LANG == "ar" else "Knowledge"): (0.8, 0.6, 0.4, "cyan"),
+    }
+    if st.button(t('launch_clash'), use_container_width=True, type="primary"):
+        fig, axes = plt.subplots(2, 2, figsize=(12, 10), facecolor='#000010')
+        for idx, (name, (w0, b0, e0, col)) in enumerate(nations.items()):
+            ax = axes[idx//2, idx%2]; ax.set_facecolor('#0a0a1a')
+            W_s, B_s, S_s, E_s = cosmic_engine(w0, b0, e0, 200, lag_global)
+            ax.plot(S_s, color=col, linewidth=2, label='S')
+            ax.plot(E_s, color=col, linestyle='--', alpha=0.6, label='E')
+            ax.set_title(name, color=col, fontweight='bold')
+            ax.set_ylim(0, 1.05); ax.grid(True, alpha=0.2)
+            ax.tick_params(colors='white'); ax.legend(facecolor='#0a0a1a', edgecolor='white', labelcolor='white', fontsize=8)
+        plt.tight_layout(); st.pyplot(fig)
+        st.success(t('clash_success'))
 
-# =============================================
-# MODULE 4: CIVILIZATIONS CLASH
-# =============================================
-elif module == "⚔️ Civilizations Clash":
-    st.header("⚔️ Civilizations Clash Simulator")
-    st.markdown("6 nations competing according to S = W × B.")
-    
-    nations = [
-        {"name": "Faith", "W": 0.9, "B": 0.9, "E": 0.1, "color": "green"},
-        {"name": "Luxury", "W": 0.3, "B": 0.2, "E": 0.9, "color": "gold"},
-        {"name": "Tyrant", "W": 0.1, "B": 0.9, "E": 0.85, "color": "red"},
-        {"name": "Knowledge", "W": 0.8, "B": 0.6, "E": 0.4, "color": "cyan"},
-    ]
-    
-    years = st.slider("Simulation Years", 20, 150, 60)
-    
-    if st.button("▶️ Start Clash Simulation", use_container_width=True):
-        fig, ax = plt.subplots(figsize=(10, 6))
-        for n in nations:
-            W_s, B_s, S_s, E_s = cosmic_engine(n['W'], n['B'], n['E'], years)
-            ax.plot(S_s, color=n['color'], label=n['name'])
-        ax.legend(); ax.grid(True, alpha=0.3); ax.set_ylim(0, 1.05)
-        st.pyplot(fig)
+# --- تبويب 4: افهم ---
+with tabs[4]:
+    st.header(t('library_title'))
+    with st.expander("📜 " + ("خُلَاصَةُ النَّظَرِيَّةِ" if LANG == "ar" else "Theory Summary"), expanded=True):
+        st.markdown(f"""
+        **{('الدِّينُ الْقَيِّمُ' if LANG == 'ar' else 'The Upright Religion')}**: {('قَانُونُ السَّبَبِيَّةِ الْكَوْنِيِّ.' if LANG == 'ar' else 'The cosmic law of causality.')}
+        **{('الْإِسْلَامُ الْحَنِيفُ' if LANG == 'ar' else 'The Upright Islam')}**: {('الِاسْتِجَابَةُ الدِّينَامِيكِيَّةُ.' if LANG == 'ar' else 'The dynamic response.')}
+        **{('مُعَادَلَةُ الثَّبَاتِ' if LANG == 'ar' else 'Stability Equation')}**: `S = W × B`
+        """)
+    with st.expander("🔤 " + ("الْمُعْجَمُ الْهَنْدَسِيُّ" if LANG == "ar" else "Geometric Lexicon"), expanded=False):
+        tools = {
+            "فَاءُ السَّبَبِيَّةِ (فَـ)": ("=", "تَرْبِطُ السَّبَبَ بِالنَّتِيجَةِ حَتْمًا."),
+            "لَامُ التَّعْلِيلِ (لِـ)": ("→", "سَهْمُ الْغَايَةِ."),
+            "إِلَّا": ("{}", "حُدُودُ الْمَجْمُوعَةِ."),
+        }
+        sel = st.selectbox(t('select_tool'), list(tools.keys()))
+        if sel:
+            st.metric("الرَّمْزُ", tools[sel][0])
+            st.info(tools[sel][1])
 
-# =============================================
-# MODULES 5-8: SIMPLIFIED PLACEHOLDERS
-# =============================================
-elif module == "🧭 The Existential Compass":
-    st.header("🧭 The Existential Compass")
-    st.markdown("Discover your position in the W-B space.")
-    W_val = st.slider("Your W Score", 0.0, 1.0, 0.5)
-    B_val = st.slider("Your B Score", 0.0, 1.0, 0.5)
-    st.metric("Your S (Stability)", f"{W_val * B_val:.2f}")
-
-elif module == "📜 The Akhirah Balance":
-    st.header("📜 The Akhirah Balance")
-    hasanat = st.number_input("Total Hasanat", 0, 10000, 500)
-    sayyiat = st.number_input("Total Sayyiat", 0, 10000, 300)
-    balance = hasanat - sayyiat
-    st.metric("Net Balance", balance, delta="Positive" if balance > 0 else "Negative")
-
-elif module == "⚛️ Physics & Biology Lab":
-    st.header("⚛️ Physics & Biology Lab")
-    st.markdown("Explore the Mizan in physics, chemistry, and biology.")
-
-elif module == "🔥 The Battle Heatmap":
-    st.header("🔥 The Battle Heatmap")
-    if st.button("Generate Heatmap", use_container_width=True):
-        W_s, B_s, S_s, E_s = cosmic_engine(0.5, 0.5, 0.3, 100)
-        heat_data = np.array([W_s, B_s, S_s, E_s])
-        fig, ax = plt.subplots(figsize=(10, 4))
-        ax.imshow(heat_data, aspect='auto', cmap='RdYlGn', vmin=0, vmax=1)
-        ax.set_yticks([0,1,2,3]); ax.set_yticklabels(['W','B','S','E'])
-        st.pyplot(fig)
-
-# =============================================
-# Footer
-# =============================================
 st.markdown("---")
-st.markdown("*The Cosmic Command Center – Mizan Theory Platform v8.0 – Ali Adel Alatifi*")
+st.markdown(f"<p style='text-align:center;color:#666;'>{t('footer')}</p>", unsafe_allow_html=True)
