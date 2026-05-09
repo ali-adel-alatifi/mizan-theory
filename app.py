@@ -359,6 +359,7 @@ with tab1:
         
         if st.session_state.get("run", False):
     placeholder = st.empty()
+    
     while st.session_state.get("run", False):
         W = st.session_state.W; B = st.session_state.B; E = st.session_state.E
         S = st.session_state.S; phase = st.session_state.phase
