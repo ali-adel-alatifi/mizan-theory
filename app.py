@@ -476,7 +476,9 @@ elif st.session_state.init and not st.session_state.run:
     colors = [get_color(st.session_state.sw[i], st.session_state.sb[i]) for i in range(N_STARS)]
     ax.scatter(st.session_state.sx, st.session_state.sy, s=35, c=colors, alpha=0.9, edgecolors='white', linewidths=0.4, zorder=5)
     ax.text(14, 1.2, t('في انتظار التشغيل...', 'Waiting to run...'), color='white', fontsize=12, ha='center')
-    plt.tight_layout(pad=0); st.pyplot(fig); plt.close(fig)with tab2:
+    plt.tight_layout(pad=0); st.pyplot(fig); plt.close(fig)
+    
+with tab2:
     st.header(t("🧭 البوصلة الشخصية", "🧭 Personal Compass"))
     st.markdown(t("أجب عن 28 سؤالاً لتكتشف موقعك في فضاء الولاء والبراءة.", "Answer 28 questions to discover your position."))
     if 'compass_answers' not in st.session_state: st.session_state.compass_answers = {}
