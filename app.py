@@ -561,7 +561,9 @@ with tab2:
             ax.text(x,y,lbl,ha='center',color='white',alpha=0.8)
         ax.scatter(D_map, L_map, c='cyan', s=250, edgecolors='white', linewidth=3, zorder=10)
         ax.tick_params(colors='white'); st.pyplot(fig)
-        if st.button(t("🔄 إعادة الاختبار", "🔄 Retake Test")): st.session_state.compass_answers = {}; st.rerun()with tab3:
+        if st.button(t("🔄 إعادة الاختبار", "🔄 Retake Test")): st.session_state.compass_answers = {}; st.rerun()
+            
+with tab3:
     st.header(t("📖 كتاب الميزان", "📖 The Book of Mizan"))
     with st.expander(t("📜 الإهداء والمقدمة", "📜 Dedication & Introduction"), expanded=False):
         st.markdown(t("""
