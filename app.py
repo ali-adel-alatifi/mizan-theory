@@ -474,9 +474,8 @@ elif st.session_state.init and not st.session_state.run:
     ax.text(14, 10, 'S', color='#1a1000', fontsize=16, ha='center', va='center', fontweight='bold')
     ax.add_patch(Circle((14, 10), 0.5 + 16 * E_curr, color='#0FF', alpha=0.25 * (1 - min(E_curr, 1)) + 0.04, zorder=7))
     ax.add_patch(Circle((14, 10), 8.5, color='#0F8', alpha=0.15, fill=False, lw=2.5, zorder=2))
-    if st.session_state.get('sw') is not None and st.session_state.get('sb') is not None:
-
-if 'sw' in st.session_state and 'sb' in st.session_state:
+    
+    if st.session_state.get('sw') is not None and st.session_state.get('sb') is not None:if 'sw' in st.session_state and 'sb' in st.session_state:
     colors = [get_color(st.session_state.sw[i], st.session_state.sb[i]) for i in range(N_STARS)]
     ax.scatter(st.session_state.sx, st.session_state.sy, s=35, c=colors, alpha=0.9, edgecolors='white', linewidths=0.4, zorder=5)
     ax.text(14, 1.2, t('في انتظار التشغيل...', 'Waiting to run...'), color='white', fontsize=12, ha='center')
