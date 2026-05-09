@@ -104,7 +104,7 @@ LETTER_CATEGORIES = {
     }
 }
 
-LETTER_TOOLTIPS =
+LETTER_TOOLTIPS = {
     "taj_أ":{"ar":"الوحدانية – أصل الولاء: كلما تجلت، زاد تماسك النظام.","en":"Oneness – root of loyalty."},
     "taj_ل":{"ar":"المُلك والعدل – يقوي W: السيادة لله والعدل في الحكم.","en":"Sovereignty & justice – boosts W."},
     "taj_م":{"ar":"الجمع والتماسك – يقوي B: وحدة الصف والجماعة.","en":"Gathering – boosts B."},
