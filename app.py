@@ -307,7 +307,9 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     t("📖 كتاب الميزان", "📖 The Book of Mizan"),
     t("🔤 المعجم الهندسي", "🔤 Geometric Lexicon"),
     t("📜 رسالة الترحيب", "📜 Welcome Message"),
-])with tab1:
+])
+
+with tab1:
     st.header(t("🏛️ المختبر الجماعي – محاكاة الثبات الحي", "🏛️ The Collective Lab – Live Stability Simulation"))
     st.markdown(t(
         "شاهد كيف يتفاعل الولاء (W) والبراءة (B) في مجتمع حي. كل نجمة تمثل فرداً، ولونها يعكس موقعه في الأرباع الوجودية الأربعة.",
