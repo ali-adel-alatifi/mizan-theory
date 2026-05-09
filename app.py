@@ -103,6 +103,7 @@ LETTER_CATEGORIES = {
         "غ":{"value":1000,"positive":"الغفران","negative":"الغش","affects":"b"},
     }
 }
+
 LETTER_TOOLTIPS = {
     "taj_أ":{"ar":"الوحدانية – أصل الولاء: كلما تجلت، زاد تماسك النظام.","en":"Oneness – root of loyalty."},
     "taj_ل":{"ar":"المُلك والعدل – يقوي W: السيادة لله والعدل في الحكم.","en":"Sovereignty & justice – boosts W."},
@@ -128,6 +129,7 @@ LETTER_TOOLTIPS = {
     "act_ض":{"ar":"الضياء (+) / الضلال (-) – يؤثر على B.","en":"Radiance (+) / Misguidance (-) – affects B."},
     "act_ظ":{"ar":"الظفر (+) / الظلم (-) – يؤثر على W و B معًا.","en":"Victory (+) / Injustice (-) – affects both."},
     "act_غ":{"ar":"الغفران (+) / الغش (-) – يؤثر على B.","en":"Forgiveness (+) / Fraud (-) – affects B."},
+}
 
 def get_color(w, b):
     if w >= 0.55 and b >= 0.55: return '#FFD700'
