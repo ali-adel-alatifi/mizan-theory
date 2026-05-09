@@ -291,7 +291,9 @@ with st.sidebar:
             keys_to_keep = ["lang"]
             for k in list(st.session_state.keys()):
                 if k not in keys_to_keep: del st.session_state[k]
-            st.rerun()st.markdown(f"""
+            st.rerun()
+            
+    st.markdown(f"""
 <div style="text-align: center; padding: 20px 0 10px 0;">
     <h1 style="color: #FFD700; font-size: 2.5em; margin-bottom: 0;">⚖️ {t('المنصة الذهبية', 'The Golden Platform')}</h1>
     <h2 style="color: #FFD700; font-size: 1.3em; margin-top: 0;">{t('S = W × B | من الذرة إلى الحضارة', 'S = W × B | From Atom to Civilization')}</h2>
