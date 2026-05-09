@@ -466,18 +466,20 @@ if st.session_state.get("run", False):
 elif st.session_state.init and not st.session_state.run:
     fig, ax = plt.subplots(figsize=(14, 10), facecolor='#000010')
     ax.set_xlim(0, 28); ax.set_ylim(0, 20); ax.axis('off')
-    S_curr, E_curr = st.session_state.S, st.session_state.E
+    S_curr = st.session_state.get('S', 0.5)
+    E_curr = st.session_state.get('E', 0.3)
     for r, a, c in [(0.5, 0.98, '#FFF'), (1, 0.65, '#FFD700'), (1.7, 0.3, '#FFD700'),
                     (2.6, 0.12, '#FFA500'), (3.8, 0.05, '#FF6347'), (5.5, 0.02, '#FF4500')]:
         ax.add_patch(Circle((14, 10), r * (0.5 + 2.8 * S_curr), color=c, alpha=a, zorder=15))
     ax.text(14, 10, 'S', color='#1a1000', fontsize=16, ha='center', va='center', fontweight='bold')
     ax.add_patch(Circle((14, 10), 0.5 + 16 * E_curr, color='#0FF', alpha=0.25 * (1 - min(E_curr, 1)) + 0.04, zorder=7))
     ax.add_patch(Circle((14, 10), 8.5, color='#0F8', alpha=0.15, fill=False, lw=2.5, zorder=2))
-    colors = [get_color(st.session_state.sw[i], st.session_state.sb[i]) for i in range(N_STARS)]
-    ax.scatter(st.session_state.sx, st.session_state.sy, s=35, c=colors, alpha=0.9, edgecolors='white', linewidths=0.4, zorder=5)
+    if st.session_state.get('sw') is not None and st.session_state.get('sb') is not None:
+        colors = [get_color(st.session_state.sw[i], st.session_state.sb[i]) for i in range(N_STARS)]
+        ax.scatter(st.session_state.sx, st.session_state.sy, s=35, c=colors, alpha=0.9, edgecolors='white', linewidths=0.4, zorder=5)
     ax.text(14, 1.2, t('في انتظار التشغيل...', 'Waiting to run...'), color='white', fontsize=12, ha='center')
     plt.tight_layout(pad=0); st.pyplot(fig); plt.close(fig)
-    
+
 with tab2:
     st.header(t("🧭 البوصلة الشخصية", "🧭 Personal Compass"))
     st.markdown(t("أجب عن 28 سؤالاً لتكتشف موقعك في فضاء الولاء والبراءة.", "Answer 28 questions to discover your position."))
