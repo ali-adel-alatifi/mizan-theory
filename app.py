@@ -357,9 +357,8 @@ with tab1:
         col5.metric(t("الطور", "Phase"), st.session_state.phase)
         st.info(t("اضغط على ▶️ تشغيل المحاكاة في الشريط الجانبي.", "Press ▶️ Run Simulation in the sidebar."))
         
-        if st.session_state.get("run", False):
+if st.session_state.get("run", False):
     placeholder = st.empty()
-    
     while st.session_state.get("run", False):
         W = st.session_state.W; B = st.session_state.B; E = st.session_state.E
         S = st.session_state.S; phase = st.session_state.phase
