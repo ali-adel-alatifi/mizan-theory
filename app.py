@@ -208,7 +208,9 @@ def calc_S(W, B, E, q_val=100, n_val=50, k_val=20,
     S_base *= (1 - 0.15 * khianah_val)
     if tajalli_intensity and 'ط' in tajalli_intensity: S_base *= purity
     if tajalli_intensity and 'ح' in tajalli_intensity: S_base *= decay_resist
-    return np.clip(S_base, 0.001, 1.0)with st.sidebar:
+    return np.clip(S_base, 0.001, 1.0)
+              
+with st.sidebar:
     lang_choice = st.radio("اللغة / Language", ["العربية", "English"], index=0 if LANG == "ar" else 1)
     if (lang_choice == "English" and LANG == "ar") or (lang_choice == "العربية" and LANG == "en"):
         st.session_state.lang = "en" if lang_choice == "English" else "ar"
