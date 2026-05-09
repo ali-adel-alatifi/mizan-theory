@@ -600,7 +600,9 @@ with tab3:
         """,
         """
         Istidraj is the delayed collapse of material empowerment (E) after moral stability (S) has collapsed.
-        """))with tab4:
+        """))
+        
+with tab4:
     st.header(t("🔤 المعجم الهندسي للقرآن", "🔤 Geometric Lexicon of the Quran"))
     st.markdown(t("اكتشف كيف تترجم أدوات اللغة القرآنية إلى مشغلات رياضية.", "Discover how Quranic linguistic tools translate into mathematical operators."))
     geometric_tools = {
