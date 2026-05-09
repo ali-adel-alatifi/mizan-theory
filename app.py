@@ -103,7 +103,6 @@ LETTER_CATEGORIES = {
         "غ":{"value":1000,"positive":"الغفران","negative":"الغش","affects":"b"},
     }
 }
-
 LETTER_TOOLTIPS = {
     "taj_أ":{"ar":"الوحدانية – أصل الولاء: كلما تجلت، زاد تماسك النظام.","en":"Oneness – root of loyalty."},
     "taj_ل":{"ar":"المُلك والعدل – يقوي W: السيادة لله والعدل في الحكم.","en":"Sovereignty & justice – boosts W."},
