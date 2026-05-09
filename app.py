@@ -129,7 +129,8 @@ LETTER_TOOLTIPS =
     "act_ض":{"ar":"الضياء (+) / الضلال (-) – يؤثر على B.","en":"Radiance (+) / Misguidance (-) – affects B."},
     "act_ظ":{"ar":"الظفر (+) / الظلم (-) – يؤثر على W و B معًا.","en":"Victory (+) / Injustice (-) – affects both."},
     "act_غ":{"ar":"الغفران (+) / الغش (-) – يؤثر على B.","en":"Forgiveness (+) / Fraud (-) – affects B."},
-}def get_color(w, b):
+
+def get_color(w, b):
     if w >= 0.55 and b >= 0.55: return '#FFD700'
     elif w >= 0.55 and b < 0.45: return '#E0E0E0'
     elif w < 0.45 and b >= 0.55: return '#FF5252'
@@ -348,6 +349,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
         col4.metric(t("E (التمكين)", "E (Empowerment)"), f"{st.session_state.E:.3f}")
         col5.metric(t("الطور", "Phase"), st.session_state.phase)
         st.info(t("اضغط على ▶️ تشغيل المحاكاة في الشريط الجانبي.", "Press ▶️ Run Simulation in the sidebar."))
+        
         if st.session_state.get("run", False):
     placeholder = st.empty()
     while st.session_state.get("run", False):
