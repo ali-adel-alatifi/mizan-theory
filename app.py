@@ -2,49 +2,23 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Rectangle
-import random
-import time
+import random, time
 from collections import deque
 from io import BytesIO
 import warnings
 warnings.filterwarnings('ignore')
 
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════
 # إعداد الصفحة
-# ═══════════════════════════════════════════════════════════════
-st.set_page_config(
-    page_title="مختبر الميزان الحي | The Living Mizan Lab",
-    page_icon="⚖️",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# ═══════════════════════════════════════════════════════════════
-# اللغة
-# ═══════════════════════════════════════════════════════════════
-if "lang" not in st.session_state:
-    st.session_state.lang = "ar"
+# ═══════════════════════════════════════════════
+st.set_page_config(page_title="مختبر الميزان الحي", page_icon="⚖️", layout="wide")
+if "lang" not in st.session_state: st.session_state.lang = "ar"
 LANG = st.session_state.lang
+def t(ar, en): return ar if LANG == "ar" else en
 
-def t(ar, en):
-    return ar if LANG == "ar" else en
-
-# ═══════════════════════════════════════════════════════════════
-# تنسيق عام
-# ═══════════════════════════════════════════════════════════════
-st.markdown("""
-<style>
-    .stApp { background: linear-gradient(160deg, #0a0a2e 0%, #0d0d28 30%, #0f0f1a 100%); }
-    h1, h2, h3 { color: #FFD700; }
-    .stButton > button { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #FFD700; border: 2px solid #FFD700; border-radius: 10px; height: 3em; font-weight: bold; font-size: 1em; width: 100%; }
-    .stButton > button:hover { background: #FFD700; color: #000; }
-    .stMetric { background: rgba(10,10,46,0.8); border-radius: 10px; padding: 10px; border: 1px solid #FFD700; }
-</style>
-""", unsafe_allow_html=True)
-
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════
 # دوال
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════
 def get_star_color(w, b):
     if w >= 0.55 and b >= 0.55: return '#FFD700'
     elif w >= 0.55 and b < 0.45: return '#E0E0E0'
@@ -69,56 +43,55 @@ def compute_curvature(W_hist, B_hist):
 def calc_S(W, B, E, q=1.0):
     return np.clip(W * B * (1 + q * 0.5), 0.001, 1.0)
 
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════
 # الشريط الجانبي
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════
 with st.sidebar:
-    lang_choice = st.radio("🌐 اللغة / Language", ["العربية", "English"], index=0 if LANG == "ar" else 1)
-    if (lang_choice == "English" and LANG == "ar") or (lang_choice == "العربية" and LANG == "en"):
-        st.session_state.lang = "en" if lang_choice == "English" else "ar"
+    lang_choice = st.radio("🌐 اللغة / Language", ["العربية", "English"], index=0 if LANG=="ar" else 1)
+    if (lang_choice=="English" and LANG=="ar") or (lang_choice=="العربية" and LANG=="en"):
+        st.session_state.lang = "en" if lang_choice=="English" else "ar"
         st.rerun()
     st.markdown("---")
     st.subheader(t("⚙️ إعدادات المحاكاة", "⚙️ Simulation Settings"))
     W_init = st.slider(t("W الابتدائي", "Initial W"), 0.0, 1.0, 0.55, 0.01)
     B_init = st.slider(t("B الابتدائي", "Initial B"), 0.0, 1.0, 0.52, 0.01)
     lag_frames = st.slider(t("فجوة الاستدراج", "Istidraj Gap"), 5, 50, 22, 1)
-    N_STARS = st.slider(t("عدد النجوم", "Number of Stars"), 100, 600, 300, 50)
+    N_STARS = st.slider(t("عدد النجوم", "Stars"), 100, 600, 300, 50)
     q_intensity = st.slider(t("⚖️ ق (الميزان)", "⚖️ Q (Balance)"), 0.0, 1.0, 1.0, 0.01)
     st.markdown("---")
     col1, col2 = st.columns(2)
     with col1:
-        if st.button(t("▶️ تشغيل", "▶️ Run"), use_container_width=True, type="primary"):
-            st.session_state.run = True
+        if st.button(t("▶️ تشغيل", "▶️ Run"), use_container_width=True): st.session_state.run = True
     with col2:
-        if st.button(t("⏹️ إيقاف", "⏹️ Stop"), use_container_width=True):
-            st.session_state.run = False
+        if st.button(t("⏹️ إيقاف", "⏹️ Stop"), use_container_width=True): st.session_state.run = False
 
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════
 # العنوان
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════
 st.markdown(f"""
 <div style="text-align:center;padding:20px 0 10px 0;">
-    <h1 style="color:#FFD700;font-size:2.8em;margin-bottom:0;text-shadow:0 0 20px rgba(255,215,0,0.4);">⚖️ {t('مختبر الميزان الحي', 'The Living Mizan Lab')}</h1>
+    <h1 style="color:#FFD700;font-size:2.8em;margin-bottom:0;">⚖️ {t('مختبر الميزان الحي', 'The Living Mizan Lab')}</h1>
     <h2 style="color:#CCC;font-size:1.2em;margin-top:0;">{t('S = W × B | من الذرة إلى الحضارة', 'S = W × B | From Atom to Civilization')}</h2>
 </div>
 """, unsafe_allow_html=True)
 
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════
 # التبويبات
-# ═══════════════════════════════════════════════════════════════
-tab1, tab2, tab3 = st.tabs([
+# ═══════════════════════════════════════════════
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     t("🌌 المشهد الكوني", "🌌 The Cosmic Scene"),
+    t("🌍 مختبر الأمم", "🌍 Nations Lab"),
     t("🧭 ميزانك", "🧭 Your Balance"),
     t("📐 هندسة الصراط", "📐 Path Geometry"),
+    t("📜 رسالة إلى البشرية", "📜 Message to Humanity"),
 ])
 
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════
 # تبويب ١: المشهد الكوني
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════
 with tab1:
     if 'run' not in st.session_state: st.session_state.run = False
     if 'init_cosmic' not in st.session_state: st.session_state.init_cosmic = False
-
     if not st.session_state.init_cosmic:
         np.random.seed(42); random.seed(42)
         cx, cy = 14, 10.0
@@ -135,8 +108,7 @@ with tab1:
         cycle_angle, angle_W, angle_B = 0.0, 0.0, np.pi*0.5
         eb = deque([S]*30, maxlen=30)
         pS, pE, px = deque(maxlen=400), deque(maxlen=400), deque(maxlen=400)
-        frame_count = 0
-        good_deeds, bad_deeds = 10.0, 5.0
+        frame_count, good_deeds, bad_deeds = 0, 10.0, 5.0
         st.session_state.update({
             'cx':cx,'cy':cy,'sx':sx,'sy':sy,'sw':sw,'sb':sb,
             'star_W_hist':star_W_hist,'star_B_hist':star_B_hist,
@@ -146,7 +118,6 @@ with tab1:
             'planet_W_hist':planet_W_hist,'planet_B_hist':planet_B_hist,
             'good_deeds':good_deeds,'bad_deeds':bad_deeds,'init_cosmic':True
         })
-
     if st.session_state.get("run", False):
         placeholder = st.empty()
         while st.session_state.get("run", False):
@@ -161,183 +132,233 @@ with tab1:
             frame_count=st.session_state.frame_count
             planet_W_hist=st.session_state.planet_W_hist; planet_B_hist=st.session_state.planet_B_hist
             good_deeds=st.session_state.good_deeds; bad_deeds=st.session_state.bad_deeds
-
             cycle_angle += 0.008; sv = np.sin(cycle_angle)
-            if sv>0.5: phase=t('ذروة الاستقرار','Peak')
+            if sv>0.5: phase=t('ذروة','Peak')
             elif sv>0: phase=t('صعود','Rising')
             elif sv>-0.5: phase=t('انهيار','Collapse')
-            else: phase=t('القاع','Bottom')
+            else: phase=t('قاع','Bottom')
             if 0.3<sv<0.35: phase=t('>> استدراج <<','>> Istidraj <<')
             target_S = 0.5+0.45*sv
-
             for i in range(N_STARS):
                 dist = np.sqrt((sx[i]-sx)**2 + (sy[i]-sy)**2)
                 close = np.where((dist < 2.0) & (np.arange(N_STARS) != i))[0]
-                sw[i] += (target_S - sw[i])*0.02 + np.random.uniform(-0.02, 0.02)
-                sb[i] += (target_S - sb[i])*0.02 + np.random.uniform(-0.02, 0.02)
+                sw[i] += (target_S - sw[i])*0.02 + np.random.uniform(-0.02,0.02)
+                sb[i] += (target_S - sb[i])*0.02 + np.random.uniform(-0.02,0.02)
                 if len(close) > 0:
-                    sw[i] += (np.mean(sw[close]) - sw[i])*0.03
-                    sb[i] += (np.mean(sb[close]) - sb[i])*0.03
-                sw[i] = np.clip(sw[i], 0.01, 1.0)
-                sb[i] = np.clip(sb[i], 0.01, 1.0)
+                    sw[i] += (np.mean(sw[close])-sw[i])*0.03
+                    sb[i] += (np.mean(sb[close])-sb[i])*0.03
+                sw[i]=np.clip(sw[i],0.01,1.0); sb[i]=np.clip(sb[i],0.01,1.0)
                 star_W_hist[i].append(sw[i]); star_B_hist[i].append(sb[i])
-
-            if random.random() < 0.005:
+            if random.random()<0.005:
                 aff = np.random.choice(N_STARS, size=int(N_STARS*0.2), replace=False)
-                sw[aff] *= np.random.uniform(0.5, 0.8)
-                sb[aff] *= np.random.uniform(0.5, 0.8)
-
-            avgW = np.mean(sw); avgB = np.mean(sb)
-            W += (avgW-W)*0.04; B += (avgB-B)*0.04
-            W = np.clip(W, 0.01, 1.0); B = np.clip(B, 0.01, 1.0)
-
-            S = calc_S(W, B, E, q_intensity)
+                sw[aff]*=np.random.uniform(0.5,0.8); sb[aff]*=np.random.uniform(0.5,0.8)
+            avgW=np.mean(sw); avgB=np.mean(sb)
+            W+=(avgW-W)*0.04; B+=(avgB-B)*0.04
+            W=np.clip(W,0.01,1.0); B=np.clip(B,0.01,1.0)
+            S = calc_S(W,B,E,q_intensity)
             eb.append(S)
-            E_target = list(eb)[-lag_frames] if len(eb) >= lag_frames else S
-            E += 0.03*(E_target - E)
-
+            E_target = list(eb)[-lag_frames] if len(eb)>=lag_frames else S
+            E += 0.03*(E_target-E)
             W = W - 0.015*E + 0.03/(S+0.1) - 0.007*(1-B)
             B = B - 0.012*E + 0.006*(1-B)*W*(1-W)
-            W = np.clip(W, 0.01, 1.0); B = np.clip(B, 0.01, 1.0)
-            S = calc_S(W, B, E, q_intensity)
-
+            W=np.clip(W,0.01,1.0); B=np.clip(B,0.01,1.0)
+            S = calc_S(W,B,E,q_intensity)
             planet_W_hist.append(W); planet_B_hist.append(B)
-            frame_count += 1
-            if frame_count % 2 == 0: pS.append(S); pE.append(E); px.append(len(px))
-
-            angle_W += 0.02 + random.uniform(-0.025, 0.025)*(1-W)**2
-            angle_B += 0.02 + random.uniform(-0.025, 0.025)*(1-B)**2
-            wx = cx + (7-2.5*W)*np.cos(angle_W)
-            wy = cy + (7-2.5*W)*np.sin(angle_W)*0.7
-            bx = cx + (5-1.5*B)*np.cos(angle_B)
-            by = cy + (5-1.5*B)*np.sin(angle_B)*0.7
-
-            instability = 1 - np.mean(sw*sb)
-            sx += np.random.uniform(-0.07, 0.07, N_STARS)*instability
-            sy += np.random.uniform(-0.07, 0.07, N_STARS)*instability
-            sx = np.clip(sx, cx-13, cx+13)
-            sy = np.clip(sy, cy-9, cy+9)
-
-            good_deeds += W*0.1
-            bad_deeds += (1-B)*0.1
-
-            st.session_state.W=W; st.session_state.B=B; st.session_state.E=E; st.session_state.S=S
-            st.session_state.phase=phase; st.session_state.cycle_angle=cycle_angle
-            st.session_state.angle_W=angle_W; st.session_state.angle_B=angle_B
-            st.session_state.empowerment_buffer=eb
-            st.session_state.sx=sx; st.session_state.sy=sy; st.session_state.sw=sw; st.session_state.sb=sb
-            st.session_state.star_W_hist=star_W_hist; st.session_state.star_B_hist=star_B_hist
-            st.session_state.planet_W_hist=planet_W_hist; st.session_state.planet_B_hist=planet_B_hist
-            st.session_state.history_S=pS; st.session_state.history_E=pE; st.session_state.history_x=px
-            st.session_state.frame_count=frame_count
-            st.session_state.good_deeds=good_deeds; st.session_state.bad_deeds=bad_deeds
-
-            fig, ax = plt.subplots(figsize=(14,10), facecolor='#000010')
+            frame_count+=1
+            if frame_count%2==0: pS.append(S); pE.append(E); px.append(len(px))
+            angle_W+=0.02+random.uniform(-0.025,0.025)*(1-W)**2
+            angle_B+=0.02+random.uniform(-0.025,0.025)*(1-B)**2
+            wx=cx+(7-2.5*W)*np.cos(angle_W); wy=cy+(7-2.5*W)*np.sin(angle_W)*0.7
+            bx=cx+(5-1.5*B)*np.cos(angle_B); by=cy+(5-1.5*B)*np.sin(angle_B)*0.7
+            instability = 1-np.mean(sw*sb)
+            sx+=np.random.uniform(-0.07,0.07,N_STARS)*instability
+            sy+=np.random.uniform(-0.07,0.07,N_STARS)*instability
+            sx=np.clip(sx,cx-13,cx+13); sy=np.clip(sy,cy-9,cy+9)
+            good_deeds += W*0.1; bad_deeds += (1-B)*0.1
+            st.session_state.update({
+                'W':W,'B':B,'E':E,'S':S,'phase':phase,'cycle_angle':cycle_angle,
+                'angle_W':angle_W,'angle_B':angle_B,'empowerment_buffer':eb,
+                'sx':sx,'sy':sy,'sw':sw,'sb':sb,
+                'star_W_hist':star_W_hist,'star_B_hist':star_B_hist,
+                'planet_W_hist':planet_W_hist,'planet_B_hist':planet_B_hist,
+                'history_S':pS,'history_E':pE,'history_x':px,'frame_count':frame_count,
+                'good_deeds':good_deeds,'bad_deeds':bad_deeds
+            })
+            fig, ax = plt.subplots(figsize=(14,10),facecolor='#000010')
             ax.set_xlim(0,28); ax.set_ylim(0,20); ax.axis('off')
             for r,a,c in [(0.5,0.98,'#FFF'),(1,0.65,'#FFD700'),(1.7,0.3,'#FFD700'),
                           (2.6,0.12,'#FFA500'),(3.8,0.05,'#FF6347'),(5.5,0.02,'#FF4500')]:
-                ax.add_patch(Circle((cx,cy), r*(0.5+2.8*S), color=c, alpha=a, zorder=15))
+                ax.add_patch(Circle((cx,cy),r*(0.5+2.8*S),color=c,alpha=a,zorder=15))
             ax.text(cx,cy,'S',color='#1a1000',fontsize=16,ha='center',va='center',fontweight='bold')
-            ax.add_patch(Circle((cx,cy), 0.5+17*E, color='#0FF', alpha=0.25*(1-min(E,1))+0.04, zorder=7))
-            ax.add_patch(Circle((cx,cy), 8.5, color='#0F8', alpha=0.15, fill=False, lw=2.5, zorder=2))
-            ax.add_patch(Circle((wx,wy), 0.2+0.6*W, color='#FFF', alpha=1, zorder=13))
-            ax.add_patch(Circle((bx,by), 0.2+0.6*B, color='#F33', alpha=0.8, zorder=13))
+            ax.add_patch(Circle((cx,cy),0.5+17*E,color='#0FF',alpha=0.25*(1-min(E,1))+0.04,zorder=7))
+            ax.add_patch(Circle((cx,cy),8.5,color='#0F8',alpha=0.15,fill=False,lw=2.5,zorder=2))
+            ax.add_patch(Circle((wx,wy),0.2+0.6*W,color='#FFF',alpha=1,zorder=13))
+            ax.add_patch(Circle((bx,by),0.2+0.6*B,color='#F33',alpha=0.8,zorder=13))
             ax.text(wx,wy+0.8,'W',color='#FFF',fontsize=10,ha='center')
             ax.text(bx,by+0.8,'B',color='#F33',fontsize=10,ha='center')
             colors = [get_star_color(sw[i],sb[i]) for i in range(N_STARS)]
-            ax.scatter(sx, sy, s=30, c=colors, alpha=0.9, edgecolors='white', linewidths=0.3, zorder=5)
-
+            ax.scatter(sx,sy,s=30,c=colors,alpha=0.9,edgecolors='white',linewidths=0.3,zorder=5)
             # كفتا الميزان
-            akh_x, akh_y, ms = 26.5, 18, 1.5
-            ax.plot([akh_x, akh_x], [akh_y-3, akh_y+1.5], color='#FFD700', lw=1, alpha=0.4)
-            ly = akh_y-1.5 + ms*min(good_deeds/50, 1.5)
-            ry = akh_y-1.5 - ms*min(bad_deeds/50, 1.5)
-            ax.add_patch(Circle((akh_x-1, ly), 0.6, color='#FFD700', alpha=0.3, zorder=20))
-            ax.text(akh_x-1, ly-1, f'ح {good_deeds:.0f}', color='#FFD700', fontsize=7, ha='center')
-            ax.add_patch(Circle((akh_x+1, ry), 0.6, color='#FF4444', alpha=0.3, zorder=20))
-            ax.text(akh_x+1, ry-1, f'س {bad_deeds:.0f}', color='#FF4444', fontsize=7, ha='center')
-            diff = (bad_deeds - good_deeds)/50*ms
-            ax.plot([akh_x-1, akh_x+1], [akh_y-diff, akh_y+diff], color='#FFD700', lw=1.5, alpha=0.6)
-
+            akh_x,akh_y,ms=26.5,18,1.5
+            ax.plot([akh_x,akh_x],[akh_y-3,akh_y+1.5],color='#FFD700',lw=1,alpha=0.4)
+            ly=akh_y-1.5+ms*min(good_deeds/50,1.5); ry=akh_y-1.5-ms*min(bad_deeds/50,1.5)
+            ax.add_patch(Circle((akh_x-1,ly),0.6,color='#FFD700',alpha=0.3,zorder=20))
+            ax.text(akh_x-1,ly-1,f'ح {good_deeds:.0f}',color='#FFD700',fontsize=7,ha='center')
+            ax.add_patch(Circle((akh_x+1,ry),0.6,color='#FF4444',alpha=0.3,zorder=20))
+            ax.text(akh_x+1,ry-1,f'س {bad_deeds:.0f}',color='#FF4444',fontsize=7,ha='center')
+            diff = (bad_deeds-good_deeds)/50*ms
+            ax.plot([akh_x-1,akh_x+1],[akh_y-diff,akh_y+diff],color='#FFD700',lw=1.5,alpha=0.6)
             pax = ax.inset_axes([0.5,0.02,0.46,0.12])
             pax.set_xlim(0,400); pax.set_ylim(0,1.05)
             pax.set_title(t('S يقود E – الاستدراج','S leads E – Istidraj'),color='white',fontsize=7)
             pax.tick_params(colors='white',labelsize=4); pax.grid(True,alpha=0.12)
             if pS: pax.plot(list(px),list(pS),color='#FFD700',lw=2); pax.plot(list(px),list(pE),color='#0FF',lw=1.5)
-
             ax.text(14,1.2,f'{phase} | S={S:.2f} | E={E:.2f}',color='white',fontsize=11,ha='center')
-            plt.tight_layout(pad=0)
-            placeholder.pyplot(fig)
-            plt.close(fig)
+            plt.tight_layout(pad=0); placeholder.pyplot(fig); plt.close(fig)
             time.sleep(0.08)
         st.success(t("✅ توقفت المحاكاة", "✅ Simulation stopped"))
     else:
-        st.info(t("اضغط ▶️ تشغيل المشهد في الشريط الجانبي", "Press ▶️ Run Scene in the sidebar"))
+        st.info(t("اضغط ▶️ تشغيل المشهد", "Press ▶️ Run Scene"))
+    if not st.session_state.get("run", False) and 'history_S' in st.session_state:
+        csv_data = "Time,S,E\n" + "\n".join([f"{i},{s:.4f},{e:.4f}" for i,(s,e) in enumerate(zip(st.session_state.history_S, st.session_state.history_E))])
+        st.download_button(t("📥 تحميل بيانات المحاكاة", "📥 Download Data"), data=csv_data, file_name="mizan_cosmic.csv", mime="text/csv")
 
-    # زر التحميل
-    if st.session_state.get("run", False) == False and 'history_S' in st.session_state:
-        csv_data = f"Time,S,E\n" + "\n".join([f"{i},{s:.4f},{e:.4f}" for i, (s, e) in enumerate(zip(st.session_state.history_S, st.session_state.history_E))])
-        st.download_button(t("📥 تحميل بيانات المحاكاة", "📥 Download Simulation Data"), data=csv_data, file_name="mizan_data.csv", mime="text/csv")
-
-# ═══════════════════════════════════════════════════════════════
-# تبويب ٢: ميزانك
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════
+# تبويب ٢: مختبر الأمم والحضارات
+# ═══════════════════════════════════════════════
 with tab2:
-    st.header(t("🧭 ميزانك", "🧭 Your Balance"))
-    st.markdown(t("أجب عن 12 سؤالاً بصدق لتكتشف موقعك في فضاء الولاء والبراءة.", "Answer 12 questions honestly."))
-    if 'compass_answers' not in st.session_state: st.session_state.compass_answers = {}
-    questions = {
-        "W": [
-            (t("حياتي كلها لله، لا أبتغي بها إلا وجهه", "My whole life is for Allah alone"), 3),
-            (t("أقيم الصلاة بخشوع، أستشعر الوقوف بين يدي الله", "I pray with devotion"), 3),
-            (t("أحب الله ورسوله أكثر من كل شيء", "I love Allah & Messenger most"), 3),
-            (t("أتوكل على الله مع الأخذ بالأسباب", "I rely on Allah with means"), 3),
-            (t("أشكر الله في الرخاء وأصبر في البلاء", "I thank and am patient"), 3),
-            (t("أحمل هم الإسلام والمسلمين، وأسعى لنصرتهم", "I carry concerns of Islam"), 3),
-        ],
-        "B": [
-            (t("آمر بالمعروف بالحكمة والموعظة الحسنة", "I enjoin good wisely"), 3),
-            (t("أنكر المنكر بلساني أو قلبي", "I forbid evil"), 3),
-            (t("أتبرأ من الشرك وأهله، وأعلن براءتي منهم", "I disavow polytheism"), 3),
-            (t("أجاهد نفسي على ترك الكذب والغيبة والظلم", "I struggle against sins"), 3),
-            (t("أرفض الظلم بكل صوره، ولا أرضاه لأحد", "I reject all injustice"), 3),
-            (t("أحب في الله وأبغض في الله، أوالي أولياءه وأعادي أعداءه", "I love & hate for Allah"), 3),
-        ]
-    }
-    colA, colB = st.columns(2)
-    with colA:
-        st.subheader(t("🤍 الولاء (W)", "🤍 Loyalty (W)"))
-        for i, (q, v) in enumerate(questions["W"]):
-            ans = st.radio(q, [t(f"نعم (+{v})",f"Yes (+{v})"), t("أحياناً (+1)","Sometimes (+1)"), t("لا (0)","No (0)"), t("العكس (-1)","Opposite (-1)")], key=f"cw_{i}", index=None)
-            if ans:
-                if t("نعم","Yes") in ans: st.session_state.compass_answers[f"W{i}"] = v
-                elif t("أحياناً","Sometimes") in ans: st.session_state.compass_answers[f"W{i}"] = 1
-                elif "لا" in ans: st.session_state.compass_answers[f"W{i}"] = 0
-                else: st.session_state.compass_answers[f"W{i}"] = -1
-    with colB:
-        st.subheader(t("❤️ البراءة (B)", "❤️ Disavowal (B)"))
-        for i, (q, v) in enumerate(questions["B"]):
-            ans = st.radio(q, [t(f"نعم (+{v})",f"Yes (+{v})"), t("أحياناً (+1)","Sometimes (+1)"), t("لا (0)","No (0)"), t("العكس (-1)","Opposite (-1)")], key=f"cb_{i}", index=None)
-            if ans:
-                if t("نعم","Yes") in ans: st.session_state.compass_answers[f"B{i}"] = v
-                elif t("أحياناً","Sometimes") in ans: st.session_state.compass_answers[f"B{i}"] = 1
-                elif "لا" in ans: st.session_state.compass_answers[f"B{i}"] = 0
-                else: st.session_state.compass_answers[f"B{i}"] = -1
+    st.header(t("🌍 مختبر الأمم والحضارات", "🌍 Nations & Civilizations Lab"))
+    st.markdown(t("اضبط مولدات الطاقة وحدود البراءة، وشاهد كيف تنهض الحضارة أو تنهار.", "Adjust energy generators and disavowal boundaries, and watch civilization rise or fall."))
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("### 🕌 مولدات الطاقة (العبادات)")
+        civ_prayer = st.slider(t("الصلاة (W)", "Prayer (W)"), 0.0, 1.0, 0.7, 0.01, key="civ_prayer")
+        civ_fasting = st.slider(t("الصوم (B)", "Fasting (B)"), 0.0, 1.0, 0.6, 0.01, key="civ_fasting")
+        civ_zakat = st.slider(t("الزكاة (B)", "Zakat (B)"), 0.0, 1.0, 0.5, 0.01, key="civ_zakat")
+        civ_hajj = st.slider(t("الحج (W)", "Hajj (W)"), 0.0, 1.0, 0.4, 0.01, key="civ_hajj")
+    with col2:
+        st.markdown("### 🛡️ حدود البراءة والجهاد")
+        civ_jihad_self = st.slider(t("جهاد النفس (B)", "Jihad of Self (B)"), 0.0, 1.0, 0.8, 0.01, key="civ_jihad_self")
+        civ_jihad_wealth = st.slider(t("جهاد المال (B)", "Jihad Wealth (B)"), 0.0, 1.0, 0.5, 0.01, key="civ_jihad_wealth")
+        civ_disavowal = st.slider(t("البراءة من الطاغوت (B)", "Disavowal (B)"), 0.0, 1.0, 0.9, 0.01, key="civ_disavowal")
+        civ_alliance = st.slider(t("موالاة المؤمنين (W)", "Alliance (W)"), 0.0, 1.0, 0.8, 0.01, key="civ_alliance")
+    with col3:
+        st.markdown("### ⚖️ أسس الحكم")
+        civ_justice = st.slider(t("العدل", "Justice"), 0.0, 1.0, 0.6, 0.01, key="civ_justice")
+        civ_shura = st.slider(t("الشورى", "Consultation"), 0.0, 1.0, 0.5, 0.01, key="civ_shura")
+        civ_sharia = st.slider(t("تحكيم الشرع", "Sharia"), 0.0, 1.0, 0.5, 0.01, key="civ_sharia")
+    st.markdown("---")
+    st.markdown(t("### 📜 سيناريوهات تاريخية", "### 📜 Historical Presets"))
+    pcol = st.columns(4)
+    if pcol[0].button(t("🏴 الخلافة الراشدة", "🏴 Rashidun"), use_container_width=True):
+        civ_prayer=civ_fasting=civ_zakat=civ_hajj=0.9; civ_jihad_self=civ_jihad_wealth=civ_disavowal=civ_alliance=0.9; civ_justice=civ_shura=civ_sharia=0.9; st.rerun()
+    if pcol[1].button(t("🏳️ العثمانيون", "🏳️ Ottomans 1800"), use_container_width=True):
+        civ_prayer=0.5; civ_fasting=0.4; civ_zakat=0.3; civ_hajj=0.3; civ_jihad_self=0.4; civ_jihad_wealth=0.2; civ_disavowal=0.3; civ_alliance=0.5; civ_justice=0.4; civ_shura=0.3; civ_sharia=0.4; st.rerun()
+    if pcol[2].button(t("🔻 السوفيت", "🔻 Soviets"), use_container_width=True):
+        civ_prayer=civ_fasting=civ_zakat=civ_hajj=0.0; civ_jihad_self=civ_jihad_wealth=civ_disavowal=civ_alliance=0.0; civ_justice=civ_shura=civ_sharia=0.0; st.rerun()
+    if pcol[3].button(t("🕌 الأندلس", "🕌 Andalusia"), use_container_width=True):
+        civ_prayer=0.4; civ_fasting=0.3; civ_zakat=0.2; civ_hajj=0.2; civ_jihad_self=0.2; civ_jihad_wealth=0.1; civ_disavowal=0.2; civ_alliance=0.3; civ_justice=0.3; civ_shura=0.2; civ_sharia=0.3; st.rerun()
+    st.markdown("---")
+    if st.button(t("🚀 أطلق محاكاة الحضارة", "🚀 Launch Civilization Simulation"), use_container_width=True, type="primary"):
+        W_civ = (civ_prayer + civ_hajj + civ_alliance + civ_sharia + civ_justice*0.5)/4.5
+        B_civ = (civ_fasting + civ_zakat + civ_jihad_self + civ_jihad_wealth + civ_disavowal + civ_justice*0.5)/5.5
+        W_civ=np.clip(W_civ,0.01,1.0); B_civ=np.clip(B_civ,0.01,1.0)
+        years=300; W_hist=np.zeros(years); B_hist=np.zeros(years); S_hist=np.zeros(years); E_hist=np.zeros(years)
+        W_hist[0]=W_civ; B_hist[0]=B_civ; S_hist[0]=W_civ*B_civ; E_hist[0]=0.1
+        for t in range(1,years):
+            W_hist[t] = W_hist[t-1] - 0.01*E_hist[t-1] + 0.01*civ_prayer*civ_alliance
+            B_hist[t] = B_hist[t-1] - 0.008*E_hist[t-1] + 0.01*civ_disavowal*civ_jihad_self
+            W_hist[t] += 0.005*civ_sharia; B_hist[t] += 0.005*civ_sharia
+            W_hist[t]=np.clip(W_hist[t],0.01,1.0); B_hist[t]=np.clip(B_hist[t],0.01,1.0)
+            S_hist[t]=W_hist[t]*B_hist[t]
+            E_target = S_hist[max(0,t-lag_frames)]
+            E_hist[t]=E_hist[t-1]+0.03*(E_target-E_hist[t-1]); E_hist[t]=np.clip(E_hist[t],0.01,1.0)
+        fig,axes=plt.subplots(1,2,figsize=(16,7),facecolor='#000010')
+        ax1=axes[0]; ax1.set_facecolor('#0a0a2e')
+        ax1.plot(S_hist,'g-',lw=2.5,label=t('S (الثبات)','S (Stability)'))
+        ax1.plot(E_hist,'b--',lw=2.0,label=t('E (التمكين)','E (Empowerment)'))
+        ax1.plot(W_hist,'gold',lw=1.5,alpha=0.7,label=t('W (الولاء)','W (Loyalty)'))
+        ax1.plot(B_hist,'#FF5252',lw=1.5,alpha=0.7,label=t('B (البراءة)','B (Disavowal)'))
+        ax1.axvspan(np.argmax(S_hist),np.argmax(E_hist),alpha=0.2,color='red',label=t('فجوة الاستدراج','Istidraj Gap'))
+        ax1.set_title(t('دورة الحضارة عبر ٣٠٠ عام','Civilization Cycle 300 Years'),color='white',fontsize=14,fontweight='bold')
+        ax1.set_xlabel(t('السنوات','Years'),color='white'); ax1.set_ylabel(t('القيمة','Value'),color='white')
+        ax1.legend(facecolor='#0a0a2e',edgecolor='white',labelcolor='white',fontsize=9)
+        ax1.grid(True,alpha=0.2); ax1.tick_params(colors='white'); ax1.set_ylim(0,1.05)
+        ax2=axes[1]; ax2.set_facecolor('#0a0a2e')
+        ax2.plot(B_hist,W_hist,'w-',alpha=0.4,lw=0.8)
+        ax2.scatter(B_hist[0],W_hist[0],s=150,c='green',edgecolors='white',linewidth=2,zorder=10,label=t('البداية','Start'))
+        ax2.scatter(B_hist[-1],W_hist[-1],s=150,c='red',edgecolors='white',linewidth=2,zorder=10,label=t('النهاية','End'))
+        ax2.axhline(0.5,color='grey',ls=':',lw=1); ax2.axvline(0.5,color='grey',ls=':',lw=1)
+        ax2.set_xlim(0,1); ax2.set_ylim(0,1)
+        ax2.set_xlabel('B (البراءة)',color='white'); ax2.set_ylabel('W (الولاء)',color='white')
+        ax2.set_title(t('مسار الحضارة في فضاء (W,B)','Civilization Path in (W,B)'),color='white',fontsize=14,fontweight='bold')
+        ax2.fill_between([0.5,1],0.5,1,alpha=0.1,color='green'); ax2.fill_between([0,0.5],0.5,1,alpha=0.1,color='orange')
+        ax2.fill_between([0.5,1],0,0.5,alpha=0.1,color='blue'); ax2.fill_between([0,0.5],0,0.5,alpha=0.1,color='red')
+        ax2.text(0.75,0.75,t('مؤمن','Believer'),color='green',fontsize=10,ha='center')
+        ax2.text(0.25,0.75,t('كافر','Disbeliever'),color='orange',fontsize=10,ha='center')
+        ax2.text(0.25,0.25,t('منافق','Hypocrite'),color='red',fontsize=10,ha='center')
+        ax2.text(0.75,0.25,t('مشرك','Polytheist'),color='blue',fontsize=10,ha='center')
+        ax2.legend(facecolor='#0a0a2e',edgecolor='white',labelcolor='white',fontsize=9)
+        ax2.grid(True,alpha=0.2); ax2.tick_params(colors='white')
+        plt.tight_layout(); st.pyplot(fig)
+        st.divider()
+        c1,c2,c3,c4,c5=st.columns(5)
+        c1.metric(t("W النهائي","Final W"),f"{W_hist[-1]:.3f}")
+        c2.metric(t("B النهائي","Final B"),f"{B_hist[-1]:.3f}")
+        c3.metric(t("S النهائي","Final S"),f"{S_hist[-1]:.3f}")
+        c4.metric(t("عام الانهيار","Collapse Year"),f"{np.argmin(S_hist)}" if S_hist[np.argmin(S_hist)]<0.2 else t("مستقر","Stable"))
+        c5.metric(t("فجوة الاستدراج","Istidraj Gap"),f"{max(0,np.argmax(E_hist)-np.argmax(S_hist))} {t('عام','yrs')}")
 
-    if len(st.session_state.compass_answers) == 12:
-        W_raw = sum(st.session_state.compass_answers[f"W{i}"] for i in range(6))
-        B_raw = sum(st.session_state.compass_answers[f"B{i}"] for i in range(6))
-        W_val = np.clip(W_raw/18.0, -1, 1); B_val = np.clip(B_raw/18.0, -1, 1)
-        W_norm = (W_val+1)/2; B_norm = (B_val+1)/2
-        S_val = W_norm * B_norm
-        qn, qc = classify_quadrant(W_norm, B_norm)
-        names = {"believer":t("المؤمن","Believer"),"disbeliever":t("الكافر","Disbeliever"),
-                 "hypocrite":t("المنافق","Hypocrite"),"polytheist":t("المشرك","Polytheist")}
-        st.divider(); st.header(t("📊 نتيجتك", "📊 Your Result"))
-        c1,c2,c3 = st.columns(3)
-        c1.metric("W",f"{W_val:.2f}"); c2.metric("B",f"{B_val:.2f}"); c3.metric("S",f"{S_val:.2f}")
+# ═══════════════════════════════════════════════
+# تبويب ٣: ميزانك
+# ═══════════════════════════════════════════════
+with tab3:
+    st.header(t("🧭 ميزانك", "🧭 Your Balance"))
+    if 'compass_answers' not in st.session_state: st.session_state.compass_answers={}
+    questions={
+        "W":[(t("حياتي كلها لله، لا أبتغي بها إلا وجهه","My life is for Allah alone"),3),
+             (t("أقيم الصلاة بخشوع، أستشعر الوقوف بين يدي الله","I pray with devotion"),3),
+             (t("أحب الله ورسوله أكثر من كل شيء","I love Allah & Messenger most"),3),
+             (t("أتوكل على الله مع الأخذ بالأسباب","I rely on Allah with means"),3),
+             (t("أشكر الله في الرخاء وأصبر في البلاء","I thank and am patient"),3),
+             (t("أحمل هم الإسلام والمسلمين، وأسعى لنصرتهم","I carry concerns of Islam"),3)],
+        "B":[(t("آمر بالمعروف بالحكمة والموعظة الحسنة","I enjoin good wisely"),3),
+             (t("أنكر المنكر بلساني أو قلبي","I forbid evil"),3),
+             (t("أتبرأ من الشرك وأهله، وأعلن براءتي منهم","I disavow polytheism"),3),
+             (t("أجاهد نفسي على ترك الكذب والغيبة والظلم","I struggle against sins"),3),
+             (t("أرفض الظلم بكل صوره، ولا أرضاه لأحد","I reject all injustice"),3),
+             (t("أحب في الله وأبغض في الله، أوالي أولياءه وأعادي أعداءه","I love & hate for Allah"),3)]
+    }
+    ca,cb=st.columns(2)
+    with ca:
+        st.subheader(t("🤍 الولاء (W)","🤍 Loyalty (W)"))
+        for i,(q,v) in enumerate(questions["W"]):
+            ans=st.radio(q,[t(f"نعم (+{v})",f"Yes (+{v})"),t("أحياناً (+1)","Sometimes (+1)"),t("لا (0)","No (0)"),t("العكس (-1)","Opposite (-1)")],key=f"cw_{i}",index=None)
+            if ans:
+                if t("نعم","Yes") in ans: st.session_state.compass_answers[f"W{i}"]=v
+                elif t("أحياناً","Sometimes") in ans: st.session_state.compass_answers[f"W{i}"]=1
+                elif "لا" in ans: st.session_state.compass_answers[f"W{i}"]=0
+                else: st.session_state.compass_answers[f"W{i}"]=-1
+    with cb:
+        st.subheader(t("❤️ البراءة (B)","❤️ Disavowal (B)"))
+        for i,(q,v) in enumerate(questions["B"]):
+            ans=st.radio(q,[t(f"نعم (+{v})",f"Yes (+{v})"),t("أحياناً (+1)","Sometimes (+1)"),t("لا (0)","No (0)"),t("العكس (-1)","Opposite (-1)")],key=f"cb_{i}",index=None)
+            if ans:
+                if t("نعم","Yes") in ans: st.session_state.compass_answers[f"B{i}"]=v
+                elif t("أحياناً","Sometimes") in ans: st.session_state.compass_answers[f"B{i}"]=1
+                elif "لا" in ans: st.session_state.compass_answers[f"B{i}"]=0
+                else: st.session_state.compass_answers[f"B{i}"]=-1
+    if len(st.session_state.compass_answers)==12:
+        W_raw=sum(st.session_state.compass_answers[f"W{i}"] for i in range(6))
+        B_raw=sum(st.session_state.compass_answers[f"B{i}"] for i in range(6))
+        W_val=np.clip(W_raw/18.0,-1,1); B_val=np.clip(B_raw/18.0,-1,1)
+        W_norm=(W_val+1)/2; B_norm=(B_val+1)/2; S_val=W_norm*B_norm
+        qn,qc=classify_quadrant(W_norm,B_norm)
+        names={"believer":t("المؤمن","Believer"),"disbeliever":t("الكافر","Disbeliever"),"hypocrite":t("المنافق","Hypocrite"),"polytheist":t("المشرك","Polytheist")}
+        st.divider(); st.header(t("📊 نتيجتك","📊 Your Result"))
+        c1,c2,c3=st.columns(3); c1.metric("W",f"{W_val:.2f}"); c2.metric("B",f"{B_val:.2f}"); c3.metric("S",f"{S_val:.2f}")
         st.markdown(f"<h2 style='color:{qc};text-align:center;'>{names.get(qn,qn)}</h2>",unsafe_allow_html=True)
-        fig,ax = plt.subplots(figsize=(6,6),facecolor='#0a0a2e'); ax.set_facecolor('#0a0a2e')
+        fig,ax=plt.subplots(figsize=(6,6),facecolor='#0a0a2e'); ax.set_facecolor('#0a0a2e')
         ax.set_xlim(-1.2,1.2); ax.set_ylim(-1.2,1.2)
         ax.axhline(0,color='grey',lw=0.5); ax.axvline(0,color='grey',lw=0.5)
         ax.add_patch(Rectangle((0,0),1,1,color='#FFD700',alpha=0.15))
@@ -351,19 +372,19 @@ with tab2:
         ax.scatter(B_val,W_val,s=250,c='#00FFFF',edgecolors='white',linewidth=3,zorder=10)
         ax.set_xlabel("B",color='white'); ax.set_ylabel("W",color='white'); ax.tick_params(colors='white')
         st.pyplot(fig)
-        if st.button(t("🔄 أعد الميزان", "🔄 Retake")): st.session_state.compass_answers={}; st.rerun()
+        if st.button(t("🔄 أعد الميزان","🔄 Retake"),use_container_width=True): st.session_state.compass_answers={}; st.rerun()
 
-# ═══════════════════════════════════════════════════════════════
-# تبويب ٣: هندسة الصراط
-# ═══════════════════════════════════════════════════════════════
-with tab3:
+# ═══════════════════════════════════════════════
+# تبويب ٤: هندسة الصراط
+# ═══════════════════════════════════════════════
+with tab4:
     st.header(t("📐 مختبر هندسة الصراط", "📐 Path Geometry Lab"))
     if 'path_W' not in st.session_state: st.session_state.path_W=[0.5]; st.session_state.path_B=[0.5]; st.session_state.path_kappa=[0.0]
     c1,c2,c3=st.columns([1,1,1])
     with c1: sin_strength=st.slider(t("⚡ شدة المعصية","⚡ Sin Strength"),0.0,0.1,0.02,0.005)
     with c2: repentance_sincerity=st.slider(t("💧 صدق التوبة","💧 Sincerity"),0.0,1.0,0.8,0.05)
     with c3:
-        if st.button(t("🕌 توبة","🕌 Repent"),use_container_width=True,type="primary"):
+        if st.button(t("🕌 توبة","🕌 Repent"),use_container_width=True):
             cW=st.session_state.path_W[-1]; cB=st.session_state.path_B[-1]
             st.session_state.path_W.append(np.clip(cW+(1.0-cW)*repentance_sincerity,0.0,1.0))
             st.session_state.path_B.append(np.clip(cB+(1.0-cB)*repentance_sincerity,0.0,1.0))
@@ -373,7 +394,8 @@ with tab3:
     with cb1:
         if st.button(t("▶️ خطوة","▶️ Step"),use_container_width=True):
             cW=st.session_state.path_W[-1]; cB=st.session_state.path_B[-1]
-            nW=cW-sin_strength*(cW-0.2)+np.random.uniform(-0.01,0.01); nB=cB-sin_strength*(cB-0.2)+np.random.uniform(-0.01,0.01)
+            nW=cW-sin_strength*(cW-0.2)+np.random.uniform(-0.01,0.01)
+            nB=cB-sin_strength*(cB-0.2)+np.random.uniform(-0.01,0.01)
             nW=np.clip(nW,0.05,1.0); nB=np.clip(nB,0.05,1.0)
             st.session_state.path_W.append(nW); st.session_state.path_B.append(nB)
             kappa=compute_curvature(st.session_state.path_W,st.session_state.path_B) if len(st.session_state.path_W)>=3 else 0.0
@@ -408,6 +430,44 @@ with tab3:
     ax2.grid(True,alpha=0.2); ax2.tick_params(colors='white')
     ax2.set_ylim(-0.01,max(0.2,max(st.session_state.path_kappa)*1.2 if st.session_state.path_kappa else 0.1))
     plt.tight_layout(); st.pyplot(fig)
+    st.divider(); c1,c2,c3,c4=st.columns(4)
+    c1.metric("W",f"{pW[-1]:.3f}"); c2.metric("B",f"{pB[-1]:.3f}")
+    c3.metric("κ",f"{st.session_state.path_kappa[-1]:.4f}")
+    c4.metric(t("الصراط؟","On Path?"),t("✅ نعم" if st.session_state.path_kappa[-1]<0.03 else "⚠️ لا","✅ YES" if st.session_state.path_kappa[-1]<0.03 else "⚠️ NO"))
 
+# ═══════════════════════════════════════════════
+# تبويب ٥: رسالة إلى البشرية
+# ═══════════════════════════════════════════════
+with tab5:
+    st.header(t("📜 رسالة إلى البشرية", "📜 Message to Humanity"))
+    st.markdown(t("""
+    <div style="text-align:center;font-size:1.1em;line-height:2.2;color:#CCC;">
+    > "هَلْ يُوجَد قَانُون وَاحِد يَحْكُم الذَّرَّة وَالْحَضَارَة؟"<br>
+    > هَذَا نَمُوذَج الْمِيزَان الَّذِي يُثْبِت أَنَّ <b style="color:#FFD700;">S = W × B</b>
+    <br><br>
+    <b>هَذَا الْمُخْتَبَر</b> يَجْمَع بَيْن الْكِتَاب الْمَسْطُور وَالْكِتَاب الْمَنْظُور، وَيُثْبِت أَنَّ لِهَذَا الْوُجُود قَانُونًا وَاحِدًا، وَأَنَّ الْجَزَاء مِن جِنْس الْعَمَل.
+    <br><br>
+    <b style="color:#FFD700;">
+    ﴿وَالسَّمَاءَ رَفَعَهَا وَوَضَعَ الْمِيزَانَ﴾<br>
+    ﴿فَمَن يَكْفُرْ بِالطَّاغُوتِ وَيُؤْمِن بِاللَّهِ فَقَدِ اسْتَمْسَكَ بِالْعُرْوَةِ الْوُثْقَىٰ﴾
+    </b>
+    </div>
+    ""","""
+    <div style="text-align:center;font-size:1.1em;line-height:2.2;color:#CCC;">
+    > "Is there a single law governing the atom and civilization?"<br>
+    > This Mizan model proves <b style="color:#FFD700;">S = W × B</b>
+    <br><br>
+    <b>This lab</b> unites the written and observed Books, proving one law governs existence, and recompense mirrors the deed.
+    <br><br>
+    <b style="color:#FFD700;">
+    ﴿And the heaven He raised and imposed the balance﴾<br>
+    ﴿Whoever disbelieves in Taghut and believes in Allah has grasped the firm handhold﴾
+    </b>
+    </div>
+    """), unsafe_allow_html=True)
+
+# ═══════════════════════════════════════════════
+# التذييل
+# ═══════════════════════════════════════════════
 st.markdown("---")
 st.markdown(f"<p style='text-align:center;color:#888;'>⚖️ S = W × B | ق = الحق = الميزان | © 2026 علي عادل العاطفي</p>", unsafe_allow_html=True)
