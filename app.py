@@ -1,14 +1,14 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle, Rectangle
-import random, time
+from matplotlib.patches import Circle, Rectangle, FancyBboxPatch
+import random, time, hashlib
 from collections import deque
 from io import BytesIO
 import warnings
 warnings.filterwarnings('ignore')
 
-st.set_page_config(page_title="مختبر الميزان", page_icon="⚖️", layout="wide")
+st.set_page_config(page_title="مختبر الميزان – سفينة نوح الرقمية", page_icon="⚖️", layout="wide")
 
 if "lang" not in st.session_state: st.session_state.lang = "ar"
 L = st.session_state.lang
@@ -20,18 +20,42 @@ st.markdown("""
 .stApp { background: linear-gradient(180deg, #0a0f1e 0%, #0d1528 30%, #0f1a2e 100%); }
 h1, h2, h3 { font-family: 'Cairo', sans-serif; color: #FFD700; }
 p, label, div { font-family: 'Cairo', sans-serif; color: #E0E0E0; }
-.golden-title { font-size: 3em; font-weight: 900; text-align: center; background: linear-gradient(180deg, #FFF8DC 0%, #FFD700 30%, #B8860B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 10px 0; }
+.golden-title {
+    font-size: 3.2em; font-weight: 900; text-align: center;
+    background: linear-gradient(180deg, #FFF8DC 0%, #FFD700 30%, #B8860B 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 10px 0;
+}
 .verse-text { text-align: center; color: #FFD700; font-size: 1.3em; margin: 15px 0; line-height: 2; }
-.stButton > button { background: linear-gradient(135deg, rgba(20,30,60,0.9), rgba(30,40,70,0.9)); border: 2px solid #FFD700; color: #FFD700; border-radius: 12px; padding: 12px 25px; font-weight: bold; width: 100%; }
-.stButton > button:hover { background: #FFD700; color: #0a0f1e; }
+.stButton > button {
+    background: linear-gradient(135deg, rgba(20,30,60,0.9), rgba(30,40,70,0.9));
+    border: 2px solid #FFD700; color: #FFD700; border-radius: 12px;
+    padding: 12px 25px; font-weight: bold; width: 100%; transition: all 0.3s ease;
+}
+.stButton > button:hover { background: #FFD700; color: #0a0f1e; box-shadow: 0 0 25px rgba(255,215,0,0.5); }
 .stTabs [data-baseweb="tab-list"] { gap: 5px; background: rgba(13,21,40,0.8); border-radius: 15px; padding: 5px; }
-.stTabs [data-baseweb="tab"] { background: transparent; border: 1px solid rgba(255,215,0,0.3); border-radius: 10px; color: #CCC; padding: 10px 18px; }
-.stTabs [aria-selected="true"] { background: rgba(255,215,0,0.15) !important; border: 2px solid #FFD700 !important; color: #FFD700 !important; font-weight: bold; }
-.message-box { background: rgba(20,30,60,0.7); border-radius: 15px; padding: 30px; margin: 20px 0; border: 1px solid rgba(255,215,0,0.3); line-height: 2.2; }
-.question-box { background: rgba(20,30,60,0.6); border-radius: 10px; padding: 15px; margin: 8px 0; border: 1px solid rgba(255,215,0,0.2); }
+.stTabs [data-baseweb="tab"] {
+    background: transparent; border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 10px; color: #CCC; padding: 10px 18px;
+}
+.stTabs [aria-selected="true"] {
+    background: rgba(255,215,0,0.15) !important; border: 2px solid #FFD700 !important;
+    color: #FFD700 !important; font-weight: bold;
+}
+.message-box {
+    background: rgba(20,30,60,0.7); border-radius: 15px; padding: 30px;
+    margin: 20px 0; border: 1px solid rgba(255,215,0,0.3); line-height: 2.2;
+}
+.scales-container {
+    position: fixed; top: 10px; right: 10px; z-index: 1000;
+    background: rgba(10,15,30,0.9); border-radius: 10px; padding: 10px;
+    border: 1px solid #FFD700; text-align: center; font-size: 0.8em;
+}
 </style>
 """, unsafe_allow_html=True)
 
+# ═══════════════════════════════════════════════════════════════
+# دوال أساسية
+# ═══════════════════════════════════════════════════════════════
 def star_color(w, b):
     if w >= 0.55 and b >= 0.55: return '#FFD700'
     elif w >= 0.55 and b < 0.45: return '#E0E0E0'
@@ -53,57 +77,83 @@ def curvature(W, B):
     denom = (dW[-1]**2 + dB[-1]**2 + 1e-10)**1.5
     return num / denom
 
-def calc_S(W, B, E, q=1.0):
-    return np.clip(W * B * (1 + q * 0.5), 0.001, 1.0)
-
 # ═══════════════════════════════════════════════════════════════
-# النظام النهائي – المنزلقات السبعة (من -١ إلى +١)
+# النظام النهائي – المنزلقات السبعة
 # ═══════════════════════════════════════════════════════════════
 ISLAMIC_SYSTEM_FINAL = {
     "faith": {
         "label": T("١. الإيمان", "1. Faith"),
-        "desc": T("+ إيمان خالص بالله | − إيمان بغير الله", "+ Pure faith in Allah | − Faith in other than Allah"),
-        "aya": "﴿آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ﴾",
-        "effect_W": 0.30, "effect_B": 0.15,
+        "desc": T("+ إيمان خالص | − إيمان بغير الله", "+ Pure faith | − Faith in other than Allah"),
+        "aya": "﴿آمَنَ الرَّسُولُ﴾", "effect_W": 0.30, "effect_B": 0.15,
+        "letters": "أ ل م",
     },
     "worship": {
         "label": T("٢. العبادات", "2. Worship"),
-        "desc": T("+ إقامة الصلاة والزكاة والصوم والحج | − ترك العبادات", "+ Performing worship | − Abandoning worship"),
-        "aya": "﴿بُنِيَ الْإِسْلَامُ عَلَىٰ خَمْسٍ﴾",
-        "effect_W": 0.20, "effect_B": 0.15,
+        "desc": T("+ إقامة العبادات | − تركها", "+ Performing worship | − Abandoning"),
+        "aya": "﴿بُنِيَ الْإِسْلَامُ عَلَىٰ خَمْسٍ﴾", "effect_W": 0.20, "effect_B": 0.15,
+        "letters": "ص ل و",
     },
     "transactions": {
         "label": T("٣. المعاملات", "3. Transactions"),
-        "desc": T("+ تحكيم شرع الله، العدل، الشورى | − الحكم بغير ما أنزل الله", "+ Sharia, justice | − Ruling by other than Allah's law"),
-        "aya": "﴿فَاحْكُم بَيْنَهُم بِمَا أَنزَلَ اللَّهُ﴾",
-        "effect_W": 0.12, "effect_B": 0.18,
+        "desc": T("+ تحكيم شرع الله | − الحكم بغيره", "+ Sharia | − Other laws"),
+        "aya": "﴿فَاحْكُم بَيْنَهُم بِمَا أَنزَلَ اللَّهُ﴾", "effect_W": 0.12, "effect_B": 0.18,
+        "letters": "ق س ط",
     },
     "morals": {
         "label": T("٤. الأخلاق", "4. Morals"),
-        "desc": T("+ موالاة المؤمنين، التعاون، الصدق | − موالاة الكفار، الكذب، الخيانة", "+ Alliance with believers | − Alliance with disbelievers"),
-        "aya": "﴿وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ﴾",
-        "effect_W": 0.15, "effect_B": 0.10,
+        "desc": T("+ موالاة المؤمنين | − موالاة الكفار", "+ Alliance | − Disavowal"),
+        "aya": "﴿وَتَعَاوَنُوا عَلَى الْبِرِّ﴾", "effect_W": 0.15, "effect_B": 0.10,
+        "letters": "ر ح م",
     },
     "enjoining": {
-        "label": T("٥. الأمر بالمعروف والنهي عن المنكر", "5. Enjoining Good & Forbidding Evil"),
-        "desc": T("+ الدعوة إلى الخير | − الأمر بالمنكر والنهي عن المعروف", "+ Calling to good | − Calling to evil"),
-        "aya": "﴿وَلْتَكُن مِّنكُمْ أُمَّةٌ يَدْعُونَ إِلَى الْخَيْرِ﴾",
-        "effect_W": 0.10, "effect_B": 0.20,
+        "label": T("٥. الأمر والنهي", "5. Enjoining & Forbidding"),
+        "desc": T("+ الدعوة للخير | − الأمر بالمنكر", "+ Calling to good | − Calling to evil"),
+        "aya": "﴿وَلْتَكُن مِّنكُمْ أُمَّةٌ﴾", "effect_W": 0.10, "effect_B": 0.20,
+        "letters": "ع ل م",
     },
     "hudud": {
-        "label": T("٦. إقامة الحدود", "6. Establishing Limits"),
-        "desc": T("+ إقامة حدود الله | − تعطيل الحدود واستباحة المحرمات", "+ Establishing limits | − Abolishing limits"),
-        "aya": "﴿تِلْكَ حُدُودُ اللَّهِ فَلَا تَعْتَدُوهَا﴾",
-        "effect_W": 0.05, "effect_B": 0.25,
+        "label": T("٦. إقامة الحدود", "6. Limits"),
+        "desc": T("+ إقامة الحدود | − تعطيلها", "+ Establishing | − Abolishing"),
+        "aya": "﴿تِلْكَ حُدُودُ اللَّهِ﴾", "effect_W": 0.05, "effect_B": 0.25,
+        "letters": "ح د د",
     },
     "jihad": {
-        "label": T("٧. الجهاد ونصرة الحق", "7. Jihad & Supporting Truth"),
-        "desc": T("+ الجهاد في سبيل الله | − القعود وخذلان المستضعفين", "+ Jihad for Allah | − Abandoning the oppressed"),
-        "aya": "﴿وَجَاهِدُوا فِي اللَّهِ حَقَّ جِهَادِهِ﴾",
-        "effect_W": 0.15, "effect_B": 0.15,
+        "label": T("٧. الجهاد", "7. Jihad"),
+        "desc": T("+ جهاد في سبيل الله | − قعود", "+ Jihad | − Sitting back"),
+        "aya": "﴿وَجَاهِدُوا فِي اللَّهِ﴾", "effect_W": 0.15, "effect_B": 0.15,
+        "letters": "ج هـ د",
     },
 }
 
+# ═══════════════════════════════════════════════════════════════
+# قاعدة بيانات الشواهد التاريخية
+# ═══════════════════════════════════════════════════════════════
+HISTORICAL_DATA = {
+    T("الخلافة الراشدة (٦٣٢-٦٦١م)", "Rashidun Caliphate (632-661 CE)"): {
+        "W": 0.95, "B": 0.95, "E": 0.90,
+        "desc": T("أعلى فترات التوازن في التاريخ الإسلامي.", "The highest period of balance in Islamic history.")
+    },
+    T("الدولة الأموية – أواخر (٧٤٤م)", "Umayyad Caliphate – Late (744 CE)"): {
+        "W": 0.40, "B": 0.30, "E": 0.85,
+        "desc": T("الاستدراج: تمكين مادي مع انهيار القيم.", "Istidraj: Material empowerment with value collapse.")
+    },
+    T("الدولة العثمانية – أواخر (١٨٠٠م)", "Ottoman Empire – Late (1800 CE)"): {
+        "W": 0.35, "B": 0.25, "E": 0.60,
+        "desc": T("الرجل المريض: فجوة استدراج طويلة.", "The sick man: Long Istidraj gap.")
+    },
+    T("الأندلس – قبل السقوط (١٤٩٢م)", "Andalusia – Before Fall (1492 CE)"): {
+        "W": 0.20, "B": 0.15, "E": 0.40,
+        "desc": T("انهيار كامل للقطبين مع تمكين متآكل.", "Complete collapse of both poles with eroded empowerment.")
+    },
+    T("الاتحاد السوفيتي (١٩٢٢-١٩٩١م)", "Soviet Union (1922-1991 CE)"): {
+        "W": 0.05, "B": 0.10, "E": 0.70,
+        "desc": T("W = صفر تقريباً: انهيار مفاجئ.", "W ≈ 0: Sudden collapse.")
+    },
+}
+
+# ═══════════════════════════════════════════════════════════════
+# دالة الحساب والمستشار
+# ═══════════════════════════════════════════════════════════════
 def compute_WB_final(values):
     W_total = 0.1; B_total = 0.1
     for key, val in values.items():
@@ -112,45 +162,32 @@ def compute_WB_final(values):
             B_total += val * ISLAMIC_SYSTEM_FINAL[key]["effect_B"]
     return np.clip(W_total, 0.01, 1.0), np.clip(B_total, 0.01, 1.0)
 
-def create_final_sliders(prefix, defaults=None):
-    if defaults is None: defaults = {k: 0.0 for k in ISLAMIC_SYSTEM_FINAL}
-    values = {}
-    for key, data in ISLAMIC_SYSTEM_FINAL.items():
-        values[key] = st.slider(
-            data["label"], -1.0, 1.0, defaults.get(key, 0.0), 0.05,
-            key=f"{prefix}_{key}",
-            help=f"{data['desc']}\n\n{data['aya']}"
-        )
-    return values
-
-# ═══════════════════════════════════════════════════════════════
-# أسئلة البوصلة – ١٩ سؤالاً (الغيب والشهادة)
-# ═══════════════════════════════════════════════════════════════
-COMPASS_QUESTIONS = {
-    "W": [
-        {"q": T("١. الإيمان بالغيب: أؤمن بالله وملائكته وكتبه ورسله واليوم الآخر والقدر خيره وشره", "1. I believe in Allah, His angels, books, messengers, the Last Day, and Divine Decree"), "key": "W1"},
-        {"q": T("٢. الإيمان بالشهادة: أشهد أن لا إله إلا الله وأن محمداً رسول الله، وأعمل بمقتضاهما", "2. I testify there is no god but Allah and Muhammad is His Messenger, and I act accordingly"), "key": "W2"},
-        {"q": T("٣. العبادات الباطنة: أصلي بخشوع، قلبي حاضر مع الله، أستشعر الوقوف بين يديه", "3. I pray with devotion, my heart present with Allah, feeling I stand before Him"), "key": "W3"},
-        {"q": T("٤. العبادات الظاهرة: أقيم الصلاة في وقتها، وأؤدي الزكاة، وأصوم رمضان، وأحج البيت", "4. I establish prayer on time, pay Zakat, fast Ramadan, and perform Hajj"), "key": "W4"},
-        {"q": T("٥. المعاملات الظاهرة: أؤدي الأمانات، وأفي بالعهد، وأصدق في البيع والشراء", "5. I fulfill trusts, keep promises, and am truthful in transactions"), "key": "W5"},
-        {"q": T("٦. الأخلاق الباطنة: أوالي المؤمنين بقلبي، وأحب لهم ما أحب لنفسي", "6. I ally with believers in my heart, and love for them what I love for myself"), "key": "W6"},
-        {"q": T("٧. الأخلاق الظاهرة: أتعاون مع المؤمنين على البر والتقوى، وأصدق في أقوالي وأفعالي", "7. I cooperate with believers in goodness, and am truthful in words and deeds"), "key": "W7"},
-        {"q": T("٨. الجهاد الباطن: أحمل هم الإسلام والمسلمين في قلبي، وأدعو الله لهم بالنصر", "8. I carry the concerns of Islam and Muslims in my heart, and pray for their victory"), "key": "W8"},
-        {"q": T("٩. الجهاد الظاهر: أنصر الحق وأهله والمستضعفين بما أستطيع", "9. I support the truth, its people, and the oppressed as much as I can"), "key": "W9"},
-    ],
-    "B": [
-        {"q": T("١٠. البراءة الباطنة: أكفر بالطاغوت بقلبي، وأتبرأ من كل ما يعبد من دون الله", "10. I disbelieve in Taghut in my heart, and disavow all that is worshipped besides Allah"), "key": "B1"},
-        {"q": T("١١. البراءة الظاهرة: صومي يمنعني عن الفواحش، وزكاتي تطهرني من الشح", "11. My fasting prevents me from immorality, and my Zakat purifies me from stinginess"), "key": "B2"},
-        {"q": T("١٢. المعاملات الظاهرة: أحكم شرع الله في كل صغيرة وكبيرة، ولا أحكم بغير ما أنزل الله", "12. I rule by Allah's law in all matters, and do not rule by other than what He revealed"), "key": "B3"},
-        {"q": T("١٣. المعاملات المالية: أرفض الربا، وأجتنب أكل المال بالباطل", "13. I reject usury, and avoid consuming wealth unjustly"), "key": "B4"},
-        {"q": T("١٤. الأخلاق الباطنة: أبغض الكفر والنفاق وأهلهما بقلبي", "14. I hate disbelief, hypocrisy, and their people in my heart"), "key": "B5"},
-        {"q": T("١٥. الأخلاق الظاهرة: أتبرأ من الشرك وأهله ظاهراً، ولا أواليهم", "15. I disavow polytheism and its people openly, and do not ally with them"), "key": "B6"},
-        {"q": T("١٦. الأمر بالمعروف: آمر بالمعروف بالحكمة والموعظة الحسنة", "16. I enjoin good with wisdom and beautiful preaching"), "key": "B7"},
-        {"q": T("١٧. النهي عن المنكر: أنهى عن المنكر بيدي ولساني وقلبي حسب استطاعتي", "17. I forbid evil with my hand, tongue, and heart according to my ability"), "key": "B8"},
-        {"q": T("١٨. إقامة الحدود: أقيم حدود الله ولا أتعداها، وأمنع المحرمات", "18. I establish Allah's limits, do not transgress them, and prevent prohibitions"), "key": "B9"},
-        {"q": T("١٩. الجهاد الظاهر: أجاهد في سبيل الله بالنفس والمال، وأعادي أعداءه", "19. I strive in Allah's cause with self and wealth, and oppose His enemies"), "key": "B10"},
-    ],
-}
+def get_advisor_message(W, B, quadrant_name):
+    """المستشار الشامل – يولد رسالة شخصية بناءً على موقع المستخدم."""
+    messages = {
+        "مؤمن": T(
+            "أخي/أختي، موقعك في مربع المؤمنين. هذا مقام عظيم. حافظ على ثباتك، وأكثر من النوافل، "
+            "واجعل لك وردًا من القرآن. تذكر أن إبراهيم عليه السلام كان في هذا المربع، فارفع سقف طموحك.",
+            "You are in the Believer's quadrant. This is a great station. Maintain your stability, "
+            "increase voluntary acts, and have a daily portion of Quran."
+        ),
+        "كافر": T(
+            "باب التوبة مفتوح. أقرب طريق للخروج من هذا المربع هو أن تتعرف على الله من خلال أسمائه الحسنى. "
+            "ابدأ بقراءة القرآن ولو صفحة يوميًا. واسأل الله أن يهديك.",
+            "The door of repentance is open. Start by knowing Allah through His beautiful names."
+        ),
+        "منافق": T(
+            "أنت في منطقة الخطر. أقرب طريق للخروج: الصدق مع النفس. قف مع نفسك وقفة صادقة. "
+            "اختر طريقًا واحدًا. وتذكر أن الله يحب التوابين.",
+            "You are in the danger zone. Be honest with yourself. Choose one path."
+        ),
+        "مشرك": T(
+            "لديك إيمان ولكنك تخلطه بشرك. أقرب طريق للخروج: تعلم معنى 'لا إله إلا الله' حقًا. "
+            "تخلص من كل مظاهر الشرك في حياتك.",
+            "You have faith but mix it with polytheism. Learn the true meaning of Tawhid."
+        ),
+    }
+    return messages.get(quadrant_name, T("استمر في رحلتك.", "Continue your journey."))
 
 # ═══════════════════════════════════════════════════════════════
 # الجلسة
@@ -176,12 +213,13 @@ if 'init' not in st.session_state:
     for l in ["faith","worship","transactions","morals","enjoining","hudud","jihad"]:
         setattr(st.session_state, f"path_{l}", [0.5])
     st.session_state.compass_answers = {}
+    st.session_state.challenge = None
     st.session_state.init = True
 
-print("✅ المرحلة الأولى مكتملة.")
+print("✅ المرحلة الأولى مكتملة: الأساسات، الثوابت، الشواهد التاريخية، والمستشار.")
 
 # ═══════════════════════════════════════════════════════════════
-# المرحلة الثانية: رسالة الترحيب، دليل المستخدم، العنوان، التبويبات
+# المرحلة الثانية: رسالة الترحيب، دليل المستخدم، الميزان الحي، العنوان، التبويبات
 # ═══════════════════════════════════════════════════════════════
 
 # --- رسالة الترحيب ---
@@ -189,70 +227,33 @@ with st.expander(T("📜 رسالة ترحيب", "📜 Welcome Message"), expand
     st.markdown(f"""
     <div class="message-box">
     <h2 style="text-align:center;color:#FFD700;">⚖️ {T('مختبر الميزان', 'The Mizan Lab')}</h2>
-    <p style="text-align:center;font-style:italic;color:#CCC;font-size:1.1em;">
+    <p style="text-align:center;font-style:italic;color:#CCC;">
     "{T('هَلْ يُوجَدُ قَانُونٌ وَاحِدٌ يَحْكُمُ الذَّرَّةَ وَالْحَضَارَةَ؟', 'Is there a single law governing the atom and civilization?')}"
     </p>
     <p>{T(
     'هذا ليس كتابًا، وليس تطبيقًا. هذا مختبر. مختبرٌ صغير، لعله يفتح لك بابًا كبيرًا. '
     'لا ندّعي الحقيقة المطلقة، بل ندعوك لرؤية شيءٍ قد يكون مرّ على قلبك ولم تلاحظه.',
-    'This is not a book, nor an app. This is a lab. A small lab, perhaps it opens a big door for you. '
-    'We do not claim absolute truth, but invite you to see something that may have passed your heart unnoticed.'
+    'This is not a book, nor an app. This is a lab. A small lab, perhaps it opens a big door for you.'
     )}</p>
     <p>{T(
     'تأمل معي: الذرةُ في داخلها قوتان: جاذبيةٌ تجمع، وتنافرٌ يمنع التصادم. لو اختلت إحداهما، لانهارت الذرة. '
     'والخليةُ في جسدك: جهاز مناعةٍ يحمي، وغذاءٌ يبني. لو نامت المناعة، لالتهم المرضُ الجسد.',
     'Reflect with me: the atom has two forces: attraction that gathers, and repulsion that prevents collision. '
-    'If one fails, the atom collapses. And the cell in your body: an immune system that protects, and nutrition that builds. '
-    'If immunity sleeps, disease devours the body.'
+    'And the cell: an immune system that protects, and nutrition that builds.'
     )}</p>
     <p>{T(
     'وحتى في عالم الكيمياء، يتجلى القانون نفسه: الذرّات المتآلفة تتحد برابطةٍ قوية (هذا ولاؤها)، '
     'لكنها تحتاج إلى "طاقة تنشيط" لتنفصل عن ذراتٍ أخرى كانت مرتبطة بها (هذه براءتها). '
-    'إن لم تملك هذه الطاقة، بقيت أسيرة تفاعلاتها القديمة، لا تتحد بالجديد. '
-    'هذه "التوبة" الكيميائية: قوةٌ تدفعها لتكسر حاجزًا، فتنطلق إلى استقرارٍ أعظم. '
-    'أليس هذا ما يحدث للمؤمن حين يتوب؟',
-    'Even in chemistry, the same law manifests: compatible atoms unite with a strong bond (their loyalty), '
-    'but they need "activation energy" to separate from other atoms they were bound to (their disavowal). '
-    'Without this energy, they remain captive to old reactions, unable to unite with the new. '
-    'This is chemical "repentance": a force that pushes them to break a barrier, launching them to greater stability. '
-    'Is this not what happens to the believer when they repent?'
-    )}</p>
-    <p>{T(
-    'والمجتمع: ولاءٌ يجمع أفراده، وبراءةٌ من الفساد تحمي تماسكه. لو غاب أحدهما، تفكك المجتمع.',
-    'And society: loyalty that gathers its members, and disavowal of corruption that protects its cohesion. '
-    'If either is absent, society disintegrates.'
+    'هذه "التوبة" الكيميائية: قوةٌ تدفعها لتكسر حاجزًا، فتنطلق إلى استقرارٍ أعظم.',
+    'Even in chemistry, the same law manifests: atoms unite with a strong bond (loyalty), '
+    'but need "activation energy" to separate from others (disavowal). '
+    'This is chemical "repentance": a force to break a barrier and launch to greater stability.'
     )}</p>
     <p style="color:#FFD700;font-weight:bold;">{T(
-    'هل هذه مصادفة؟ أم أن هناك "قانونًا واحدًا" ينساب في نسيج الوجود كله، من الذرة إلى الحضارة؟',
-    'Is this coincidence? Or is there a "single law" flowing through the fabric of existence, from atom to civilization?'
-    )}</p>
-    <p>{T(
-    'نحن هنا لا نعظ. نحن نعرض. لا نفرض عليك جوابًا، بل نتركك تجرب بيدك. '
-    'حرّك المنزلقات. أجب عن الأسئلة. شاهد كيف يتغير الثبات. واسأل نفسك: '
-    'لماذا ينهار كل شيء عندما يختل أحد القطبين؟ '
-    'لماذا تتكرر هذه الثنائية في كل ما حولنا؟ '
-    'هل هناك "حق" و"باطل" موجودان في صلب الوجود، لا في كتب الأخلاق فقط؟',
-    'We are not preaching. We are presenting. We do not impose an answer, but let you experiment with your own hands. '
-    'Move the sliders. Answer the questions. Watch how stability changes. And ask yourself: '
-    'Why does everything collapse when one pole fails? '
-    'Why does this duality repeat everywhere around us? '
-    'Is there "truth" and "falsehood" embedded in the core of existence, not just in books of ethics?'
+    'هل هذه مصادفة؟ أم أن هناك "قانونًا واحدًا" ينساب في نسيج الوجود كله؟',
+    'Is this coincidence? Or is there a "single law" flowing through the fabric of existence?'
     )}</p>
     <p style="text-align:center;color:#FFD700;font-size:1.2em;font-weight:bold;">S = W × B</p>
-    <p>{T(
-    'W: الولاء لله وأوليائه. B: البراءة من الطاغوت وأوليائه. S: الثبات الوجودي.',
-    'W: Loyalty to Allah & His allies. B: Disavowal of Taghut & its allies. S: Existential Stability.'
-    )}</p>
-    <p>{T(
-    'هذه معادلة، لا أكثر. ولكنها قد تكون أعمق مما تظن. إنها ليست اختراعًا، بل استنباطٌ من قوله تعالى: '
-    '﴿فَمَن يَكْفُرْ بِالطَّاغُوتِ وَيُؤْمِن بِاللَّهِ فَقَدِ اسْتَمْسَكَ بِالْعُرْوَةِ الْوُثْقَىٰ﴾.',
-    'This is an equation, nothing more. But it may be deeper than you think. It is not an invention, '
-    'but a derivation from His saying: ﴿Whoever disbelieves in Taghut and believes in Allah has grasped the firm handhold﴾.'
-    )}</p>
-    <p style="color:#FFD700;">{T(
-    '"العروة الوثقى" هي الثبات الذي تبحث عنه. والطريق إليها مرسومٌ في هذه المنزلقات السبعة وهذه الأسئلة التسعة عشر.',
-    '"The Firm Handhold" is the stability you seek. The path to it is drawn in these seven sliders and nineteen questions.'
-    )}</p>
     <p style="text-align:center;font-style:italic;color:#AAA;">{T(
     'جرب. تأمل. واسأل. الباب مفتوح.',
     'Try. Reflect. Ask. The door is open.'
@@ -265,43 +266,63 @@ with st.expander(T("📖 دليل المستخدم", "📖 User Guide"), expande
     st.markdown(T("""
     ### 🎯 كيف تستخدم هذا المختبر؟
     
-    **١. المنزلقات السبعة:** كل منزلق يمثل بُعدًا من أبعاد الإسلام. 
-    - حركه **يمينًا** (قيم موجبة) لترى كيف يزيد الثبات.
-    - حركه **يسارًا** (قيم سالبة) لترى كيف ينهار الثبات.
-    - ابدأ من المنتصف (0) لتشاهد أثر كل تغيير.
+    **المنزلقات السبعة:** كل منزلق يمثل بُعدًا من أبعاد الإسلام.
+    حركه يمينًا (قيم موجبة) لترى كيف يزيد الثبات، ويسارًا (قيم سالبة) لترى كيف ينهار.
     
-    **٢. أصل المنزلقات:** هذه المنزلقات مستنبطة من أبواب الشريعة الإسلامية.
-    وهي تغطي الإيمان (الغيب والشهادة)، العبادات (الباطنة والظاهرة)، المعاملات، الأخلاق،
-    الأمر بالمعروف والنهي عن المنكر، إقامة الحدود، والجهاد ونصرة الحق.
-    فإذا اختل أي جزء من هذه المنظومة، اختل الميزان كله.
+    **بوصلة الأسئلة (١٩ سؤالاً):** أجب عن الأسئلة لتعرف موقعك الدقيق.
+    الأسئلة تغطي الغيب والشهادة، الباطن والظاهر.
     
-    **٣. بوصلة الأسئلة (١٩ سؤالاً):** أجب عن الأسئلة لتعرف موقعك بدقة.
-    كل سؤال يحمل قيمة (+٣، ٠، -٣). الأسئلة تغطي الغيب والشهادة، الباطن والظاهر.
+    **المستشار الشامل:** بعد إجابتك عن الأسئلة، سيظهر لك "المستشار" برسالة شخصية
+    ترشدك إلى أقرب طريق للوصول إلى مقام إبراهيم عليه السلام.
     
-    **٤. التبويبات:** كل تبويب يمثل مستوى من مستويات الوجود.
+    **الشواهد التاريخية:** قارن بين الدول التاريخية لترى كيف تنطبق المعادلة على التاريخ الفعلي.
     
-    **٥. المعادلة المركزية:** S = W × B
-    - W (الولاء) و B (البراءة) يتضاعفان معًا.
-    - العلاقة **ضرب لا جمع**: انهيار أي من القطبين يُسقط الثبات كليًا.
+    **تحديات يومية:** كل يوم، تحدٍ جديد لتقوية أحد جوانب ميزانك.
+    
+    **المعادلة المركزية:** S = W × B (العلاقة ضرب لا جمع).
     """,
     """
     ### 🎯 How to Use This Lab
     
-    **1. The Seven Sliders:** Each slider represents a dimension of Islam.
+    **Seven Sliders:** Each represents a dimension of Islam.
     Move right for positive values, left for negative.
     
-    **2. Origin of the Sliders:** Derived from the chapters of Islamic Sharia,
-    covering faith (unseen and seen), worship (inner and outer), transactions,
-    morals, enjoining good and forbidding evil, establishing limits, and jihad.
+    **19-Question Compass:** Answer to know your precise position.
     
-    **3. The 19-Question Compass:** Answer to know your precise position.
-    Each question carries a value (+3, 0, -3).
+    **The Advisor:** After answering, you'll receive a personal message
+    guiding you to the nearest path to the Station of Abraham.
     
-    **4. The Tabs:** Each tab represents a level of existence.
+    **Historical Evidence:** Compare historical nations to see how the equation applies.
     
-    **5. The Central Equation:** S = W × B
-    The relationship is multiplication, not addition.
+    **Daily Challenges:** Each day, a new challenge to strengthen one aspect of your balance.
+    
+    **Central Equation:** S = W × B (multiplication, not addition).
     """))
+
+# --- الميزان الأخروي الحي (يظهر في كل التبويبات) ---
+def render_live_scales():
+    """تعرض كفتي الميزان الأخروي في كل التبويبات."""
+    good = st.session_state.get('good', 0)
+    bad = st.session_state.get('bad', 0)
+    balance = good - bad
+    
+    if balance > 0:
+        status = T("⚖️ راجحة", "⚖️ Winning")
+        color = '#FFD700'
+    elif balance < 0:
+        status = T("⚖️ خاسرة", "⚖️ Losing")
+        color = '#FF4444'
+    else:
+        status = T("⚖️ متوازنة", "⚖️ Balanced")
+        color = '#888'
+    
+    st.sidebar.markdown(f"""
+    <div style="text-align:center;padding:10px;background:rgba(10,15,30,0.9);border-radius:10px;border:1px solid #FFD700;margin-top:10px;">
+        <p style="color:#FFD700;font-size:0.8em;margin:0;">📜 {T('الميزان الحي', 'Live Scales')}</p>
+        <p style="color:#FFD700;font-size:0.7em;margin:2px 0;">{T('حسنات', 'Good')}: {good:.0f} | {T('سيئات', 'Bad')}: {bad:.0f}</p>
+        <p style="color:{color};font-size:0.9em;margin:0;font-weight:bold;">{status}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # --- العنوان الرئيسي ---
 col_icon1, col_title, col_icon2 = st.columns([1, 6, 1])
@@ -309,7 +330,7 @@ with col_icon1:
     st.markdown("<p style='text-align:center;font-size:4em;'>⚖️</p>", unsafe_allow_html=True)
 with col_title:
     st.markdown("<h1 class='golden-title'>مختبر الميزان</h1>", unsafe_allow_html=True)
-    st.markdown(f"<p style='text-align:center;color:#CCC;font-size:1.2em;'>{T('القانون الواحد من الذرة إلى الحضارة', 'The One Law from Atom to Civilization')}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='text-align:center;color:#CCC;font-size:1.2em;'>{T('سفينة نوح الرقمية – القانون الواحد من الذرة إلى الحضارة', 'The Digital Ark – The One Law from Atom to Civilization')}</p>", unsafe_allow_html=True)
 with col_icon2:
     st.markdown("<p style='text-align:center;font-size:4em;'>⚖️</p>", unsafe_allow_html=True)
 
@@ -337,13 +358,13 @@ tab_labels = [
     T("🏛️ الدولة", "🏛️ State"),
     T("🌍 الأمة", "🌍 Nation"),
     T("🏰 الحضارة", "🏰 Civilization"),
-    T("📜 الآخرة", "📜 Hereafter"),
+    T("📜 الشواهد", "📜 Evidence"),
     T("📐 الصراط", "📐 Path"),
 ]
 
 tabs = st.tabs(tab_labels)
 
-# --- شريط جانبي للإعدادات العامة ---
+# --- شريط جانبي للإعدادات ---
 with st.sidebar:
     st.markdown("### ⚙️ إعدادات عامة")
     lag = st.select_slider(
@@ -352,16 +373,73 @@ with st.sidebar:
         value=22, key="lag"
     )
     st.markdown("---")
+    
+    # عرض الميزان الأخروي الحي
+    render_live_scales()
+    
+    st.markdown("---")
+    
+    # تحدي اليوم
+    st.markdown(f"### 🎯 {T('تحدي اليوم', 'Daily Challenge')}")
+    if st.session_state.get('challenge') is None:
+        challenges = [
+            T("اليوم: ارفع منزلق 'الصلاة' إلى +0.8 على الأقل.", "Today: Raise the 'Prayer' slider to at least +0.8."),
+            T("اليوم: أجب عن أسئلة البوصلة الـ ١٩.", "Today: Answer the 19 compass questions."),
+            T("اليوم: شاهد المشهد الكوني لمدة دقيقتين وتأمل.", "Today: Watch the cosmic scene for 2 minutes and reflect."),
+            T("اليوم: قارن بين حضارتين في تبويب 'الحضارة'.", "Today: Compare two civilizations in the 'Civilization' tab."),
+        ]
+        st.session_state.challenge = random.choice(challenges)
+    st.info(st.session_state.challenge)
+    
+    st.markdown("---")
     if st.button("🔄 إعادة ضبط كل شيء", key="btn_reset", use_container_width=True):
         for k in list(st.session_state.keys()):
             if k not in ("lang",): del st.session_state[k]
         st.rerun()
 
-print("✅ المرحلة الثانية مكتملة.")
+print("✅ المرحلة الثانية مكتملة: رسالة الترحيب، دليل المستخدم، الميزان الحي، العنوان، التبويبات.")
 
 # ═══════════════════════════════════════════════════════════════
 # المرحلة الثالثة: الكون، الفرد، المجتمع
 # ═══════════════════════════════════════════════════════════════
+
+# --- أسئلة البوصلة (تُعرف هنا لتستخدم في التبويبات) ---
+COMPASS_QUESTIONS = {
+    "W": [
+        {"q": T("١. الإيمان بالغيب: أؤمن بالله وملائكته وكتبه ورسله واليوم الآخر والقدر", "1. I believe in Allah, His angels, books, messengers, the Last Day, and Divine Decree"), "key": "W1"},
+        {"q": T("٢. الإيمان بالشهادة: أشهد أن لا إله إلا الله وأن محمداً رسول الله وأعمل بمقتضاهما", "2. I testify there is no god but Allah and Muhammad is His Messenger, and I act accordingly"), "key": "W2"},
+        {"q": T("٣. العبادات الباطنة: أصلي بخشوع، قلبي حاضر مع الله", "3. I pray with devotion, my heart present with Allah"), "key": "W3"},
+        {"q": T("٤. العبادات الظاهرة: أقيم الصلاة في وقتها، وأؤدي الزكاة، وأصوم، وأحج", "4. I establish prayer, pay Zakat, fast, and perform Hajj"), "key": "W4"},
+        {"q": T("٥. المعاملات: أؤدي الأمانات وأفي بالعهد وأصدق في البيع والشراء", "5. I fulfill trusts, keep promises, and am truthful in transactions"), "key": "W5"},
+        {"q": T("٦. الأخلاق الباطنة: أوالي المؤمنين بقلبي وأحب لهم ما أحب لنفسي", "6. I ally with believers in my heart and love for them what I love for myself"), "key": "W6"},
+        {"q": T("٧. الأخلاق الظاهرة: أتعاون مع المؤمنين على البر والتقوى وأصدق في أقوالي", "7. I cooperate with believers in goodness and am truthful"), "key": "W7"},
+        {"q": T("٨. الجهاد الباطن: أحمل هم الإسلام والمسلمين في قلبي", "8. I carry the concerns of Islam and Muslims in my heart"), "key": "W8"},
+        {"q": T("٩. الجهاد الظاهر: أنصر الحق وأهله والمستضعفين بما أستطيع", "9. I support the truth, its people, and the oppressed as much as I can"), "key": "W9"},
+    ],
+    "B": [
+        {"q": T("١٠. البراءة الباطنة: أكفر بالطاغوت بقلبي وأتبرأ من كل ما يعبد من دون الله", "10. I disbelieve in Taghut in my heart and disavow all worshipped besides Allah"), "key": "B1"},
+        {"q": T("١١. البراءة الظاهرة: صومي يمنعني عن الفواحش وزكاتي تطهرني من الشح", "11. My fasting prevents immorality, and my Zakat purifies me from stinginess"), "key": "B2"},
+        {"q": T("١٢. المعاملات: أحكم شرع الله ولا أحكم بغير ما أنزل الله", "12. I rule by Allah's law and do not rule by other than what He revealed"), "key": "B3"},
+        {"q": T("١٣. المعاملات المالية: أرفض الربا وأجتنب أكل المال بالباطل", "13. I reject usury and avoid consuming wealth unjustly"), "key": "B4"},
+        {"q": T("١٤. الأخلاق الباطنة: أبغض الكفر والنفاق وأهلهما بقلبي", "14. I hate disbelief, hypocrisy, and their people in my heart"), "key": "B5"},
+        {"q": T("١٥. الأخلاق الظاهرة: أتبرأ من الشرك وأهله ظاهراً ولا أواليهم", "15. I disavow polytheism and its people openly and do not ally with them"), "key": "B6"},
+        {"q": T("١٦. الأمر بالمعروف: آمر بالمعروف بالحكمة والموعظة الحسنة", "16. I enjoin good with wisdom and beautiful preaching"), "key": "B7"},
+        {"q": T("١٧. النهي عن المنكر: أنهى عن المنكر بيدي ولساني وقلبي حسب استطاعتي", "17. I forbid evil with my hand, tongue, and heart according to my ability"), "key": "B8"},
+        {"q": T("١٨. إقامة الحدود: أقيم حدود الله ولا أتعداها وأمنع المحرمات", "18. I establish Allah's limits, do not transgress them, and prevent prohibitions"), "key": "B9"},
+        {"q": T("١٩. الجهاد: أجاهد في سبيل الله بالنفس والمال وأعادي أعداءه", "19. I strive in Allah's cause with self and wealth and oppose His enemies"), "key": "B10"},
+    ],
+}
+
+def create_final_sliders(prefix, defaults=None):
+    if defaults is None: defaults = {k: 0.0 for k in ISLAMIC_SYSTEM_FINAL}
+    values = {}
+    for key, data in ISLAMIC_SYSTEM_FINAL.items():
+        values[key] = st.slider(
+            data["label"], -1.0, 1.0, defaults.get(key, 0.0), 0.05,
+            key=f"{prefix}_{key}",
+            help=f"{data['desc']}\n\n{data['aya']}\n\n{T('الحروف:', 'Letters:')} {data['letters']}"
+        )
+    return values
 
 # --- تبويب ١: الكون ---
 with tabs[0]:
@@ -472,7 +550,6 @@ with tabs[0]:
             colors = [star_color(sw[i], sb[i]) for i in range(N)]
             ax.scatter(sx, sy, s=20, c=colors, alpha=0.9, edgecolors='white', linewidths=0.2, zorder=5)
 
-            # الميزان الأخروي
             akh_x, akh_y, ms = 26.5, 18, 1.5
             ax.plot([akh_x, akh_x], [akh_y - 3, akh_y + 1.5], color='#FFD700', lw=1, alpha=0.4)
             ly = akh_y - 1.5 + ms * min(good / 50, 1.5)
@@ -484,7 +561,6 @@ with tabs[0]:
             diff = (bad - good) / 50 * ms
             ax.plot([akh_x - 1, akh_x + 1], [akh_y - diff, akh_y + diff], color='#FFD700', lw=1.5, alpha=0.6)
 
-            # منحنى الاستدراج
             pax = ax.inset_axes([0.5, 0.02, 0.46, 0.12])
             pax.set_xlim(0, 350); pax.set_ylim(0, 1.05)
             pax.set_title(T("S يقود E — الاستدراج", "S leads E — Istidraj"), color='white', fontsize=7)
@@ -499,7 +575,6 @@ with tabs[0]:
     else:
         st.info(T("اضغط ▶️ تشغيل المشهد", "Press ▶️ Run Scene"))
 
-    # زر تحميل البيانات
     if not st.session_state.get("run", False) and len(st.session_state.hS) > 0:
         csv_data = "Time,S,E\n" + "\n".join([f"{i},{s:.4f},{e:.4f}" for i, (s, e) in enumerate(zip(st.session_state.hS, st.session_state.hE))])
         st.download_button(
@@ -507,17 +582,16 @@ with tabs[0]:
             data=csv_data, file_name="mizan_cosmic.csv", mime="text/csv", key="dl_cosmic"
         )
 
-# --- تبويب ٢: الفرد (بوصلة الأسئلة الـ ١٩) ---
+# --- تبويب ٢: الفرد (بوصلة الأسئلة + المستشار الشامل) ---
 with tabs[1]:
     st.header(T("🧍 مختبر الفرد – بوصلة الميزان", "🧍 Individual Lab – The Mizan Compass"))
     st.markdown(T(
-        "أجب عن ١٩ سؤالاً بصدق لتكتشف موقعك الدقيق في فضاء الولاء والبراءة. "
-        "الأسئلة تغطي الغيب والشهادة، الباطن والظاهر.",
-        "Answer 19 questions honestly to discover your precise position in loyalty-disavowal space."
+        "أجب عن ١٩ سؤالاً بصدق لتكتشف موقعك الدقيق. بعد الإجابة، سيظهر لك 'المستشار الشامل' برسالة شخصية.",
+        "Answer 19 questions honestly. After answering, the 'Advisor' will appear with a personal message."
     ))
     
     st.markdown(f"### {T('🤍 أسئلة الولاء (W) – ٩ أسئلة', '🤍 Loyalty Questions (W) – 9 Questions')}")
-    for i, q_data in enumerate(COMPASS_QUESTIONS["W"]):
+    for q_data in COMPASS_QUESTIONS["W"]:
         ans = st.radio(
             q_data["q"],
             [T("+٣ نعم", "+3 Yes"), T("٠ حيادي", "0 Neutral"), T("-٣ لا", "-3 No")],
@@ -530,7 +604,7 @@ with tabs[1]:
             else: st.session_state.compass_answers[q_data["key"]] = -3
     
     st.markdown(f"### {T('❤️ أسئلة البراءة (B) – ١٠ أسئلة', '❤️ Disavowal Questions (B) – 10 Questions')}")
-    for i, q_data in enumerate(COMPASS_QUESTIONS["B"]):
+    for q_data in COMPASS_QUESTIONS["B"]:
         ans = st.radio(
             q_data["q"],
             [T("+٣ نعم", "+3 Yes"), T("٠ حيادي", "0 Neutral"), T("-٣ لا", "-3 No")],
@@ -552,6 +626,7 @@ with tabs[1]:
         B_norm = (B_val + 1) / 2
         S_val = W_norm * B_norm
         q_name, q_color = classify(W_norm, B_norm)
+        advisor_msg = get_advisor_message(W_val, B_val, q_name)
         
         st.divider()
         st.header(T("📊 نتيجة البوصلة", "📊 Compass Result"))
@@ -564,12 +639,18 @@ with tabs[1]:
         st.markdown(f"""
         <div style='background:rgba(20,30,60,0.8);border-radius:15px;padding:20px;border:2px solid {q_color};text-align:center;margin:15px 0;'>
             <h2 style='color:{q_color};'>{q_name}</h2>
-            <p style='color:#CCC;'>W = {W_val:.2f} | B = {B_val:.2f}</p>
-            <p style='color:#FFD700;font-size:1.3em;'>⚖️ S = W × B = {S_val:.3f}</p>
         </div>
         """, unsafe_allow_html=True)
         
-        # رسم الخريطة الرباعية
+        # المستشار الشامل
+        st.markdown(f"""
+        <div style='background:rgba(20,30,60,0.8);border-radius:15px;padding:20px;border:1px solid #FFD700;margin:15px 0;'>
+            <h3 style='color:#FFD700;'>🧠 {T('المستشار الشامل', 'The Advisor')}</h3>
+            <p style='color:#CCC;font-size:1.1em;line-height:2;'>{advisor_msg}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # رسم الخريطة
         fig, ax = plt.subplots(figsize=(6, 6), facecolor='#0a0f1e')
         ax.set_facecolor('#0a0f1e')
         ax.set_xlim(-1.2, 1.2); ax.set_ylim(-1.2, 1.2)
@@ -586,7 +667,6 @@ with tabs[1]:
         ax.set_xlabel(T("B (البراءة)", "B (Disavowal)"), color='white')
         ax.set_ylabel(T("W (الولاء)", "W (Loyalty)"), color='white')
         ax.tick_params(colors='white')
-        ax.set_title(T("موقعك في فضاء (W, B)", "Your Position in (W, B) Space"), color='white', fontsize=13)
         st.pyplot(fig)
         
         if st.button(T("🔄 أعد الاختبار", "🔄 Retake Test"), key="btn_reset_compass", use_container_width=True):
@@ -641,10 +721,10 @@ with tabs[2]:
             plt.tight_layout(); st.pyplot(fig)
             st.metric(T("متوسط S النهائي", "Final Average S"), f"{hist_S[-1]:.3f}")
 
-print("✅ المرحلة الثالثة مكتملة.")
+print("✅ المرحلة الثالثة مكتملة: الكون، الفرد (مع المستشار)، المجتمع.")
 
 # ═══════════════════════════════════════════════════════════════
-# المرحلة الرابعة: الدولة، الأمة، الحضارة
+# المرحلة الرابعة: الدولة، الأمة، الحضارة، الشواهد
 # ═══════════════════════════════════════════════════════════════
 
 # --- تبويب ٤: الدولة ---
@@ -688,7 +768,6 @@ with tabs[3]:
             c2.metric(T("أقصى S", "Max S"), f"{np.max(Sh):.3f}")
             c3.metric(T("فجوة الاستدراج", "Istidraj Gap"), f"{max(0, idxE - idxS)} {T('عام', 'yrs')}")
             
-            # زر تحميل بيانات الدولة
             csv_data = "Year,W,B,S,E\n" + "\n".join([f"{t},{Wh[t]:.4f},{Bh[t]:.4f},{Sh[t]:.4f},{Eh[t]:.4f}" for t in range(Y)])
             st.download_button(
                 T("📥 تحميل بيانات الدولة", "📥 Download State Data"),
@@ -736,7 +815,6 @@ with tabs[4]:
             c2.metric(T("أقصى S", "Max S"), f"{np.max(Sh):.3f}")
             c3.metric(T("فجوة الاستدراج", "Istidraj Gap"), f"{max(0, idxE - idxS)} {T('عام', 'yrs')}")
             
-            # زر تحميل بيانات الأمة
             csv_data = "Year,W,B,S,E\n" + "\n".join([f"{t},{Wh[t]:.4f},{Bh[t]:.4f},{Sh[t]:.4f},{Eh[t]:.4f}" for t in range(Y)])
             st.download_button(
                 T("📥 تحميل بيانات الأمة", "📥 Download Nation Data"),
@@ -772,14 +850,12 @@ with tabs[5]:
             Wh_b[0] = W_b * 0.8; Bh_b[0] = B_b * 0.8; Sh_b[0] = Wh_b[0] * Bh_b[0]; Eh_b[0] = 0.1
             
             for t in range(1, Y):
-                # الحضارة أ
                 Wh_a[t] = np.clip(Wh_a[t-1] + 0.02 * (W_a - Wh_a[t-1]) - 0.01 * Eh_a[t-1], 0.01, 1.0)
                 Bh_a[t] = np.clip(Bh_a[t-1] + 0.02 * (B_a - Bh_a[t-1]) - 0.008 * Eh_a[t-1], 0.01, 1.0)
                 Sh_a[t] = Wh_a[t] * Bh_a[t]
                 past_a = Sh_a[max(0, t - 20)]
                 Eh_a[t] = np.clip(Eh_a[t-1] + 0.04 * (past_a - Eh_a[t-1]), 0.01, 1.0)
                 
-                # الحضارة ب
                 Wh_b[t] = np.clip(Wh_b[t-1] + 0.02 * (W_b - Wh_b[t-1]) - 0.01 * Eh_b[t-1], 0.01, 1.0)
                 Bh_b[t] = np.clip(Bh_b[t-1] + 0.02 * (B_b - Bh_b[t-1]) - 0.008 * Eh_b[t-1], 0.01, 1.0)
                 Sh_b[t] = Wh_b[t] * Bh_b[t]
@@ -814,85 +890,164 @@ with tabs[5]:
             c1.metric(T("S النهائي - حضارة أ", "Final S - Civ A"), f"{Sh_a[-1]:.3f}")
             c2.metric(T("S النهائي - حضارة ب", "Final S - Civ B"), f"{Sh_b[-1]:.3f}")
             
-            # زر تحميل بيانات المقارنة
             csv_data = "Year,S_A,E_A,S_B,E_B\n" + "\n".join([f"{t},{Sh_a[t]:.4f},{Eh_a[t]:.4f},{Sh_b[t]:.4f},{Eh_b[t]:.4f}" for t in range(Y)])
             st.download_button(
                 T("📥 تحميل بيانات المقارنة", "📥 Download Comparison Data"),
                 data=csv_data, file_name="mizan_civilizations.csv", mime="text/csv", key="dl_civ"
             )
 
-print("✅ المرحلة الرابعة مكتملة: الدولة، الأمة، الحضارة.")
-
-# ═══════════════════════════════════════════════════════════════
-# المرحلة الخامسة: الآخرة، الصراط، التذييل
-# ═══════════════════════════════════════════════════════════════
-
-# --- تبويب ٧: الآخرة ---
+# --- تبويب ٧: الشواهد التاريخية ---
 with tabs[6]:
-    st.header(T("📜 ميزان الآخرة", "📜 Hereafter Balance"))
+    st.header(T("📜 الشواهد التاريخية", "📜 Historical Evidence"))
     st.markdown(T(
-        "هذا هو الميزان الأخروي. الحسنات تتراكم مع زيادة W (الولاء)، "
-        "والسيئات تتراكم مع نقصان B (البراءة). راقب كفتي الميزان وهما تتحركان.",
+        "اختر دولة تاريخية لترى كيف تنطبق معادلة الميزان على التاريخ الفعلي. "
+        "هذه تقديرات تقريبية لـ W و B و E، لكنها تُظهر نمطاً متكرراً: انهيار القيم قبل انهيار التمكين.",
         
-        "This is the Hereafter Balance. Good deeds accumulate with increasing W (Loyalty), "
-        "and bad deeds accumulate with decreasing B (Disavowal). Watch the scales move."
+        "Select a historical nation to see how the Mizan equation applies to actual history. "
+        "These are approximate estimates of W, B, and E, but they show a recurring pattern: values collapse before empowerment."
     ))
     
-    akh_good = st.session_state.good
-    akh_bad = st.session_state.bad
-    balance = akh_good - akh_bad
-    
-    fig, ax = plt.subplots(figsize=(8, 8), facecolor='#0a0f1e')
-    ax.set_facecolor('#0a0f1e')
-    ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.axis('off')
-    
-    # عمود الميزان
-    ax.plot([5, 5], [2, 9], color='#FFD700', lw=3, alpha=0.8)
-    
-    # العارضة
-    tilt = np.clip(balance / 100, -1.5, 1.5)
-    ax.plot([3, 7], [5.5 - tilt, 5.5 + tilt], color='#FFD700', lw=4, alpha=0.9)
-    
-    # كفة الحسنات
-    gY = 5.5 - tilt - 1.5
-    ax.add_patch(Circle((3, gY), 0.8, color='#FFD700', alpha=0.3, ec='#FFD700', lw=2))
-    ax.text(3, gY, f'{akh_good:.0f}', color='#FFD700', fontsize=14, ha='center', va='center', fontweight='bold')
-    ax.text(3, gY - 1.5, T('حسنات', 'Good Deeds'), color='#FFD700', fontsize=11, ha='center')
-    
-    # كفة السيئات
-    bY = 5.5 + tilt + 1.5
-    ax.add_patch(Circle((7, bY), 0.8, color='#FF4444', alpha=0.3, ec='#FF4444', lw=2))
-    ax.text(7, bY, f'{akh_bad:.0f}', color='#FF4444', fontsize=14, ha='center', va='center', fontweight='bold')
-    ax.text(7, bY - 1.5, T('سيئات', 'Bad Deeds'), color='#FF4444', fontsize=11, ha='center')
-    
-    # نتيجة الميزان
-    if balance > 0:
-        result_text = T("راجحة", "Winning")
-        result_color = '#FFD700'
-    elif balance < 0:
-        result_text = T("خاسرة", "Losing")
-        result_color = '#FF4444'
-    else:
-        result_text = T("متوازنة", "Balanced")
-        result_color = '#888'
-    
-    ax.text(5, 1, result_text, color=result_color, fontsize=16, ha='center', fontweight='bold')
-    ax.set_title(T("الميزان الأخروي", "The Hereafter Balance"), color='white', fontsize=16, fontweight='bold')
-    st.pyplot(fig)
-    
-    col1, col2, col3 = st.columns(3)
-    col1.metric(T("الحسنات", "Good Deeds"), f"{akh_good:.1f}")
-    col2.metric(T("السيئات", "Bad Deeds"), f"{akh_bad:.1f}")
-    col3.metric(
-        T("الميزان", "Balance"), 
-        f"{balance:+.1f}",
-        delta=T("راجحة", "Winning") if balance > 0 else T("خاسرة", "Losing")
+    selected_nation = st.selectbox(
+        T("اختر دولة:", "Select a nation:"),
+        list(HISTORICAL_DATA.keys())
     )
+    
+    if selected_nation:
+        data = HISTORICAL_DATA[selected_nation]
+        W_hist = data["W"]
+        B_hist = data["B"]
+        E_hist = data["E"]
+        S_hist = W_hist * B_hist
+        
+        st.markdown(f"**{selected_nation}**")
+        st.markdown(data["desc"])
+        
+        # عرض القيم
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("W (الولاء)", f"{W_hist:.2f}")
+        c2.metric("B (البراءة)", f"{B_hist:.2f}")
+        c3.metric("S (الثبات)", f"{S_hist:.2f}")
+        c4.metric("E (التمكين)", f"{E_hist:.2f}")
+        
+        # رسم بياني يوضح الفجوة بين S و E
+        fig, ax = plt.subplots(figsize=(8, 5), facecolor='#0a0f1e')
+        ax.set_facecolor('#0a0f1e')
+        categories = ['W (الولاء)', 'B (البراءة)', 'S (الثبات)', 'E (التمكين)']
+        values = [W_hist, B_hist, S_hist, E_hist]
+        colors_bar = ['gold', '#FF5252', '#0F8', '#0FF']
+        ax.bar(categories, values, color=colors_bar, edgecolor='white', linewidth=1.5)
+        
+        # إضافة خط عند S
+        ax.axhline(y=S_hist, color='#0F8', linestyle='--', alpha=0.5, label=f'S = {S_hist:.2f}')
+        
+        # إظهار الفجوة إذا كان E > S
+        if E_hist > S_hist:
+            ax.annotate(
+                T('فجوة الاستدراج', 'Istidraj Gap'),
+                xy=(3, E_hist), xytext=(3.5, E_hist + 0.1),
+                arrowprops=dict(arrowstyle='->', color='red', lw=2),
+                color='red', fontsize=10, fontweight='bold'
+            )
+        
+        ax.set_ylim(0, 1.1)
+        ax.set_title(T("مؤشرات الدولة التاريخية", "Historical Nation Indicators"), color='white', fontsize=13)
+        ax.tick_params(colors='white')
+        ax.grid(True, alpha=0.2)
+        st.pyplot(fig)
+        
+        # تحليل
+        st.markdown(T("#### 🔍 تحليل", "#### 🔍 Analysis"))
+        if E_hist > S_hist * 1.5:
+            st.warning(T(
+                "هذه الدولة كانت في حالة استدراج واضحة: تمكين مادي مرتفع مع ثبات منخفض. "
+                "الانهيار كان قادماً لا محالة، وربما بدا مفاجئاً للناظرين.",
+                "This nation was in clear Istidraj: high material empowerment with low stability. "
+                "Collapse was inevitable, and may have seemed sudden to observers."
+            ))
+        elif S_hist > 0.7:
+            st.success(T(
+                "هذه الدولة كانت في حالة توازن عالٍ. W و B متوازنتان، والتمكين يتبع الثبات بشكل صحي.",
+                "This nation was in high balance. W and B were balanced, and empowerment followed stability healthily."
+            ))
+        else:
+            st.info(T(
+                "هذه الدولة كانت في حالة متوسطة إلى منخفضة. هناك مؤشرات على بداية تراجع.",
+                "This nation was in a moderate to low state. There are signs of decline."
+            ))
 
-# --- تبويب ٨: الصراط (مع النموذج الإبراهيمي) ---
+print("✅ المرحلة الرابعة مكتملة: الدولة، الأمة، الحضارة، الشواهد التاريخية.")
+
+# ═══════════════════════════════════════════════════════════════
+# المرحلة الخامسة: الصراط والتذييل
+# ═══════════════════════════════════════════════════════════════
+
+# --- الثوابت الإبراهيمية ---
+ABRAHAMIC_VERSE = T(
+    '﴿قَدْ كَانَتْ لَكُمْ أُسْوَةٌ حَسَنَةٌ فِي إِبْرَاهِيمَ وَالَّذِينَ مَعَهُ إِذْ قَالُوا لِقَوْمِهِمْ إِنَّا بُرَآءُ مِنكُمْ وَمِمَّا تَعْبُدُونَ مِن دُونِ اللَّهِ كَفَرْنَا بِكُمْ وَبَدَا بَيْنَنَا وَبَيْنَكُمُ الْعَدَاوَةُ وَالْبَغْضَاءُ أَبَدًا حَتَّىٰ تُؤْمِنُوا بِاللَّهِ وَحْدَهُ﴾',
+    '﴿There has certainly been for you an excellent pattern in Abraham and those with him, when they said to their people, "Indeed, we are disassociated from you and from whatever you worship other than Allah. We have denied you, and there has appeared between us and you animosity and hatred forever until you believe in Allah alone."﴾'
+)
+
+def get_spiritual_nudge(situation):
+    """توليد رسالة تحفيز روحي مبنية على آية الممتحنة (٤)."""
+    if situation == "approaching":
+        return T(
+            f'🌟 لقد اقتربتَ من مقام إبراهيم عليه السلام!\n\n'
+            f'{ABRAHAMIC_VERSE}\n\n'
+            f'إبراهيم جمع بين **الولاء لله** (W) و**البراءة من الطاغوت** (B) في آن واحد. '
+            f'هذا هو سر الأسوة الحسنة. هذا هو الثبات الكامل (S=1).\n\n'
+            f'**سؤال للتأمل:** هل في حياتك "براءة" واضحة مما يعبد من دون الله؟ '
+            f'أم أنك تجمع بين الولاء لله وولاءات أخرى؟',
+            
+            f'🌟 You are approaching the Station of Abraham!\n\n'
+            f'{ABRAHAMIC_VERSE}\n\n'
+            f'Abraham combined **loyalty to Allah** (W) and **disavowal of Taghut** (B) simultaneously. '
+            f'This is the secret of the excellent pattern. This is complete stability (S=1).'
+        )
+    elif situation == "progressing":
+        return T(
+            f'🚶 أنت في طريقك إلى مقام إبراهيم.\n\n'
+            f'لاحظ كلمة **"أَبَدًا"** في الآية: ﴿وَبَدَا بَيْنَنَا وَبَيْنَكُمُ الْعَدَاوَةُ وَالْبَغْضَاءُ أَبَدًا حَتَّىٰ تُؤْمِنُوا بِاللَّهِ وَحْدَهُ﴾\n\n'
+            f'البراءة من الطاغوت ليست مؤقتة، وليست مرحلة. إنها موقف دائم. '
+            f'والولاء لله **"وَحْدَهُ"**: لا شريك له في الولاء.\n\n'
+            f'**تحدي اليوم:** راجع حياتك. هل هناك شيء تعطيه من ولائك لغير الله؟',
+            
+            f'🚶 You are on your way to the Station of Abraham.\n\n'
+            f'Note the word **"forever"**: animosity and hatred forever, until you believe in Allah alone.\n\n'
+            f'Disavowal of Taghut is not temporary. Loyalty is to Allah **alone**.'
+        )
+    elif situation == "sin":
+        return T(
+            f'⚠️ لقد ابتعدتَ عن الصراط قليلاً. لكن إبراهيم يعلمك كيف تعود.\n\n'
+            f'﴿إِنَّا بُرَآءُ مِنكُمْ﴾ — أعلنها صريحة كما أعلنها إبراهيم. '
+            f'جدد براءتك. جدد ولاءك. التوبة هي العودة إلى الأسوة الحسنة.\n\n'
+            f'**خطوة عملية:** استحضر في قلبك الآن معنى "لا إله إلا الله". '
+            f'انفِ كل طاغوت، وأثبتِ الله وحده.',
+            
+            f'⚠️ You have strayed from the path. But Abraham teaches you how to return.\n\n'
+            f'Declare it clearly as Abraham did: "We are disassociated from you." '
+            f'Renew your disavowal. Renew your loyalty. Repentance is returning to the excellent pattern.'
+        )
+    elif situation == "repentance":
+        return T(
+            f'🕋 لقد تبتَ وعدتَ إلى الصراط!\n\n'
+            f'{ABRAHAMIC_VERSE}\n\n'
+            f'إبراهيم نفسه كان بشرًا. لم يكن ملكًا. لكنه **اختار** أن يكون في مقام (1,1). '
+            f'وأنت أيضًا تختار. وكل مرة تختار فيها الله، تقترب من هذا المقام.\n\n'
+            f'**﴿إِنَّ اللَّهَ يُحِبُّ التَّوَّابِينَ﴾**',
+            
+            f'🕋 You have repented and returned to the path!\n\n'
+            f'{ABRAHAMIC_VERSE}\n\n'
+            f'Abraham himself was human. But he **chose** to be at the Station of (1,1). '
+            f'You too choose. And every time you choose Allah, you draw closer to this station.'
+        )
+    else:
+        return ""
+
+# --- تبويب ٨: الصراط (مع النموذج الإبراهيمي والتحفيز الروحي) ---
 with tabs[7]:
     st.header(T("📐 هندسة الصراط – النموذج الإبراهيمي", "📐 Path Geometry – The Abrahamic Model"))
     
+    # --- شرح النموذج الإبراهيمي ---
     st.markdown(T("""
     ### 🕋 النموذج الإبراهيمي: الجيوديسي المثالي
     
@@ -903,7 +1058,9 @@ with tabs[7]:
     - **W = 1**: ﴿إِذْ قَالَ لَهُ رَبُّهُ أَسْلِمْ ۖ قَالَ أَسْلَمْتُ لِرَبِّ الْعَالَمِينَ﴾
     - **B = 1**: ﴿إِنَّنِي بَرَاءٌ مِّمَّا تَعْبُدُونَ﴾
     
-    فكان ثباته (S) كاملاً، واستحق أن يكون إمامًا للناس: ﴿إِنِّي جَاعِلُكَ لِلنَّاسِ إِمَامًا﴾.
+    والآية الجامعة التي تعلن معادلة الميزان بكل وضوح:
+    
+    ﴿قَدْ كَانَتْ لَكُمْ أُسْوَةٌ حَسَنَةٌ فِي إِبْرَاهِيمَ وَالَّذِينَ مَعَهُ إِذْ قَالُوا لِقَوْمِهِمْ إِنَّا بُرَآءُ مِنكُمْ وَمِمَّا تَعْبُدُونَ مِن دُونِ اللَّهِ كَفَرْنَا بِكُمْ وَبَدَا بَيْنَنَا وَبَيْنَكُمُ الْعَدَاوَةُ وَالْبَغْضَاءُ أَبَدًا حَتَّىٰ تُؤْمِنُوا بِاللَّهِ وَحْدَهُ﴾
     
     **الخط الذهبي** في الرسم البياني هو مسار إبراهيم. إنه أقصر طريق بين الفطرة ورضا الله.
     وكل إنسان مدعو لاتباع هذا المسار: ﴿وَاتَّبَعَ مِلَّةَ إِبْرَاهِيمَ حَنِيفًا﴾.
@@ -911,28 +1068,23 @@ with tabs[7]:
     """
     ### 🕋 The Abrahamic Model: The Ideal Geodesic
     
-    Abraham (AS) is the "Father of Prophets" and the "Friend of Allah". He was a nation devoutly obedient to Allah, upright.
+    Abraham (AS) is the "Father of Prophets" and the "Friend of Allah".
     His path in (W, B) space is the **ideal geodesic**: the straight line with zero curvature (κ = 0).
     
     **Why Abraham?** Because he achieved perfection in both poles:
     - **W = 1**: ﴿When his Lord said to him, "Submit", he said "I have submitted to the Lord of the worlds."﴾
     - **B = 1**: ﴿Indeed, I am disassociated from that which you worship﴾
     
-    His stability (S) was complete, and he deserved to be an Imam for humanity.
+    And the comprehensive verse that declares the Mizan equation clearly:
+    
+    ﴿There has certainly been for you an excellent pattern in Abraham... they said: "We are disassociated from you and from whatever you worship other than Allah... until you believe in Allah alone."﴾
     
     **The golden line** in the graph is Abraham's path. It is the shortest path between fitrah and Allah's pleasure.
-    Every human is invited to follow this path: ﴿And follow the religion of Abraham, inclining toward truth.﴾
     """))
     
     st.markdown("---")
-    st.markdown(T(
-        "الصراط المستقيم هو المسار الذي تبقى فيه جميع المستويات في أعلى قيمها. "
-        "عندما تنهار أي قيمة (بالمعصية)، ينحني المسار. والتوبة تعيده إلى الاستقامة.",
-        
-        "The Straight Path is where all levels remain at their peak. "
-        "When any value collapses (through sin), the path curves. Repentance straightens it."
-    ))
     
+    # --- أزرار التفاعل ---
     c1, c2, c3 = st.columns(3)
     
     with c1:
@@ -950,6 +1102,16 @@ with tabs[7]:
             W_new, B_new = compute_WB_final(final_vals)
             st.session_state.path_W.append(W_new); st.session_state.path_B.append(B_new)
             st.session_state.path_kappa.append(curvature(st.session_state.path_W, st.session_state.path_B))
+            
+            # تحفيز روحي من آية الممتحنة
+            dist = np.sqrt((1 - W_new)**2 + (1 - B_new)**2)
+            if dist < 0.3:
+                st.session_state.spiritual_nudge = get_spiritual_nudge("approaching")
+            elif dist < 0.5:
+                st.session_state.spiritual_nudge = get_spiritual_nudge("progressing")
+            else:
+                st.session_state.spiritual_nudge = None
+            
             st.rerun()
     
     with c2:
@@ -968,6 +1130,8 @@ with tabs[7]:
             W_new, B_new = compute_WB_final(final_vals)
             st.session_state.path_W.append(W_new); st.session_state.path_B.append(B_new)
             st.session_state.path_kappa.append(curvature(st.session_state.path_W, st.session_state.path_B))
+            
+            st.session_state.spiritual_nudge = get_spiritual_nudge("sin")
             st.rerun()
     
     with c3:
@@ -980,16 +1144,28 @@ with tabs[7]:
             W_new, B_new = compute_WB_final(final_vals)
             st.session_state.path_W.append(W_new); st.session_state.path_B.append(B_new)
             st.session_state.path_kappa.append(0.0)
+            
+            st.session_state.spiritual_nudge = get_spiritual_nudge("repentance")
             st.rerun()
     
+    # --- عرض رسالة التحفيز الروحي ---
+    if hasattr(st.session_state, 'spiritual_nudge') and st.session_state.spiritual_nudge:
+        st.markdown(f"""
+        <div style='background:rgba(20,30,60,0.9);border-radius:12px;padding:20px;border:1px solid #FFD700;margin:15px 0;text-align:center;line-height:2.2;'>
+            <p style='color:#FFD700;font-size:1.1em;margin:0;white-space:pre-line;'>{st.session_state.spiritual_nudge}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # --- زر إعادة ---
     if st.button(T("🔄 إعادة الرحلة", "🔄 Reset Path"), key="btn_reset_path", use_container_width=True):
         for l in ["faith","worship","transactions","morals","enjoining","hudud","jihad"]:
             setattr(st.session_state, f"path_{l}", [0.0])
         st.session_state.path_W = [0.5]; st.session_state.path_B = [0.5]
         st.session_state.path_kappa = [0.0]
+        st.session_state.spiritual_nudge = None
         st.rerun()
     
-    # رسم المسار
+    # --- رسم المسار ---
     fig, axes = plt.subplots(1, 2, figsize=(16, 7), facecolor='#0a0f1e')
     
     ax1 = axes[0]
@@ -998,10 +1174,9 @@ with tabs[7]:
     ax1.set_xlabel("B (البراءة)", color='white'); ax1.set_ylabel("W (الولاء)", color='white')
     ax1.set_title(T("مسارك في فضاء (W, B) – النموذج الإبراهيمي", "Your Path in (W, B) Space – The Abrahamic Model"), color='white', fontsize=13)
     
-    # الصراط المستقيم – مسار إبراهيم (الجيوديسي)
+    # الصراط المستقيم – مسار إبراهيم
     ax1.plot([0.5, 1], [0.5, 1], '--', color='#FFD700', lw=3, alpha=0.8, 
-             label=T("✦ مسار إبراهيم (الجيوديسي: κ = 0)", "✦ Abraham's Path (Geodesic: κ = 0)"))
-    # نقطة الكمال – مقام إبراهيم
+             label=T("✦ مسار إبراهيم عليه السلام (الجيوديسي: κ = 0)", "✦ Abraham's Path (Geodesic: κ = 0)"))
     ax1.scatter([1], [1], s=200, c='#FFD700', edgecolors='white', linewidth=3, zorder=10, 
                 label=T("⭐ مقام إبراهيم (الكمال: 1,1)", "⭐ Station of Abraham (Perfection: 1,1)"))
     
@@ -1031,7 +1206,7 @@ with tabs[7]:
     
     plt.tight_layout(); st.pyplot(fig)
     
-    # مؤشرات المستويات
+    # --- مؤشرات المستويات ---
     st.divider()
     st.subheader(T("📊 المستويات الحية", "📊 Live Levels"))
     
@@ -1056,7 +1231,7 @@ with tabs[7]:
             </div>
             """, unsafe_allow_html=True)
     
-    # مؤشرات المسار
+    # --- مؤشرات المسار ---
     st.divider()
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("W (الولاء)", f"{pW[-1]:.3f}")
@@ -1066,28 +1241,28 @@ with tabs[7]:
     on_path = current_kappa < 0.03
     c4.metric(T("الصراط؟", "On Path?"), T("✅ نعم", "✅ YES") if on_path else T("⚠️ لا", "⚠️ NO"))
     
-    # المسافة إلى مقام إبراهيم
+    # --- المسافة إلى مقام إبراهيم ---
     st.divider()
     dist_to_abraham = np.sqrt((1 - pW[-1])**2 + (1 - pB[-1])**2)
     st.markdown(f"""
     <div style='text-align:center;padding:15px;background:rgba(20,30,60,0.8);border-radius:10px;border:1px solid #FFD700;'>
-        <p style='color:#FFD700;font-size:0.9em;margin:0;'>
-            {T(f'المسافة إلى مقام إبراهيم (الكمال): {dist_to_abraham:.3f}', f'Distance to Station of Abraham (Perfection): {dist_to_abraham:.3f}')}
+        <p style='color:#FFD700;font-size:1em;margin:0;'>
+            {T(f'📏 المسافة إلى مقام إبراهيم (الكمال): {dist_to_abraham:.3f}', f'📏 Distance to Station of Abraham (Perfection): {dist_to_abraham:.3f}')}
         </p>
         <p style='color:#AAA;font-size:0.8em;margin:5px 0 0 0;'>
-            {T('﴿وَاتَّبَعَ مِلَّةَ إِبْرَاهِيمَ حَنِيفًا﴾', '﴿And follow the religion of Abraham, inclining toward truth.﴾')}
+            {T('﴿قَدْ كَانَتْ لَكُمْ أُسْوَةٌ حَسَنَةٌ فِي إِبْرَاهِيمَ﴾ [الممتحنة: ٤]', '﴿There has certainly been for you an excellent pattern in Abraham.﴾ [Al-Mumtahanah: 4]')}
         </p>
     </div>
     """, unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════════════════════════
-# التذييل
+# 🏁 التذييل
 # ═══════════════════════════════════════════════════════════════
 st.markdown("---")
 st.markdown(f"""
 <div style="text-align:center;color:#888;font-size:0.9em;line-height:1.8;">
     <p style="color:#FFD700;font-size:1.3em;">⚖️ مختبر الميزان</p>
-    <p>{T('القانون الواحد من الذرة إلى الحضارة', 'The One Law from Atom to Civilization')}</p>
+    <p>{T('سفينة نوح الرقمية – القانون الواحد من الذرة إلى الحضارة', 'The Digital Ark – The One Law from Atom to Civilization')}</p>
     <p>S = W × B | ق = ١٠٠ = الحق = الميزان</p>
     <p>© 2026 علي عادل العاطفي | Ali Adel Alatifi</p>
     <p style="font-size:0.8em;margin-top:10px;">
@@ -1100,4 +1275,4 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 print("✅ المرحلة الخامسة والأخيرة مكتملة.")
-print("✅✅✅ تم بناء مختبر الميزان – النسخة النهائية المتكاملة.")
+print("✅✅✅ تم بناء مختبر الميزان – سفينة نوح الرقمية.")
