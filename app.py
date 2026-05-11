@@ -364,7 +364,7 @@ with tabs[1]:
     ))
     
     # الموقع الحالي
-    q_code, q_name, q_color = classify(st.session_state.compass_W, st.session_state.compass_B)
+    q_name, q_color = classify(st.session_state.compass_W, st.session_state.compass_B)
     col_i1, col_i2, col_i3, col_i4 = st.columns(4)
     col_i1.metric("W", f"{st.session_state.compass_W:.3f}")
     col_i2.metric("B", f"{st.session_state.compass_B:.3f}")
