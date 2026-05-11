@@ -8,18 +8,12 @@ from io import BytesIO
 import warnings
 warnings.filterwarnings('ignore')
 
-# ═══════════════════════════════════════════════════════════════
-# إعداد الصفحة
-# ═══════════════════════════════════════════════════════════════
 st.set_page_config(page_title="مختبر الميزان", page_icon="⚖️", layout="wide")
 
 if "lang" not in st.session_state: st.session_state.lang = "ar"
 L = st.session_state.lang
 T = lambda ar, en: ar if L == "ar" else en
 
-# ═══════════════════════════════════════════════════════════════
-# التنسيق
-# ═══════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Amiri+Quran&display=swap');
@@ -28,17 +22,14 @@ h1, h2, h3 { font-family: 'Cairo', sans-serif; color: #FFD700; }
 p, label, div { font-family: 'Cairo', sans-serif; color: #E0E0E0; }
 .golden-title { font-size: 3.5em; font-weight: 900; text-align: center; background: linear-gradient(180deg, #FFF8DC 0%, #FFD700 30%, #B8860B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 10px 0; }
 .verse-text { text-align: center; color: #FFD700; font-family: 'Amiri Quran', 'Cairo', serif; font-size: 1.3em; margin: 15px 0; line-height: 2; }
-.stButton > button { background: linear-gradient(135deg, rgba(20,30,60,0.9), rgba(30,40,70,0.9)); border: 2px solid #FFD700; color: #FFD700; border-radius: 12px; padding: 12px 25px; font-weight: bold; font-size: 1em; width: 100%; transition: all 0.3s ease; font-family: 'Cairo', sans-serif; }
+.stButton > button { background: linear-gradient(135deg, rgba(20,30,60,0.9), rgba(30,40,70,0.9)); border: 2px solid #FFD700; color: #FFD700; border-radius: 12px; padding: 12px 25px; font-weight: bold; font-size: 1em; width: 100%; transition: all 0.3s ease; }
 .stButton > button:hover { background: #FFD700; color: #0a0f1e; box-shadow: 0 0 25px rgba(255,215,0,0.5); transform: scale(1.02); }
 .stTabs [data-baseweb="tab-list"] { gap: 5px; background: rgba(13,21,40,0.8); border-radius: 15px; padding: 5px; }
-.stTabs [data-baseweb="tab"] { background: transparent; border: 1px solid rgba(255,215,0,0.3); border-radius: 10px; color: #CCC; font-family: 'Cairo', sans-serif; padding: 10px 18px; }
+.stTabs [data-baseweb="tab"] { background: transparent; border: 1px solid rgba(255,215,0,0.3); border-radius: 10px; color: #CCC; padding: 10px 18px; }
 .stTabs [aria-selected="true"] { background: rgba(255,215,0,0.15) !important; border: 2px solid #FFD700 !important; color: #FFD700 !important; font-weight: bold; }
 </style>
 """, unsafe_allow_html=True)
 
-# ═══════════════════════════════════════════════════════════════
-# دوال أساسية
-# ═══════════════════════════════════════════════════════════════
 def star_color(w, b):
     if w >= 0.55 and b >= 0.55: return '#FFD700'
     elif w >= 0.55 and b < 0.45: return '#E0E0E0'
@@ -64,180 +55,103 @@ def calc_S(W, B, E, q=1.0):
     return np.clip(W * B * (1 + q * 0.5), 0.001, 1.0)
 
 # ═══════════════════════════════════════════════════════════════
-# القاموس الشامل للقيم الإسلامية المؤثرة على W و B
+# النظام الهرمي للقيم الإسلامية
 # ═══════════════════════════════════════════════════════════════
-ISLAMIC_VALUES = {
-    "W_generators": {
-        "prayer": {"label": T("الصلاة", "Prayer"), "weight": 0.15, "aya": "﴿إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنكَرِ﴾"},
-        "fasting": {"label": T("الصوم", "Fasting"), "weight": 0.10, "aya": "﴿يَا أَيُّهَا الَّذِينَ آمَنُوا كُتِبَ عَلَيْكُمُ الصِّيَامُ﴾"},
-        "hajj": {"label": T("الحج", "Hajj"), "weight": 0.08, "aya": "﴿وَلِلَّهِ عَلَى النَّاسِ حِجُّ الْبَيْتِ﴾"},
-        "charity": {"label": T("الصدقة", "Charity"), "weight": 0.07, "aya": "﴿مَّثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ﴾"},
-        "remembrance": {"label": T("ذكر الله", "Dhikr"), "weight": 0.12, "aya": "﴿أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ﴾"},
-        "trust": {"label": T("التوكل على الله", "Tawakkul"), "weight": 0.10, "aya": "﴿وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ﴾"},
-        "quran": {"label": T("تلاوة القرآن", "Reciting Quran"), "weight": 0.10, "aya": "﴿الَّذِينَ آتَيْنَاهُمُ الْكِتَابَ يَتْلُونَهُ حَقَّ تِلَاوَتِهِ﴾"},
-        "love_allah": {"label": T("حب الله ورسوله", "Love of Allah & Messenger"), "weight": 0.15, "aya": "﴿وَالَّذِينَ آمَنُوا أَشَدُّ حُبًّا لِّلَّهِ﴾"},
-        "alliance_believers": {"label": T("موالاة المؤمنين", "Alliance with Believers"), "weight": 0.12, "aya": "﴿إِنَّمَا وَلِيُّكُمُ اللَّهُ وَرَسُولُهُ وَالَّذِينَ آمَنُوا﴾"},
-        "support_oppressed": {"label": T("نصرة المظلومين", "Supporting Oppressed"), "weight": 0.10, "aya": "﴿وَمَا لَكُمْ لَا تُقَاتِلُونَ فِي سَبِيلِ اللَّهِ وَالْمُسْتَضْعَفِينَ﴾"},
-        "truthfulness": {"label": T("الصدق", "Truthfulness"), "weight": 0.10, "aya": "﴿يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَكُونُوا مَعَ الصَّادِقِينَ﴾"},
-        "keeping_promises": {"label": T("الوفاء بالعهد", "Keeping Promises"), "weight": 0.08, "aya": "﴿وَأَوْفُوا بِالْعَهْدِ إِنَّ الْعَهْدَ كَانَ مَسْئُولًا﴾"},
-        "gratitude": {"label": T("الشكر", "Gratitude"), "weight": 0.10, "aya": "﴿لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ﴾"},
-        "patience": {"label": T("الصبر", "Patience"), "weight": 0.12, "aya": "﴿إِنَّ اللَّهَ مَعَ الصَّابِرِينَ﴾"},
-        "repentance": {"label": T("التوبة", "Repentance"), "weight": 0.15, "aya": "﴿إِنَّ اللَّهَ يُحِبُّ التَّوَّابِينَ﴾"},
-        "knowledge": {"label": T("طلب العلم", "Seeking Knowledge"), "weight": 0.08, "aya": "﴿وَقُل رَّبِّ زِدْنِي عِلْمًا﴾"},
-        "kindness_parents": {"label": T("بر الوالدين", "Kindness to Parents"), "weight": 0.12, "aya": "﴿وَبِالْوَالِدَيْنِ إِحْسَانًا﴾"},
-        "family_ties": {"label": T("صلة الرحم", "Family Ties"), "weight": 0.10, "aya": "﴿وَاتَّقُوا اللَّهَ الَّذِي تَسَاءَلُونَ بِهِ وَالْأَرْحَامَ﴾"},
-        "humility": {"label": T("التواضع", "Humility"), "weight": 0.08, "aya": "﴿وَعِبَادُ الرَّحْمَٰنِ الَّذِينَ يَمْشُونَ عَلَى الْأَرْضِ هَوْنًا﴾"},
-        "mercy": {"label": T("الرحمة", "Mercy"), "weight": 0.10, "aya": "﴿وَمَا أَرْسَلْنَاكَ إِلَّا رَحْمَةً لِّلْعَالَمِينَ﴾"},
+ISLAMIC_SYSTEM = {
+    "faith": {
+        "label": T("الإيمان", "Faith"),
+        "desc": T("الإيمان بالله وملائكته وكتبه ورسله واليوم الآخر والقدر", "Belief in Allah, His angels, books, messengers, Last Day, and Decree"),
+        "weight": 0.30, "aya": "﴿آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ﴾"
     },
-    "B_generators": {
-        "disavowal_taghut": {"label": T("البراءة من الطاغوت", "Disavowal of Taghut"), "weight": 0.20, "aya": "﴿فَمَن يَكْفُرْ بِالطَّاغُوتِ﴾"},
-        "enjoining_good": {"label": T("الأمر بالمعروف", "Enjoining Good"), "weight": 0.15, "aya": "﴿وَلْتَكُن مِّنكُمْ أُمَّةٌ يَدْعُونَ إِلَى الْخَيْرِ﴾"},
-        "forbidding_evil": {"label": T("النهي عن المنكر", "Forbidding Evil"), "weight": 0.18, "aya": "﴿وَيَنْهَوْنَ عَنِ الْمُنكَرِ﴾"},
-        "jihad_self": {"label": T("جهاد النفس", "Jihad of Self"), "weight": 0.15, "aya": "﴿وَجَاهِدُوا فِي اللَّهِ حَقَّ جِهَادِهِ﴾"},
-        "jihad_wealth": {"label": T("الجهاد بالمال", "Jihad with Wealth"), "weight": 0.12, "aya": "﴿وَجَاهِدُوا بِأَمْوَالِكُمْ وَأَنفُسِكُمْ﴾"},
-        "chastity": {"label": T("العفة", "Chastity"), "weight": 0.12, "aya": "﴿وَلْيَسْتَعْفِفِ الَّذِينَ لَا يَجِدُونَ نِكَاحًا﴾"},
-        "hatred_sins": {"label": T("بغض المعاصي", "Hatred of Sins"), "weight": 0.10, "aya": "﴿وَكَرَّهَ إِلَيْكُمُ الْكُفْرَ وَالْفُسُوقَ وَالْعِصْيَانَ﴾"},
-        "reject_injustice": {"label": T("رفض الظلم", "Rejecting Injustice"), "weight": 0.15, "aya": "﴿وَلَا تَرْكَنُوا إِلَى الَّذِينَ ظَلَمُوا﴾"},
-        "avoid_usury": {"label": T("اجتناب الربا", "Avoiding Usury"), "weight": 0.10, "aya": "﴿وَذَرُوا مَا بَقِيَ مِنَ الرِّبَا﴾"},
-        "lowering_gaze": {"label": T("غض البصر", "Lowering Gaze"), "weight": 0.08, "aya": "﴿قُل لِّلْمُؤْمِنِينَ يَغُضُّوا مِنْ أَبْصَارِهِمْ﴾"},
-        "honest_testimony": {"label": T("الشهادة بالحق", "Truthful Testimony"), "weight": 0.10, "aya": "﴿وَلَا تَكْتُمُوا الشَّهَادَةَ﴾"},
-        "avoid_backbiting": {"label": T("ترك الغيبة", "Avoiding Backbiting"), "weight": 0.10, "aya": "﴿وَلَا يَغْتَب بَّعْضُكُم بَعْضًا﴾"},
-        "avoid_lies": {"label": T("ترك الكذب", "Avoiding Lies"), "weight": 0.12, "aya": "﴿وَاجْتَنِبُوا قَوْلَ الزُّورِ﴾"},
-        "apply_sharia": {"label": T("تحكيم شرع الله", "Applying Sharia"), "weight": 0.18, "aya": "﴿وَمَن لَّمْ يَحْكُم بِمَا أَنزَلَ اللَّهُ﴾"},
-        "justice": {"label": T("العدل", "Justice"), "weight": 0.15, "aya": "﴿إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ﴾"},
-        "consultation": {"label": T("الشورى", "Consultation"), "weight": 0.10, "aya": "﴿وَأَمْرُهُمْ شُورَىٰ بَيْنَهُمْ﴾"},
-        "guard_chastity": {"label": T("حفظ الفرج", "Guarding Chastity"), "weight": 0.12, "aya": "﴿وَالَّذِينَ هُمْ لِفُرُوجِهِمْ حَافِظُونَ﴾"},
-        "avoid_fraud": {"label": T("ترك الغش", "Avoiding Fraud"), "weight": 0.10, "aya": "﴿مَنْ غَشَّنَا فَلَيْسَ مِنَّا﴾"},
-        "love_hate_allah": {"label": T("الحب والبغض في الله", "Love & Hate for Allah"), "weight": 0.15, "aya": "﴿أَشِدَّاءُ عَلَى الْكُفَّارِ رُحَمَاءُ بَيْنَهُمْ﴾"},
-    }
+    "worship": {
+        "label": T("العبادات", "Worship"),
+        "desc": T("الشهادتان، الصلاة، الزكاة، الصوم، الحج", "Shahada, Prayer, Zakat, Fasting, Hajj"),
+        "weight": 0.25, "aya": "﴿بُنِيَ الْإِسْلَامُ عَلَىٰ خَمْسٍ﴾"
+    },
+    "transactions": {
+        "label": T("المعاملات", "Transactions"),
+        "desc": T("تحكيم شرع الله، العدل، الشورى، إقامة الحدود، تحريم الربا، الأمانة", "Sharia, Justice, Consultation, Limits, No Usury, Trust"),
+        "weight": 0.20, "aya": "﴿فَاحْكُم بَيْنَهُم بِمَا أَنزَلَ اللَّهُ﴾"
+    },
+    "morals": {
+        "label": T("الأخلاق", "Morals"),
+        "desc": T("موالاة المؤمنين، التعاون على البر، التواصي بالحق والصبر، الصدق، الوفاء", "Alliance, Cooperation, Truth, Patience, Honesty, Promises"),
+        "weight": 0.15, "aya": "﴿وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ﴾"
+    },
+    "jihad": {
+        "label": T("الجهاد", "Jihad"),
+        "desc": T("الأمر بالمعروف، النهي عن المنكر، جهاد النفس والمال، نصرة الحق", "Enjoining Good, Forbidding Evil, Jihad of Self & Wealth, Supporting Truth"),
+        "weight": 0.10, "aya": "﴿وَجَاهِدُوا فِي اللَّهِ حَقَّ جِهَادِهِ﴾"
+    },
+    "disavowal": {
+        "label": T("البراءة من الطاغوت", "Disavowal of Taghut"),
+        "desc": T("الكفر بالطاغوت وأوليائه، البراءة من الشرك، بغض الكفر والنفاق", "Disbelief in Taghut, Disavowal of Polytheism, Hatred of Disbelief"),
+        "weight": 0.30, "aya": "﴿فَمَن يَكْفُرْ بِالطَّاغُوتِ وَيُؤْمِن بِاللَّهِ﴾"
+    },
 }
 
-# ═══════════════════════════════════════════════════════════════
-# مصفوفة الترابط بين القيم (الديناميكية الحية للإسلام الحنيف)
-# ═══════════════════════════════════════════════════════════════
-VALUE_LINKS = {
-    "prayer": ["truthfulness", "chastity", "humility", "patience", "remembrance"],
-    "fasting": ["chastity", "patience", "humility", "hatred_sins", "jihad_self"],
-    "charity": ["gratitude", "humility", "mercy", "support_oppressed"],
-    "hajj": ["love_allah", "repentance", "alliance_believers", "humility"],
-    "remembrance": ["love_allah", "trust", "patience", "gratitude"],
-    "quran": ["knowledge", "truthfulness", "love_allah", "remembrance"],
-    "knowledge": ["truthfulness", "enjoining_good", "forbidding_evil", "apply_sharia"],
-    "repentance": ["prayer", "charity", "humility", "love_allah"],
-    "truthfulness": ["trust", "keeping_promises", "honest_testimony", "alliance_believers"],
-    "patience": ["gratitude", "trust", "jihad_self", "humility"],
-    "gratitude": ["prayer", "charity", "remembrance", "love_allah"],
-    "love_allah": ["prayer", "remembrance", "jihad_self", "repentance"],
-    "alliance_believers": ["support_oppressed", "enjoining_good", "jihad_wealth", "apply_sharia"],
-    "enjoining_good": ["forbidding_evil", "apply_sharia", "jihad_self", "honest_testimony"],
-    "forbidding_evil": ["disavowal_taghut", "jihad_self", "reject_injustice", "hatred_sins"],
-    "disavowal_taghut": ["jihad_self", "jihad_wealth", "love_hate_allah", "forbidding_evil"],
-    "jihad_self": ["chastity", "patience", "avoid_lies", "lowering_gaze"],
-    "jihad_wealth": ["charity", "support_oppressed", "apply_sharia"],
-    "apply_sharia": ["justice", "consultation", "reject_injustice", "avoid_usury"],
-    "justice": ["reject_injustice", "support_oppressed", "honest_testimony", "alliance_believers"],
-    "humility": ["mercy", "patience", "gratitude", "kindness_parents"],
-    "mercy": ["charity", "support_oppressed", "kindness_parents", "family_ties"],
-}
-
-# ═══════════════════════════════════════════════════════════════
-# دالة حساب W و B من القيم المترابطة (الضرب لا الجمع)
-# ═══════════════════════════════════════════════════════════════
-def compute_WB_interlinked(input_values, base_W=0.05, base_B=0.05, iterations=3):
-    enhanced = input_values.copy()
-    for _ in range(iterations):
-        new_enhanced = enhanced.copy()
-        for key in enhanced:
-            if key in VALUE_LINKS:
-                linked_sum = 0
-                for linked_key in VALUE_LINKS[key]:
-                    linked_sum += enhanced.get(linked_key, 0.5)
-                if len(VALUE_LINKS[key]) > 0:
-                    avg_linked = linked_sum / len(VALUE_LINKS[key])
-                    new_enhanced[key] = enhanced[key] * 0.7 + avg_linked * 0.3
-        enhanced = new_enhanced
+def compute_WB_hierarchical(faith, worship, transactions, morals, jihad, disavowal):
+    W = faith
+    W *= (0.3 + 0.7 * worship)
+    W *= (0.3 + 0.7 * transactions)
+    W *= (0.4 + 0.6 * morals)
+    W *= (0.5 + 0.5 * jihad)
     
-    W_total = base_W
-    for key in ISLAMIC_VALUES["W_generators"]:
-        if key in enhanced:
-            W_total += enhanced[key] * ISLAMIC_VALUES["W_generators"][key]["weight"]
+    B = disavowal
+    B *= (0.3 + 0.7 * transactions)
+    B *= (0.4 + 0.6 * morals)
+    B *= (0.5 + 0.5 * jihad)
     
-    B_total = base_B
-    for key in ISLAMIC_VALUES["B_generators"]:
-        if key in enhanced:
-            B_total += enhanced[key] * ISLAMIC_VALUES["B_generators"][key]["weight"]
-    
-    return np.clip(W_total, 0.01, 1.0), np.clip(B_total, 0.01, 1.0)
+    return np.clip(W, 0.01, 1.0), np.clip(B, 0.01, 1.0)
 
-# ═══════════════════════════════════════════════════════════════
-# دالة حساب W و B البسيطة (بدون ترابط)
-# ═══════════════════════════════════════════════════════════════
-def compute_WB_simple(input_values, base_W=0.1, base_B=0.1):
-    W_total = base_W
-    B_total = base_B
-    for key, val in input_values.items():
-        if key in ISLAMIC_VALUES["W_generators"]:
-            W_total += val * ISLAMIC_VALUES["W_generators"][key]["weight"]
-        elif key in ISLAMIC_VALUES["B_generators"]:
-            B_total += val * ISLAMIC_VALUES["B_generators"][key]["weight"]
-    return np.clip(W_total, 0.01, 1.0), np.clip(B_total, 0.01, 1.0)
-
-# ═══════════════════════════════════════════════════════════════
-# دالة إنشاء منزلقات القيم
-# ═══════════════════════════════════════════════════════════════
-def create_value_sliders(prefix, W_defaults=None, B_defaults=None):
-    if W_defaults is None: W_defaults = {k: 0.5 for k in ISLAMIC_VALUES["W_generators"]}
-    if B_defaults is None: B_defaults = {k: 0.5 for k in ISLAMIC_VALUES["B_generators"]}
+def create_hierarchical_sliders(prefix, defaults=None):
+    if defaults is None:
+        defaults = {"faith":0.8, "worship":0.7, "transactions":0.6, "morals":0.6, "jihad":0.5, "disavowal":0.8}
     values = {}
-    col_w, col_b = st.columns(2)
-    with col_w:
-        st.markdown(f"### 🤍 {T('مولدات الولاء (W)', 'Loyalty Generators (W)')}")
-        for key, data in ISLAMIC_VALUES["W_generators"].items():
-            values[key] = st.slider(data["label"], 0.0, 1.0, W_defaults.get(key, 0.5), 0.05, key=f"{prefix}_W_{key}", help=data["aya"])
-    with col_b:
-        st.markdown(f"### ❤️ {T('مولدات البراءة (B)', 'Disavowal Generators (B)')}")
-        for key, data in ISLAMIC_VALUES["B_generators"].items():
-            values[key] = st.slider(data["label"], 0.0, 1.0, B_defaults.get(key, 0.5), 0.05, key=f"{prefix}_B_{key}", help=data["aya"])
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(f"### 🤍 {T('مولدات الولاء (W)','Loyalty Generators (W)')}")
+        values["faith"] = st.slider(f"🕌 {ISLAMIC_SYSTEM['faith']['label']}", 0.0, 1.0, defaults.get("faith",0.8), 0.05, key=f"{prefix}_faith", help=ISLAMIC_SYSTEM["faith"]["desc"])
+        values["worship"] = st.slider(f"🤲 {ISLAMIC_SYSTEM['worship']['label']}", 0.0, 1.0, defaults.get("worship",0.7), 0.05, key=f"{prefix}_worship", help=ISLAMIC_SYSTEM["worship"]["desc"])
+        values["transactions"] = st.slider(f"⚖️ {ISLAMIC_SYSTEM['transactions']['label']}", 0.0, 1.0, defaults.get("transactions",0.6), 0.05, key=f"{prefix}_transactions", help=ISLAMIC_SYSTEM["transactions"]["desc"])
+    with col2:
+        st.markdown(f"### ❤️ {T('مولدات البراءة (B)','Disavowal Generators (B)')}")
+        values["disavowal"] = st.slider(f"🚫 {ISLAMIC_SYSTEM['disavowal']['label']}", 0.0, 1.0, defaults.get("disavowal",0.8), 0.05, key=f"{prefix}_disavowal", help=ISLAMIC_SYSTEM["disavowal"]["desc"])
+        values["morals"] = st.slider(f"🌸 {ISLAMIC_SYSTEM['morals']['label']}", 0.0, 1.0, defaults.get("morals",0.6), 0.05, key=f"{prefix}_morals", help=ISLAMIC_SYSTEM["morals"]["desc"])
+        values["jihad"] = st.slider(f"⚔️ {ISLAMIC_SYSTEM['jihad']['label']}", 0.0, 1.0, defaults.get("jihad",0.5), 0.05, key=f"{prefix}_jihad", help=ISLAMIC_SYSTEM["jihad"]["desc"])
     return values
 
-# ═══════════════════════════════════════════════════════════════
-# دالة عرض مصفوفة الترابط
-# ═══════════════════════════════════════════════════════════════
-def show_value_links(values_dict):
-    with st.expander(T("🔗 مصفوفة الترابط بين القيم", "🔗 Value Interconnection Matrix"), expanded=False):
-        st.markdown(T(
-            "هذه المصفوفة تُظهر كيف تترابط القيم الإسلامية. كل قيمة تؤثر في غيرها. "
-            "العلاقة **ضرب لا جمع**: انهيار قيمة واحدة يُضعف المنظومة كلها.",
-            "This matrix shows how Islamic values interconnect. Each value affects others. "
-            "The relationship is **multiplication, not addition**."
-        ))
-        W_simple, B_simple = compute_WB_simple(values_dict)
-        W_enhanced, B_enhanced = compute_WB_interlinked(values_dict)
+def show_faith_tree(values_dict):
+    with st.expander(T("🌳 شجرة الإيمان", "🌳 Faith Tree"), expanded=False):
+        W, B = compute_WB_hierarchical(values_dict.get("faith",0.5), values_dict.get("worship",0.5), values_dict.get("transactions",0.5), values_dict.get("morals",0.5), values_dict.get("jihad",0.5), values_dict.get("disavowal",0.5))
         col1, col2, col3 = st.columns(3)
-        with col1: st.metric(T("W (بسيط)", "W (Simple)"), f"{W_simple:.3f}")
-        with col2: st.metric(T("W (مترابط)", "W (Interlinked)"), f"{W_enhanced:.3f}")
-        with col3: st.metric(T("الفرق", "Delta"), f"{W_enhanced - W_simple:+.3f}")
-        st.markdown(T("#### 🔗 الروابط النشطة:", "#### 🔗 Active Links:"))
-        for key, links in VALUE_LINKS.items():
-            if key in values_dict and values_dict[key] > 0.5:
-                linked_names = []
-                for l in links:
-                    if l in ISLAMIC_VALUES["W_generators"]:
-                        linked_names.append(ISLAMIC_VALUES["W_generators"][l]["label"])
-                    elif l in ISLAMIC_VALUES["B_generators"]:
-                        linked_names.append(ISLAMIC_VALUES["B_generators"][l]["label"])
-                label = ""
-                if key in ISLAMIC_VALUES["W_generators"]: label = ISLAMIC_VALUES["W_generators"][key]["label"]
-                elif key in ISLAMIC_VALUES["B_generators"]: label = ISLAMIC_VALUES["B_generators"][key]["label"]
-                st.markdown(f"- **{label}** ← " + ", ".join(linked_names))
-
-print("✅ المرحلة الأولى مكتملة.")
+        col1.metric("W", f"{W:.3f}"); col2.metric("B", f"{B:.3f}"); col3.metric("S", f"{W*B:.3f}")
+        fig, ax = plt.subplots(figsize=(10,6), facecolor='#0a0f1e')
+        ax.set_facecolor('#0a0f1e'); ax.set_xlim(0,10); ax.set_ylim(0,10); ax.axis('off')
+        ax.text(5, 9, ISLAMIC_SYSTEM["faith"]["label"], ha='center', fontsize=12, color='#FFD700', fontweight='bold', bbox=dict(facecolor='#0a0f1e', edgecolor='#FFD700', boxstyle='round'))
+        ax.text(5, 8.3, f"{values_dict.get('faith',0.5):.2f}", ha='center', fontsize=9, color='#CCC')
+        ax.text(3, 7, ISLAMIC_SYSTEM["worship"]["label"], ha='center', fontsize=10, color='#FFD700', bbox=dict(facecolor='#0a0f1e', edgecolor='#FFA500', boxstyle='round'))
+        ax.text(3, 6.3, f"{values_dict.get('worship',0.5):.2f}", ha='center', fontsize=8, color='#CCC')
+        ax.text(7, 7, ISLAMIC_SYSTEM["disavowal"]["label"], ha='center', fontsize=10, color='#FF5252', bbox=dict(facecolor='#0a0f1e', edgecolor='#FF5252', boxstyle='round'))
+        ax.text(7, 6.3, f"{values_dict.get('disavowal',0.5):.2f}", ha='center', fontsize=8, color='#CCC')
+        ax.annotate('', xy=(3,7.3), xytext=(5,8.7), arrowprops=dict(arrowstyle='->', color='#FFD700', lw=1.5))
+        ax.annotate('', xy=(7,7.3), xytext=(5,8.7), arrowprops=dict(arrowstyle='->', color='#FF5252', lw=1.5))
+        ax.text(5, 5, ISLAMIC_SYSTEM["transactions"]["label"], ha='center', fontsize=10, color='#FFD700', bbox=dict(facecolor='#0a0f1e', edgecolor='#00FF88', boxstyle='round'))
+        ax.text(5, 4.3, f"{values_dict.get('transactions',0.5):.2f}", ha='center', fontsize=8, color='#CCC')
+        ax.annotate('', xy=(5,5.3), xytext=(3,6.7), arrowprops=dict(arrowstyle='->', color='#FFD700', lw=1.5))
+        ax.annotate('', xy=(5,5.3), xytext=(7,6.7), arrowprops=dict(arrowstyle='->', color='#FF5252', lw=1.5))
+        ax.text(5, 3, ISLAMIC_SYSTEM["morals"]["label"], ha='center', fontsize=10, color='#FFD700', bbox=dict(facecolor='#0a0f1e', edgecolor='#FF69B4', boxstyle='round'))
+        ax.text(5, 2.3, f"{values_dict.get('morals',0.5):.2f}", ha='center', fontsize=8, color='#CCC')
+        ax.annotate('', xy=(5,3.3), xytext=(5,4.7), arrowprops=dict(arrowstyle='->', color='#FFD700', lw=1.5))
+        ax.text(5, 1, ISLAMIC_SYSTEM["jihad"]["label"], ha='center', fontsize=10, color='#FFD700', bbox=dict(facecolor='#0a0f1e', edgecolor='#FF6347', boxstyle='round'))
+        ax.text(5, 0.3, f"{values_dict.get('jihad',0.5):.2f}", ha='center', fontsize=8, color='#CCC')
+        ax.annotate('', xy=(5,1.3), xytext=(5,2.7), arrowprops=dict(arrowstyle='->', color='#FFD700', lw=1.5))
+        ax.set_title(T("🌳 شجرة الإيمان", "🌳 Faith Tree"), color='white', fontsize=14, fontweight='bold')
+        st.pyplot(fig)
 
 # ═══════════════════════════════════════════════════════════════
-# المرحلة الثانية: الجلسة والعنوان وأزرار التحكم والتبويبات
+# الجلسة
 # ═══════════════════════════════════════════════════════════════
-
-# --- الجلسة العامة ---
 if 'init' not in st.session_state:
     np.random.seed(42); random.seed(42)
     cx, cy = 14, 10.0; N = 150
@@ -249,20 +163,23 @@ if 'init' not in st.session_state:
     st.session_state.N = N
     st.session_state.W = 0.55; st.session_state.B = 0.52; st.session_state.E = 0.3
     st.session_state.S = 0.55 * 0.52
-    st.session_state.pW = deque([0.55], maxlen=50)
-    st.session_state.pB = deque([0.52], maxlen=50)
-    st.session_state.hS = deque(maxlen=300)
-    st.session_state.hE = deque(maxlen=300)
-    st.session_state.hx = deque(maxlen=300)
+    st.session_state.pW = deque([0.55], maxlen=50); st.session_state.pB = deque([0.52], maxlen=50)
+    st.session_state.hS = deque(maxlen=300); st.session_state.hE = deque(maxlen=300); st.session_state.hx = deque(maxlen=300)
     st.session_state.eb = deque([0.55*0.52]*30, maxlen=30)
     st.session_state.phase = "توازن"; st.session_state.ca = 0.0
     st.session_state.aW = 0.0; st.session_state.aB = np.pi*0.5
-    st.session_state.good = 10.0; st.session_state.bad = 5.0
-    st.session_state.frame = 0
-    st.session_state.path_W = [0.5]; st.session_state.path_B = [0.5]
-    st.session_state.kappa_vals = [0.0]
+    st.session_state.good = 10.0; st.session_state.bad = 5.0; st.session_state.frame = 0
+    st.session_state.path_W = [0.5]; st.session_state.path_B = [0.5]; st.session_state.path_kappa = [0.0]
+    for l in ["faith","worship","transactions","morals","jihad","disavowal"]:
+        setattr(st.session_state, f"path_{l}", [0.5])
     st.session_state.run = False
     st.session_state.init = True
+
+print("✅ المرحلة الأولى مكتملة: الأساسات والنظام الهرمي والجلسة.")
+
+# ═══════════════════════════════════════════════════════════════
+# المرحلة الثانية: العنوان وأزرار التحكم والتبويبات
+# ═══════════════════════════════════════════════════════════════
 
 # --- العنوان الرئيسي ---
 col_icon1, col_title, col_icon2 = st.columns([1, 6, 1])
@@ -321,7 +238,7 @@ tab_labels = [
 
 tabs = st.tabs(tab_labels)
 
-print("✅ المرحلة الثانية مكتملة.")
+print("✅ المرحلة الثانية مكتملة: العنوان وأزرار التحكم والتبويبات.")
 
 # ═══════════════════════════════════════════════════════════════
 # المرحلة الثالثة: الكون، الفرد، المجتمع
@@ -332,13 +249,17 @@ with tabs[0]:
     st.header(T("🌌 المشهد الكوني", "🌌 The Cosmic Scene"))
     
     with st.expander(T("⚙️ مولدات الطاقة", "⚙️ Energy Generators"), expanded=False):
-        cosmic_values = create_value_sliders("cosmic")
-        show_value_links(cosmic_values)
+        cosmic_values = create_hierarchical_sliders("cosmic")
+        show_faith_tree(cosmic_values)
     
     placeholder = st.empty()
     
     if st.session_state.get("run", False):
-        W, B = compute_WB_interlinked(cosmic_values)
+        W, B = compute_WB_hierarchical(
+            cosmic_values["faith"], cosmic_values["worship"],
+            cosmic_values["transactions"], cosmic_values["morals"],
+            cosmic_values["jihad"], cosmic_values["disavowal"]
+        )
         st.session_state.W = W; st.session_state.B = B
         
         while st.session_state.run:
@@ -468,11 +389,15 @@ with tabs[0]:
 with tabs[1]:
     st.header(T("🧍 مختبر الفرد", "🧍 Individual Lab"))
     
-    indiv_values = create_value_sliders("indiv")
-    show_value_links(indiv_values)
+    indiv_values = create_hierarchical_sliders("indiv")
+    show_faith_tree(indiv_values)
     
     if st.button(T("🔍 احسب موقعي", "🔍 Calculate My Position"), key="btn_indiv", use_container_width=True):
-        W, B = compute_WB_interlinked(indiv_values)
+        W, B = compute_WB_hierarchical(
+            indiv_values["faith"], indiv_values["worship"],
+            indiv_values["transactions"], indiv_values["morals"],
+            indiv_values["jihad"], indiv_values["disavowal"]
+        )
         S_val = W * B
         name, color = classify(W, B)
         
@@ -509,14 +434,18 @@ with tabs[1]:
 with tabs[2]:
     st.header(T("👥 مختبر المجتمع", "👥 Society Lab"))
     
-    soc_values = create_value_sliders("soc")
-    show_value_links(soc_values)
+    soc_values = create_hierarchical_sliders("soc")
+    show_faith_tree(soc_values)
     
     pop = st.slider(T("عدد الأفراد", "Population"), 50, 300, 150, 25, key="pop_soc")
     years = st.slider(T("سنوات المحاكاة", "Simulation Years"), 10, 200, 80, 10, key="yrs_soc")
     
     if st.button(T("🚀 شغّل محاكاة المجتمع", "🚀 Run Society Simulation"), key="btn_soc", use_container_width=True):
-        W_base, B_base = compute_WB_interlinked(soc_values)
+        W_base, B_base = compute_WB_hierarchical(
+            soc_values["faith"], soc_values["worship"],
+            soc_values["transactions"], soc_values["morals"],
+            soc_values["jihad"], soc_values["disavowal"]
+        )
         pW = np.random.uniform(0.2, 0.9, pop); pB = np.random.uniform(0.2, 0.9, pop)
         px = np.random.uniform(0, 30, pop); py = np.random.uniform(0, 30, pop)
         
@@ -557,7 +486,7 @@ with tabs[2]:
         
         st.metric(T("متوسط S النهائي", "Final Average S"), f"{hist_S[-1]:.3f}")
 
-print("✅ المرحلة الثالثة مكتملة.")
+print("✅ المرحلة الثالثة مكتملة: الكون، الفرد، المجتمع.")
 
 # ═══════════════════════════════════════════════════════════════
 # المرحلة الرابعة: الدولة، الأمة، الحضارة
@@ -567,13 +496,17 @@ print("✅ المرحلة الثالثة مكتملة.")
 with tabs[3]:
     st.header(T("🏛️ مختبر الدولة", "🏛️ State Lab"))
     
-    state_values = create_value_sliders("state")
-    show_value_links(state_values)
+    state_values = create_hierarchical_sliders("state")
+    show_faith_tree(state_values)
     
     state_years = st.slider(T("سنوات المحاكاة", "Simulation Years"), 50, 300, 120, 10, key="yrs_state")
     
     if st.button(T("🚀 شغّل محاكاة الدولة", "🚀 Run State Simulation"), key="btn_state", use_container_width=True):
-        W_base, B_base = compute_WB_interlinked(state_values)
+        W_base, B_base = compute_WB_hierarchical(
+            state_values["faith"], state_values["worship"],
+            state_values["transactions"], state_values["morals"],
+            state_values["jihad"], state_values["disavowal"]
+        )
         Y = state_years
         
         Wh = np.zeros(Y); Bh = np.zeros(Y); Sh = np.zeros(Y); Eh = np.zeros(Y)
@@ -608,13 +541,17 @@ with tabs[3]:
 with tabs[4]:
     st.header(T("🌍 مختبر الأمة", "🌍 Nation Lab"))
     
-    nation_values = create_value_sliders("nation")
-    show_value_links(nation_values)
+    nation_values = create_hierarchical_sliders("nation")
+    show_faith_tree(nation_values)
     
     nation_years = st.slider(T("سنوات المحاكاة", "Simulation Years"), 100, 500, 250, 25, key="yrs_nation")
     
     if st.button(T("🚀 شغّل محاكاة الأمة", "🚀 Run Nation Simulation"), key="btn_nation", use_container_width=True):
-        W_base, B_base = compute_WB_interlinked(nation_values)
+        W_base, B_base = compute_WB_hierarchical(
+            nation_values["faith"], nation_values["worship"],
+            nation_values["transactions"], nation_values["morals"],
+            nation_values["jihad"], nation_values["disavowal"]
+        )
         Y = nation_years
         
         Wh = np.zeros(Y); Bh = np.zeros(Y); Sh = np.zeros(Y); Eh = np.zeros(Y)
@@ -653,18 +590,25 @@ with tabs[5]:
     col_a, col_b = st.columns(2)
     with col_a:
         st.markdown(f"### 🟡 {T('الحضارة الأولى', 'Civilization A')}")
-        civ_a_values = create_value_sliders("civ_a")
-        show_value_links(civ_a_values)
+        civ_a_values = create_hierarchical_sliders("civ_a")
+        show_faith_tree(civ_a_values)
     with col_b:
         st.markdown(f"### 🔴 {T('الحضارة الثانية', 'Civilization B')}")
-        civ_b_values = create_value_sliders("civ_b",
-            W_defaults={k: 0.2 for k in ISLAMIC_VALUES["W_generators"]},
-            B_defaults={k: 0.2 for k in ISLAMIC_VALUES["B_generators"]})
-        show_value_links(civ_b_values)
+        civ_b_values = create_hierarchical_sliders("civ_b",
+            defaults={"faith":0.3, "worship":0.2, "transactions":0.3, "morals":0.3, "jihad":0.1, "disavowal":0.2})
+        show_faith_tree(civ_b_values)
     
     if st.button(T("🚀 شغّل مقارنة الحضارات", "🚀 Run Civilization Comparison"), key="btn_civ", use_container_width=True):
-        W_a, B_a = compute_WB_interlinked(civ_a_values)
-        W_b, B_b = compute_WB_interlinked(civ_b_values)
+        W_a, B_a = compute_WB_hierarchical(
+            civ_a_values["faith"], civ_a_values["worship"],
+            civ_a_values["transactions"], civ_a_values["morals"],
+            civ_a_values["jihad"], civ_a_values["disavowal"]
+        )
+        W_b, B_b = compute_WB_hierarchical(
+            civ_b_values["faith"], civ_b_values["worship"],
+            civ_b_values["transactions"], civ_b_values["morals"],
+            civ_b_values["jihad"], civ_b_values["disavowal"]
+        )
         
         Y = 200
         Sh_a = np.zeros(Y); Eh_a = np.zeros(Y)
@@ -718,7 +662,7 @@ with tabs[5]:
         c1.metric(T("S النهائي - حضارة أ", "Final S - Civ A"), f"{Sh_a[-1]:.3f}")
         c2.metric(T("S النهائي - حضارة ب", "Final S - Civ B"), f"{Sh_b[-1]:.3f}")
 
-print("✅ المرحلة الرابعة مكتملة.")
+print("✅ المرحلة الرابعة مكتملة: الدولة، الأمة، الحضارة.")
 
 # ═══════════════════════════════════════════════════════════════
 # المرحلة الخامسة: الآخرة، الصراط، التذييل
@@ -790,107 +734,155 @@ with tabs[6]:
 with tabs[7]:
     st.header(T("📐 هندسة الصراط", "📐 Path Geometry"))
     st.markdown(T(
-        "هذا المختبر يُريك كيف ينحني مسارك في فضاء (W, B) بالمعصية، "
-        "وكيف تعيده التوبة إلى الاستقامة. الخط الذهبي هو الصراط المستقيم (κ = 0)، "
-        "وهو مسار إبراهيم عليه السلام.",
+        "الصراط المستقيم هو المسار الذي تبقى فيه جميع مستويات النظام الهرمي في أعلى قيمها. "
+        "عندما تنهار أي قيمة (بالمعصية)، ينحني المسار. والتوبة تعيده إلى الاستقامة.",
         
-        "This lab shows how your path curves in (W, B) space with sin, "
-        "and how repentance straightens it. The gold line is the Straight Path (κ = 0), "
-        "the path of Abraham (AS)."
+        "The Straight Path is where all hierarchical levels remain at their peak. "
+        "When any value collapses (through sin), the path curves. Repentance straightens it."
     ))
     
+    # أزرار التحكم
     c1, c2, c3 = st.columns(3)
+    
     with c1:
-        if st.button(T("▶️ خطوة", "▶️ Step"), key="btn_step8", use_container_width=True):
-            Wc = st.session_state.path_W[-1]; Bc = st.session_state.path_B[-1]
-            nW = np.clip(Wc + (1 - Wc) * 0.15 + random.uniform(-0.03, 0.03), 0.01, 1.0)
-            nB = np.clip(Bc + (1 - Bc) * 0.15 + random.uniform(-0.03, 0.03), 0.01, 1.0)
-            st.session_state.path_W.append(nW); st.session_state.path_B.append(nB)
-            st.session_state.kappa_vals.append(curvature(st.session_state.path_W, st.session_state.path_B))
-            st.rerun()
-    with c2:
-        sin_str = st.slider(T("شدة المعصية", "Sin Strength"), 0.01, 0.2, 0.05, 0.01, key="sl_sin8")
-        if st.button(T("⚠️ معصية", "⚠️ Sin"), key="btn_sin8", use_container_width=True):
-            Wc = st.session_state.path_W[-1]; Bc = st.session_state.path_B[-1]
-            nW = np.clip(Wc - sin_str * (Wc - 0.1) + random.uniform(-0.05, 0.05), 0.01, 1.0)
-            nB = np.clip(Bc - sin_str * (Bc - 0.1) + random.uniform(-0.05, 0.05), 0.01, 1.0)
-            st.session_state.path_W.append(nW); st.session_state.path_B.append(nB)
-            st.session_state.kappa_vals.append(curvature(st.session_state.path_W, st.session_state.path_B))
-            st.rerun()
-    with c3:
-        if st.button(T("🕌 توبة", "🕌 Repent"), key="btn_rep8", use_container_width=True):
-            Wc = st.session_state.path_W[-1]; Bc = st.session_state.path_B[-1]
-            nW = np.clip(Wc + (1 - Wc) * 0.8, 0.01, 1.0)
-            nB = np.clip(Bc + (1 - Bc) * 0.8, 0.01, 1.0)
-            st.session_state.path_W.append(nW); st.session_state.path_B.append(nB)
-            st.session_state.kappa_vals.append(0.0)
+        if st.button(T("▶️ خطوة نحو الكمال", "▶️ Step Toward Perfection"), key="btn_path_h", use_container_width=True):
+            levels = ["faith", "worship", "transactions", "morals", "jihad", "disavowal"]
+            chosen = random.choice(levels)
+            current = getattr(st.session_state, f"path_{chosen}")[-1]
+            new_val = min(1.0, current + 0.1)
+            
+            for l in levels:
+                if l == chosen:
+                    getattr(st.session_state, f"path_{l}").append(new_val)
+                else:
+                    getattr(st.session_state, f"path_{l}").append(getattr(st.session_state, f"path_{l}")[-1])
+            
+            W_new, B_new = compute_WB_hierarchical(
+                st.session_state.path_faith[-1], st.session_state.path_worship[-1],
+                st.session_state.path_transactions[-1], st.session_state.path_morals[-1],
+                st.session_state.path_jihad[-1], st.session_state.path_disavowal[-1]
+            )
+            st.session_state.path_W.append(W_new); st.session_state.path_B.append(B_new)
+            st.session_state.path_kappa.append(curvature(st.session_state.path_W, st.session_state.path_B))
             st.rerun()
     
-    if st.button(T("🔄 إعادة الرحلة", "🔄 Reset Path"), key="btn_reset8", use_container_width=True):
+    with c2:
+        sin_str = st.slider(T("⚡ شدة المعصية", "⚡ Sin Strength"), 0.01, 0.3, 0.1, 0.01, key="sin_h")
+        if st.button(T("⚠️ معصية", "⚠️ Sin"), key="btn_sin_h", use_container_width=True):
+            levels = ["faith", "worship", "transactions", "morals", "jihad", "disavowal"]
+            chosen = random.choice(levels)
+            current = getattr(st.session_state, f"path_{chosen}")[-1]
+            new_val = max(0.01, current - sin_str * random.uniform(0.5, 1.0))
+            
+            for l in levels:
+                if l == chosen:
+                    getattr(st.session_state, f"path_{l}").append(new_val)
+                else:
+                    getattr(st.session_state, f"path_{l}").append(getattr(st.session_state, f"path_{l}")[-1])
+            
+            W_new, B_new = compute_WB_hierarchical(
+                st.session_state.path_faith[-1], st.session_state.path_worship[-1],
+                st.session_state.path_transactions[-1], st.session_state.path_morals[-1],
+                st.session_state.path_jihad[-1], st.session_state.path_disavowal[-1]
+            )
+            st.session_state.path_W.append(W_new); st.session_state.path_B.append(B_new)
+            st.session_state.path_kappa.append(curvature(st.session_state.path_W, st.session_state.path_B))
+            st.rerun()
+    
+    with c3:
+        if st.button(T("🕌 توبة نصوح", "🕌 Sincere Repentance"), key="btn_rep_h", use_container_width=True):
+            for l in ["faith", "worship", "transactions", "morals", "jihad", "disavowal"]:
+                current = getattr(st.session_state, f"path_{l}")[-1]
+                new_val = min(1.0, current + 0.8 * (1.0 - current))
+                getattr(st.session_state, f"path_{l}").append(new_val)
+            
+            W_new, B_new = compute_WB_hierarchical(
+                st.session_state.path_faith[-1], st.session_state.path_worship[-1],
+                st.session_state.path_transactions[-1], st.session_state.path_morals[-1],
+                st.session_state.path_jihad[-1], st.session_state.path_disavowal[-1]
+            )
+            st.session_state.path_W.append(W_new); st.session_state.path_B.append(B_new)
+            st.session_state.path_kappa.append(0.0)
+            st.rerun()
+    
+    if st.button(T("🔄 إعادة الرحلة", "🔄 Reset Path"), key="btn_reset_h", use_container_width=True):
+        for l in ["faith", "worship", "transactions", "morals", "jihad", "disavowal"]:
+            setattr(st.session_state, f"path_{l}", [0.5])
         st.session_state.path_W = [0.5]; st.session_state.path_B = [0.5]
-        st.session_state.kappa_vals = [0.0]
+        st.session_state.path_kappa = [0.0]
         st.rerun()
     
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6), facecolor='#0a0f1e')
-    
     # رسم المسار
+    fig, axes = plt.subplots(1, 2, figsize=(16, 7), facecolor='#0a0f1e')
+    
     ax1 = axes[0]
     ax1.set_facecolor('#0a0f1e')
     ax1.set_xlim(0, 1); ax1.set_ylim(0, 1)
     ax1.set_xlabel("B (البراءة)", color='white'); ax1.set_ylabel("W (الولاء)", color='white')
     ax1.set_title(T("مسارك في فضاء (W, B)", "Your Path in (W, B) Space"), color='white', fontsize=13)
     
-    # الصراط المستقيم
-    ax1.plot([0.5, 1], [0.5, 1], '--', color='#FFD700', lw=2.5, alpha=0.7,
-             label=T("الصراط المستقيم (إبراهيم)", "Straight Path (Abraham)"))
-    ax1.scatter([1], [1], s=120, c='#FFD700', edgecolors='white', linewidth=2, zorder=10,
-                label=T("الكمال (1,1)", "Perfection (1,1)"))
+    ax1.plot([0.5, 1], [0.5, 1], '--', color='#FFD700', lw=2.5, alpha=0.7, label=T("الصراط المستقيم", "Straight Path"))
+    ax1.scatter([1], [1], s=120, c='#FFD700', edgecolors='white', linewidth=2, zorder=10, label=T("الكمال (1,1)", "Perfection (1,1)"))
     
     pW = st.session_state.path_W; pB = st.session_state.path_B
     if len(pW) > 1:
         for i in range(1, len(pW)):
-            kv = st.session_state.kappa_vals[i] if i < len(st.session_state.kappa_vals) else 0
+            kv = st.session_state.path_kappa[i] if i < len(st.session_state.path_kappa) else 0
             cl = '#00FFFF' if kv < 0.05 else '#FF4444'
             ax1.plot(pB[i-1:i+1], pW[i-1:i+1], color=cl, lw=2 if kv < 0.05 else 3)
-        ax1.scatter([pB[0]], [pW[0]], s=80, c='white', edgecolors='cyan', linewidth=2, zorder=10,
-                    label=T("البداية", "Start"))
-        ax1.scatter([pB[-1]], [pW[-1]], s=120, c='#00FFFF', edgecolors='white', linewidth=3, zorder=10,
-                    label=T("الآن", "Now"))
+        ax1.scatter([pB[0]], [pW[0]], s=80, c='white', edgecolors='cyan', linewidth=2, zorder=10, label=T("البداية", "Start"))
+        ax1.scatter([pB[-1]], [pW[-1]], s=120, c='#00FFFF', edgecolors='white', linewidth=3, zorder=10, label=T("الآن", "Now"))
     
     ax1.legend(facecolor='#0a0f1e', edgecolor='white', labelcolor='white', fontsize=8, loc='lower right')
     ax1.grid(True, alpha=0.2); ax1.tick_params(colors='white')
     
-    # منحنى الانحناء
     ax2 = axes[1]
     ax2.set_facecolor('#0a0f1e')
-    ax2.plot(st.session_state.kappa_vals, color='#FFD700', lw=2, marker='o', markersize=3)
-    ax2.axhline(y=0.05, color='#FF4444', linestyle='--', alpha=0.6,
-                label=T("حد الخطر (0.05)", "Danger Threshold (0.05)"))
-    ax2.axhline(y=0.0, color='#00FF88', linestyle='--', alpha=0.4,
-                label=T("الصراط (0.0)", "Straight Path (0.0)"))
-    ax2.set_title(T("منحنى الانحناء عبر الزمن", "Curvature Over Time"), color='white', fontsize=13)
-    ax2.set_xlabel(T("الخطوات", "Steps"), color='white')
-    ax2.set_ylabel("κ (الانحناء)", color='white')
+    ax2.plot(st.session_state.path_kappa, color='#FFD700', lw=2, marker='o', markersize=3)
+    ax2.axhline(y=0.05, color='#FF4444', linestyle='--', alpha=0.6, label=T("حد الخطر", "Danger"))
+    ax2.axhline(y=0.0, color='#00FF88', linestyle='--', alpha=0.4, label=T("الصراط", "Straight"))
+    ax2.set_title(T("منحنى الانحناء (κ)", "Curvature Over Time"), color='white', fontsize=13)
+    ax2.set_xlabel(T("الخطوات", "Steps"), color='white'); ax2.set_ylabel("κ", color='white')
     ax2.legend(facecolor='#0a0f1e', edgecolor='white', labelcolor='white', fontsize=8)
     ax2.grid(True, alpha=0.2); ax2.tick_params(colors='white')
-    max_kappa = max(st.session_state.kappa_vals) if st.session_state.kappa_vals else 0.1
+    max_kappa = max(st.session_state.path_kappa) if st.session_state.path_kappa else 0.1
     ax2.set_ylim(-0.01, max(0.2, max_kappa * 1.2))
     
     plt.tight_layout(); st.pyplot(fig)
     
-    # مؤشرات حية
+    # مؤشرات حية للمستويات الهرمية
+    st.divider()
+    st.subheader(T("📊 المستويات الهرمية", "📊 Hierarchical Levels"))
+    
+    cols = st.columns(6)
+    levels_labels = [
+        ("faith", T("الإيمان", "Faith"), '#FFD700'),
+        ("worship", T("العبادات", "Worship"), '#FFA500'),
+        ("transactions", T("المعاملات", "Transactions"), '#00FF88'),
+        ("morals", T("الأخلاق", "Morals"), '#FF69B4'),
+        ("jihad", T("الجهاد", "Jihad"), '#FF6347'),
+        ("disavowal", T("البراءة", "Disavowal"), '#FF5252'),
+    ]
+    
+    for i, (key, label, color) in enumerate(levels_labels):
+        val = getattr(st.session_state, f"path_{key}")[-1]
+        with cols[i]:
+            st.markdown(f"""
+            <div style="text-align:center;padding:8px;background:rgba(20,30,60,0.8);border-radius:8px;border:1px solid {color};">
+                <p style="color:{color};font-size:0.7em;margin:0;">{label}</p>
+                <p style="color:white;font-size:1em;margin:0;font-weight:bold;">{val:.2f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    # مؤشرات المسار
     st.divider()
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("W (الولاء)", f"{pW[-1]:.3f}")
     c2.metric("B (البراءة)", f"{pB[-1]:.3f}")
-    current_kappa = st.session_state.kappa_vals[-1] if st.session_state.kappa_vals else 0.0
+    current_kappa = st.session_state.path_kappa[-1] if st.session_state.path_kappa else 0.0
     c3.metric("κ (الانحناء)", f"{current_kappa:.4f}")
-    
     on_path = current_kappa < 0.03
-    c4.metric(
-        T("الصراط؟", "On Path?"),
-        T("✅ نعم", "✅ YES") if on_path else T("⚠️ لا", "⚠️ NO")
-    )
+    c4.metric(T("الصراط؟", "On Path?"), T("✅ نعم", "✅ YES") if on_path else T("⚠️ لا", "⚠️ NO"))
     
     # المعادلات
     with st.expander(T("📖 معادلات المختبر", "📖 Lab Equations"), expanded=False):
@@ -956,5 +948,5 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-print("✅ المرحلة الخامسة مكتملة.")
+print("✅ المرحلة الخامسة والأخيرة مكتملة.")
 print("✅✅✅ تم بناء مختبر الميزان – النسخة النهائية المتكاملة.")
