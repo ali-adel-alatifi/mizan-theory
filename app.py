@@ -3,119 +3,183 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # =============================================
-# الإعدادات
+# الإعدادات العامة
 # =============================================
-st.set_page_config(page_title="⚖️ المحرك الوجودي", page_icon="⚖️", layout="wide")
-st.markdown("<h1 style='text-align:center;color:#FFD700'>⚖️ المحرك الوجودي – قانون العروة الوثقى</h1>", unsafe_allow_html=True)
+st.set_page_config(page_title="⚖️ مختبر الميزان – النظام المتكامل", page_icon="⚖️", layout="wide")
+st.markdown("<h1 style='text-align:center;color:#FFD700'>⚖️ مختبر الميزان – النظام المتكامل</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align:center;color:#CCC'>﴿فَمَن يَكْفُرْ بِالطَّاغُوتِ وَيُؤْمِن بِاللَّهِ فَقَدِ اسْتَمْسَكَ بِالْعُرْوَةِ الْوُثْقَىٰ لَا انفِصَامَ لَهَا﴾</p>", unsafe_allow_html=True)
 
 # =============================================
-# الشريط الجانبي – 11 منزلقًا وجوديًا
+# الثوابت الوجودية
+# =============================================
+ح = {'أ':1,'ل':30,'م':40,'ر':200,'س':60,'ح':8,'ط':9}
+W_LABELS = ["الصلاة", "الزكاة والصدقات", "الولاء لله ورسوله والمؤمنين", "تحكيم الشريعة", "العدل", "الشورى"]
+B_LABELS = ["البراءة من الطاغوت", "الرحمة والعطاء (الماعون)", "الأمر بالمعروف", "النهي عن المنكر", "النزاهة ومكافحة الفساد"]
+
+# =============================================
+# الشريط الجانبي الذكي
 # =============================================
 with st.sidebar:
-    st.header("🎛️ مؤشرات الوجود")
+    st.header("🎛️ لوحة التحكم")
+    mode = st.radio("اختر وضع الإدخال:", ["🧑‍⚖️ التقدير اليدوي (المنزلقات)", "🤖 مساعد الذكاء الاصطناعي"])
 
-    st.subheader("🤍 الولاء (W) – الإيمان بالله")
-    W1 = st.slider("الصلاة", -1.0, 1.0, 0.0, 0.1)
-    W2 = st.slider("الزكاة والصدقات", -1.0, 1.0, 0.0, 0.1)
-    W3 = st.slider("الولاء لله ورسوله والمؤمنين", -1.0, 1.0, 0.0, 0.1)
-    W4 = st.slider("تحكيم الشريعة", -1.0, 1.0, 0.0, 0.1)
-    W5 = st.slider("العدل", -1.0, 1.0, 0.0, 0.1)
-    W6 = st.slider("الشورى", -1.0, 1.0, 0.0, 0.1)
+    if mode == "🧑‍⚖️ التقدير اليدوي (المنزلقات)":
+        st.subheader("🤍 الولاء (W)")
+        W1 = st.slider(W_LABELS[0], -1.0, 1.0, 0.0, 0.1)
+        W2 = st.slider(W_LABELS[1], -1.0, 1.0, 0.0, 0.1)
+        W3 = st.slider(W_LABELS[2], -1.0, 1.0, 0.0, 0.1)
+        W4 = st.slider(W_LABELS[3], -1.0, 1.0, 0.0, 0.1)
+        W5 = st.slider(W_LABELS[4], -1.0, 1.0, 0.0, 0.1)
+        W6 = st.slider(W_LABELS[5], -1.0, 1.0, 0.0, 0.1)
 
-    st.subheader("❤️ البراءة (B) – الكفر بالطاغوت")
-    B1 = st.slider("البراءة من الطاغوت", -1.0, 1.0, 0.0, 0.1)
-    B2 = st.slider("الرحمة والعطاء (الماعون)", -1.0, 1.0, 0.0, 0.1, help="﴿فَوَيْلٌ لِّلْمُصَلِّينَ... وَيَمْنَعُونَ الْمَاعُونَ﴾")
-    B3 = st.slider("الأمر بالمعروف", -1.0, 1.0, 0.0, 0.1)
-    B4 = st.slider("النهي عن المنكر", -1.0, 1.0, 0.0, 0.1)
-    B5 = st.slider("النزاهة ومكافحة الفساد", -1.0, 1.0, 0.0, 0.1)
+        st.subheader("❤️ البراءة (B)")
+        B1 = st.slider(B_LABELS[0], -1.0, 1.0, 0.0, 0.1)
+        B2 = st.slider(B_LABELS[1], -1.0, 1.0, 0.0, 0.1, help="﴿فَوَيْلٌ لِّلْمُصَلِّينَ... وَيَمْنَعُونَ الْمَاعُونَ﴾")
+        B3 = st.slider(B_LABELS[2], -1.0, 1.0, 0.0, 0.1)
+        B4 = st.slider(B_LABELS[3], -1.0, 1.0, 0.0, 0.1)
+        B5 = st.slider(B_LABELS[4], -1.0, 1.0, 0.0, 0.1)
+
+        st.subheader("🌐 التمكين المادي (E)")
+        E_val = st.slider("مستوى التمكين", 0.0, 1.0, 0.5, 0.05)
+
+    else:  # وضع الذكاء الاصطناعي
+        st.info("أدخل وصفًا نصيًا للكيان (دولة، مجتمع، فرد). سيقوم الذكاء الاصطناعي بتقدير القيم.")
+        ai_text = st.text_area("الوصف النصي:", height=250)
+        ai_mode = st.radio("نوع الكيان:", ["دولة", "مجتمع", "فرد"])
+        if st.button("تحليل بالذكاء الاصطناعي"):
+            with st.spinner("جاري التحليل..."):
+                # هنا سيتم استدعاء API الذكاء الاصطناعي لتحويل النص إلى أرقام
+                # ai_result = call_ai_api(ai_text)
+                # حاليًا: محاكاة للنتيجة
+                ai_result = {
+                    "W": [0.5, 0.4, 0.5, 0.6, 0.4, 0.3],
+                    "B": [0.6, 0.5, 0.4, 0.3, 0.4],
+                    "E": 0.6
+                }
+                W1, W2, W3, W4, W5, W6 = ai_result["W"]
+                B1, B2, B3, B4, B5 = ai_result["B"]
+                E_val = ai_result["E"]
+                st.success("تم التحليل!")
+        else:
+            W1, W2, W3, W4, W5, W6 = [0.0]*6
+            B1, B2, B3, B4, B5 = [0.0]*5
+            E_val = 0.5
 
 # =============================================
-# المحرك الوجودي – حيث تتحول الآية إلى معادلة
+# المحرك الوجودي
 # =============================================
-
-# ١. القيم الخام
 W_raw = np.mean([W1, W2, W3, W4, W5, W6])
 B_raw = np.mean([B1, B2, B3, B4, B5])
 
-# ٢. القيم العددية للحروف (حساب الجمل)
-ح = {'أ':1,'ل':30,'م':40,'ر':200,'س':60,'ح':8,'ط':9}
-
-# ٣. تطبيع W و B إلى 0-1
+# تطبيع
 W = (W_raw + 1) / 2
 B = (B_raw + 1) / 2
 
-# ٤. تطبيق مُوَلِّدَات الحروف (تضخيم الطاقة الوجودية)
+# تضخيم الحروف
 W_boost = 1 + (ح['أ'] + ح['ر'] + ح['س'] + ح['ط']) / 1000
 B_boost = 1 + (ح['ل'] + ح['ح'] + ح['ط']) / 1000
 W_eff = W * W_boost
 B_eff = B * B_boost
-
-# ٥. حساب الثبات S
 S_raw = W_eff * B_eff * (1 + ح['م'] / 1000)
 
-# =============================================
-# البوابات المنطقية الثلاث – المستمدة من القرآن
-# =============================================
-gate_name, gate_msg = "", ""
-
-if B2 <= 0:  # بوابة الماعون
+# البوابات المنطقية
+gate_name, gate_msg, gate_color = "", "", ""
+if B2 <= 0:
     S_final = -1
     gate_name = "بوابة الماعون"
     gate_msg = "⚠️ انهيار: ﴿فَوَيْلٌ لِّلْمُصَلِّينَ... وَيَمْنَعُونَ الْمَاعُونَ﴾"
-elif W1 > 0 and B1 <= 0:  # بوابة الإخلاص
+    gate_color = "🔴"
+elif W1 > 0 and B1 <= 0:
     S_final = 0
     gate_name = "بوابة الإخلاص"
     gate_msg = "⚠️ باطل: ﴿يَعْبُدُونَنِي وَلَا يُشْرِكُونَ بِي شَيْئًا﴾"
-elif W_raw > 0 and B_raw > 0:  # بوابة الوعد
+    gate_color = "🟡"
+elif W_raw > 0 and B_raw > 0:
     S_final = min(1.0, S_raw)
     gate_name = "بوابة الوعد"
     gate_msg = "🟢 ثبات: ﴿فَلَهُمْ أَجْرٌ غَيْرُ مَمْنُونٍ﴾"
+    gate_color = "🟢"
 else:
     S_final = max(0.0, S_raw)
     gate_name = "المعادلة العامة"
+    gate_color = "⚪"
+
+# فجوة الاستدراج
+istidraj_gap = max(0, E_val - S_final) if S_final > -1 else 1.0
+istidraj_warning = ""
+if istidraj_gap > 0.3:
+    istidraj_warning = f"🚨 إنذار استدراج: التمكين المادي (E={E_val:.2f}) يتجاوز الثبات (S={S_final:.2f}) بفجوة {istidraj_gap:.2f}!"
+elif istidraj_gap > 0.1:
+    istidraj_warning = f"⚡ تحذير: فجوة استدراج متوسطة ({istidraj_gap:.2f})."
 
 # =============================================
-# عرض النتائج
+# عرض النتائج الحالية
 # =============================================
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 col1.metric("W (الولاء)", f"{W_raw:+.2f}")
 col2.metric("B (البراءة)", f"{B_raw:+.2f}")
 col3.metric("S (الثبات)", f"{S_final:.2f}")
+col4.metric("E (التمكين)", f"{E_val:.2f}")
 
+st.markdown(f"### {gate_color} {gate_name}")
 if gate_msg:
     if "انهيار" in gate_msg: st.error(gate_msg)
     elif "باطل" in gate_msg: st.warning(gate_msg)
     else: st.success(gate_msg)
+if istidraj_warning:
+    st.error(istidraj_warning) if "إنذار" in istidraj_warning else st.warning(istidraj_warning)
 
 # =============================================
-# خريطة الوجود (فضاء القيم)
+# المحاكي الزمني – حتمية المصير
 # =============================================
-fig, ax = plt.subplots(figsize=(6,6), facecolor='#0a0a2e')
+st.divider()
+st.header("⏳ المحاكي الزمني – حتمية المصير")
+st.markdown("هذه المحاكاة تظهر كيف ستتغير S وE عبر 50 سنة افتراضية بناءً على القيم الحالية.")
+
+years = 50
+S_history, E_history = [S_final], [E_val]
+for _ in range(years):
+    new_E = E_history[-1] + 0.02 * (S_history[-1] - E_history[-1])
+    new_W = W_raw
+    new_B = B_raw
+    # تأثير طويل المدى: إذا كانت الفجوة كبيرة، تنهار S تدريجيًا
+    if new_E > S_history[-1] + 0.2:
+        new_B -= 0.03
+    elif new_E < S_history[-1]:
+        new_B += 0.01
+    new_S = ((new_W+1)/2) * ((new_B+1)/2) * (1 + sum(ح.values())/1000)
+    S_history.append(new_S)
+    E_history.append(new_E)
+
+fig, ax = plt.subplots(figsize=(10, 4), facecolor='#0a0a2e')
 ax.set_facecolor('#0a0a2e')
-ax.set_xlim(-1.2,1.2); ax.set_ylim(-1.2,1.2)
-ax.axhline(0,color='grey',lw=0.5); ax.axvline(0,color='grey',lw=0.5)
-ax.set_xlabel("B (الكفر بالطاغوت)", color='white'); ax.set_ylabel("W (الإيمان بالله)", color='white')
-
-# الأرباع
-ax.fill_between([0,1.2], 0, 1.2, color='#FFD700', alpha=0.2)
-ax.fill_between([-1.2,0], 0, 1.2, color='#FF5252', alpha=0.2)
-ax.fill_between([-1.2,0], -1.2, 0, color='#FFB6C1', alpha=0.2)
-ax.fill_between([0,1.2], -1.2, 0, color='#FFA500', alpha=0.2)
-
-ax.text(0.6,0.6,'المؤمنون',color='#FFD700',fontsize=10,ha='center',fontweight='bold')
-ax.text(-0.6,0.6,'المغضوب عليهم',color='#FF5252',fontsize=10,ha='center',fontweight='bold')
-ax.text(-0.6,-0.6,'المنافقون',color='#FFB6C1',fontsize=10,ha='center',fontweight='bold')
-ax.text(0.6,-0.6,'الضالون',color='#FFA500',fontsize=10,ha='center',fontweight='bold')
-
-# نقطة الكيان
-ax.scatter(B_raw, W_raw, s=300, c='cyan', edgecolors='white', linewidth=3, zorder=10)
-# مقام إبراهيم
-ax.scatter(1, 1, s=100, c='#FFD700', edgecolors='white', linewidth=2, zorder=10, marker='*')
-ax.text(1, 1.15, 'إبراهيم', color='#FFD700', fontsize=8, ha='center')
-
+ax.plot(S_history, label='S (الثبات)', color='#FFD700', linewidth=2)
+ax.plot(E_history, label='E (التمكين)', color='#00FFFF', linewidth=2, linestyle='--')
+ax.fill_between(range(years+1), S_history, E_history, where=(np.array(E_history) > np.array(S_history)), color='red', alpha=0.2, label='منطقة الاستدراج')
+ax.axhline(y=0, color='red', linestyle=':')
+ax.set_xlabel('السنوات', color='white')
+ax.set_ylabel('القيمة', color='white')
+ax.legend(facecolor='#0a0a2e', edgecolor='white', labelcolor='white')
 ax.tick_params(colors='white')
+ax.grid(True, alpha=0.2)
 st.pyplot(fig)
 
+# =============================================
+# المستشفى – وصفة علاجية
+# =============================================
+st.divider()
+st.header("🏥 المستشفى – وصفة علاجية")
+W_vals, B_vals = [W1,W2,W3,W4,W5,W6], [B1,B2,B3,B4,B5]
+weakest_W_idx, weakest_B_idx = np.argmin(W_vals), np.argmin(B_vals)
+if gate_name == "بوابة الماعون":
+    st.error(f"🎯 الأولوية القصوى: إصلاح '{B_LABELS[weakest_B_idx]}'. بدون رحمة وعطاء، لا تنفع أي عبادة.")
+elif gate_name == "بوابة الإخلاص":
+    st.warning(f"🎯 الأولوية: تنقية '{W_LABELS[weakest_W_idx]}' من شوائب الشرك والرياء.")
+elif istidraj_gap > 0.3:
+    st.error(f"🎯 سد فجوة الاستدراج ({istidraj_gap:.2f}) عبر رفع '{B_LABELS[weakest_B_idx]}' أو '{W_LABELS[weakest_W_idx]}'.")
+else:
+    st.info(f"🎯 للتقدم نحو مقام إبراهيم: عزز '{W_LABELS[weakest_W_idx]}' و'{B_LABELS[weakest_B_idx]}'.")
+st.markdown(f"- أضعف مؤشر ولاء (W): **{W_LABELS[weakest_W_idx]}** ({W_vals[weakest_W_idx]:+.2f})\n- أضعف مؤشر براءة (B): **{B_LABELS[weakest_B_idx]}** ({B_vals[weakest_B_idx]:+.2f})")
+
 st.markdown("---")
-st.caption("⚖️ المحرك الوجودي – المرحلة الأولى | علي عادل العاطفي | 2026")
+st.caption("⚖️ مختبر الميزان – النظام المتكامل | علي عادل العاطفي | 2026")
