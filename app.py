@@ -607,7 +607,7 @@ with tab5:
 print("✅ المرحلة الثالثة مكتملة: العنوان، لوحة القيادة، خريطة الوجود، المحاكي الزمني، المستشفى، المعجم الهندسي، رسالة الترحيب")
 
 # =============================================
-# المرحلة الرابعة: المشهد الحي المتكامل والتذييل
+# المرحلة الرابعة: المشهد الحي المستقر + التذييل
 # =============================================
 
 with tab6:
@@ -615,26 +615,23 @@ with tab6:
     st.markdown(TXT(
         "هذا المشهد الحي يحاكي تفاعل النجوم (الأفراد) مع قطبي الميزان W وB. "
         "النجوم الذهبية تمثل المؤمنين المتوازنين، والبيضاء تمثل من لديهم ولاء بلا براءة، "
-        "والحمراء تمثل براءة بلا ولاء، والوردية تمثل من لا هذا ولا ذاك. "
-        "الميزان الأخروي الخفي يظهر تدريجياً مع تراكم الحسنات والسيئات.",
+        "والحمراء تمثل براءة بلا ولاء، والوردية تمثل من لا هذا ولا ذاك.",
         "This live scene simulates the interaction of stars with the poles of the Mizan. "
-        "Golden stars: balanced believers. White: loyalty without disavowal. Red: disavowal without loyalty. Pink: neither. "
-        "The invisible afterlife scales gradually appear as deeds accumulate."
+        "Golden stars: balanced believers. White: loyalty without disavowal. Red: disavowal without loyalty. Pink: neither."
     ))
 
-    # إعدادات المشهد الحي
+    # إعدادات
     with st.expander(TXT("⚙️ إعدادات المشهد الحي", "⚙️ Live Scene Settings"), expanded=False):
         col_set1, col_set2, col_set3, col_set4 = st.columns(4)
         with col_set1:
             live_speed = st.slider(TXT("سرعة المحاكاة", "Speed"), 0.01, 0.2, 0.08, 0.01, key="live_speed")
         with col_set2:
-            live_stars = st.slider(TXT("عدد النجوم", "Stars"), 50, 400, 200, 50, key="live_stars")
+            live_stars = st.slider(TXT("عدد النجوم", "Stars"), 50, 300, 150, 25, key="live_stars")
         with col_set3:
-            live_trail = st.slider(TXT("مسار الكواكب", "Trail"), 20, 200, 100, 10, key="live_trail")
+            live_trail = st.slider(TXT("مسار الكواكب", "Trail"), 20, 150, 80, 10, key="live_trail")
         with col_set4:
-            live_chem = st.slider(TXT("عدد الجزيئات", "Molecules"), 10, 80, 40, 10, key="live_chem")
+            live_chem = st.slider(TXT("عدد الجزيئات", "Molecules"), 10, 60, 30, 10, key="live_chem")
 
-    # أزرار التحكم
     col_btn1, col_btn2, col_btn3 = st.columns(3)
     with col_btn1:
         if st.button(TXT("▶️ تشغيل", "▶️ Run"), use_container_width=True, type="primary"):
@@ -649,7 +646,6 @@ with tab6:
                     del st.session_state[key]
             st.rerun()
 
-    # التهيئة
     if 'live_init' not in st.session_state:
         st.session_state.live_init = False
     if 'live_run' not in st.session_state:
@@ -702,11 +698,11 @@ with tab6:
             st.error(f"خطأ في التهيئة: {e}")
             st.session_state.live_init = False
 
-    # تشغيل المحاكاة
     if st.session_state.get("live_run", False):
         placeholder = st.empty()
 
         try:
+            # استخراج الحالة
             cx = st.session_state.live_cx
             cy = st.session_state.live_cy
             sx = st.session_state.live_sx.copy()
@@ -739,37 +735,48 @@ with tab6:
             M_curr = len(chem_x)
             mr = 8.5
 
-            # تحديث النجوم
+            # تحديث النجوم – حلقة مبسطة وآمنة
+            target_W = W
+            target_B = B
             for i in range(N_curr):
-                sw[i] += (W - sw[i]) * 0.01 + np.random.uniform(-0.02, 0.02)
-                sb[i] += (B - sb[i]) * 0.01 + np.random.uniform(-0.02, 0.02)
-                close_mask = np.zeros(N_curr, dtype=bool)
+                sw[i] += (target_W - sw[i]) * 0.02 + np.random.uniform(-0.02, 0.02)
+                sb[i] += (target_B - sb[i]) * 0.02 + np.random.uniform(-0.02, 0.02)
+                # تأثير الجوار
+                total_w_influence = 0.0
+                total_b_influence = 0.0
+                count_near = 0
                 for j in range(N_curr):
-                    if i != j:
-                        dx = sx[i] - sx[j]
-                        dy = sy[i] - sy[j]
-                        if np.sqrt(dx*dx + dy*dy) < 2.0:
-                            close_mask[j] = True
-                if np.any(close_mask):
-                    sw[i] += (np.mean(sw[close_mask]) - sw[i]) * 0.02
-                    sb[i] += (np.mean(sb[close_mask]) - sb[i]) * 0.02
+                    if i == j: continue
+                    dx = sx[i] - sx[j]
+                    dy = sy[i] - sy[j]
+                    if dx*dx + dy*dy < 4.0:  # مسافة 2
+                        total_w_influence += sw[j]
+                        total_b_influence += sb[j]
+                        count_near += 1
+                if count_near > 0:
+                    avg_near_w = total_w_influence / count_near
+                    avg_near_b = total_b_influence / count_near
+                    sw[i] += (avg_near_w - sw[i]) * 0.03
+                    sb[i] += (avg_near_b - sb[i]) * 0.03
                 sw[i] = np.clip(sw[i], 0.01, 1.0)
                 sb[i] = np.clip(sb[i], 0.01, 1.0)
 
-            # تحديث الجزيئات الكيميائية
+            # تحديث الجزيئات
             for i in range(M_curr):
-                chem_w[i] += (W - chem_w[i]) * 0.015 + np.random.uniform(-0.025, 0.025)
-                chem_b[i] += (B - chem_b[i]) * 0.015 + np.random.uniform(-0.025, 0.025)
+                chem_w[i] += (target_W - chem_w[i]) * 0.015 + np.random.uniform(-0.02, 0.02)
+                chem_b[i] += (target_B - chem_b[i]) * 0.015 + np.random.uniform(-0.02, 0.02)
                 chem_w[i] = np.clip(chem_w[i], 0.01, 1.0)
                 chem_b[i] = np.clip(chem_b[i], 0.01, 1.0)
 
-            # صدمات
+            # صدمات نادرة
             if random.random() < 0.005:
-                aff_stars = np.random.choice(N_curr, size=max(1, int(N_curr*0.2)), replace=False)
+                n_aff_stars = max(1, int(N_curr * 0.15))
+                aff_stars = np.random.choice(N_curr, size=n_aff_stars, replace=False)
                 sw[aff_stars] *= random.uniform(0.5, 0.8)
                 sb[aff_stars] *= random.uniform(0.5, 0.8)
                 if M_curr > 0:
-                    aff_chem = np.random.choice(M_curr, size=max(1, int(M_curr*0.2)), replace=False)
+                    n_aff_chem = max(1, int(M_curr * 0.15))
+                    aff_chem = np.random.choice(M_curr, size=n_aff_chem, replace=False)
                     chem_w[aff_chem] *= random.uniform(0.6, 0.9)
                     chem_b[aff_chem] *= random.uniform(0.6, 0.9)
                 phase = TXT("💥 صدمة", "💥 Shock")
@@ -777,6 +784,7 @@ with tab6:
             avg_W = np.mean(sw) if N_curr > 0 else W
             avg_B = np.mean(sb) if N_curr > 0 else B
             avg_S_stars = np.mean(sw * sb) if N_curr > 0 else S
+
             W += (avg_W - W) * 0.03
             B += (avg_B - B) * 0.03
             W = np.clip(W, 0.01, 1.0)
@@ -838,80 +846,51 @@ with tab6:
             st.session_state.live_hist_S = hist_S; st.session_state.live_hist_E = hist_E
             st.session_state.live_hist_x = hist_x; st.session_state.live_frame = frame
 
-            # رسم المشهد المتكامل
-            fig, ax = plt.subplots(figsize=(16, 12), facecolor='#000010')
+            # رسم
+            fig, ax = plt.subplots(figsize=(15, 11), facecolor='#000010')
             ax.set_xlim(0, 28); ax.set_ylim(0, 20); ax.axis('off')
 
-            # النواة الذهبية
+            # النواة
             for r, a, c in [(0.5,0.98,'#FFF'),(1,0.65,'#FFD700'),(1.7,0.3,'#FFD700'),
                              (2.6,0.12,'#FFA500'),(3.8,0.05,'#FF6347'),(5.5,0.02,'#FF4500')]:
                 ax.add_patch(plt.matplotlib.patches.Circle((cx,cy), r*(0.5+2.8*S), color=c, alpha=a, zorder=15))
             ax.text(cx,cy,'S',color='#1a1000',fontsize=16,ha='center',va='center',fontweight='bold')
-            ax.text(cx,cy-2.5,f'S={S:.2f}',color='#FFD700',fontsize=10,ha='center',fontweight='bold')
 
             # هالة E
-            ax.add_patch(plt.matplotlib.patches.Circle((cx,cy), 0.5+16*E, color='#0FF', alpha=0.25*(1-min(E,1))+0.04, zorder=7))
+            ax.add_patch(plt.matplotlib.patches.Circle((cx,cy), 0.5+14*E, color='#0FF', alpha=0.25*(1-min(E,1))+0.04, zorder=7))
 
-            # الغشاء والحلقات
+            # غشاء
             ax.add_patch(plt.matplotlib.patches.Circle((cx,cy), mr, color='#0F8', alpha=0.12, fill=False, lw=2.5, zorder=2))
-            for r in [10.0, 11.5, 13.0]:
-                ax.add_patch(plt.matplotlib.patches.Circle((cx,cy), r, color='#FFD700', alpha=0.02, fill=False, lw=0.6, ls=':', zorder=0))
-
-            # القنوات
-            for i in range(6):
-                ang = -np.pi/4 + i*(np.pi/2)/5
-                chx = cx + mr*np.cos(ang); chy = cy + mr*np.sin(ang)
-                ax.add_patch(plt.matplotlib.patches.Circle((chx,chy), 0.2+0.4*avg_W, color='#FFF', alpha=0.3+0.5*avg_W, zorder=8, ec='#FFD700', lw=1.5))
-            for i in range(6):
-                ang = np.pi - np.pi/4 + i*(np.pi/2)/5
-                chx = cx + mr*np.cos(ang); chy = cy + mr*np.sin(ang)
-                ax.add_patch(plt.matplotlib.patches.Circle((chx,chy), 0.2+0.4*avg_B, color='#F33', alpha=0.25+0.35*avg_B, zorder=8, ec='#F66', lw=1.5))
-
-            # أسهم التدفق
-            for i in range(3):
-                a = -np.pi/5 + i*0.5 + 0.1*np.sin(flow_angle)
-                r1, r2 = 3+S*2.5, 0.6
-                x1, y1 = cx + r1*np.cos(a), cy + r1*np.sin(a)
-                x2, y2 = cx + r2*np.cos(a), cy + r2*np.sin(a)
-                arr = plt.matplotlib.patches.FancyArrowPatch((x1,y1),(x2,y2), color='white', alpha=0.15+0.4*avg_W, lw=0.6, arrowstyle='->')
-                ax.add_patch(arr)
-            for i in range(3):
-                a = np.pi - np.pi/5 + i*0.5 + 0.1*np.cos(flow_angle)
-                r1, r2 = 3+S*2.5, 0.6
-                x1, y1 = cx + r1*np.cos(a), cy + r1*np.sin(a)
-                x2, y2 = cx + r2*np.cos(a), cy + r2*np.sin(a)
-                arr = plt.matplotlib.patches.FancyArrowPatch((x1,y1),(x2,y2), color='#F33', alpha=0.12+0.3*avg_B, lw=0.6, arrowstyle='->')
-                ax.add_patch(arr)
 
             # الكوكبان
-            ax.add_patch(plt.matplotlib.patches.Circle((wx,wy), 0.3+0.5*W, color='#FFF', alpha=1, zorder=13))
-            ax.add_patch(plt.matplotlib.patches.Circle((bx,by), 0.3+0.5*B, color='#F33', alpha=0.85, zorder=13))
-            ax.text(wx,wy+0.8,'W',color='#FFF',fontsize=10,ha='center')
-            ax.text(bx,by+0.8,'B',color='#F33',fontsize=10,ha='center')
+            ax.add_patch(plt.matplotlib.patches.Circle((wx,wy), 0.25+0.45*W, color='#FFF', alpha=1, zorder=13))
+            ax.add_patch(plt.matplotlib.patches.Circle((bx,by), 0.25+0.45*B, color='#F33', alpha=0.8, zorder=13))
+            ax.text(wx,wy+0.7,'W',color='#FFF',fontsize=9,ha='center')
+            ax.text(bx,by+0.7,'B',color='#F33',fontsize=9,ha='center')
             if len(trail_Wx)>1: ax.plot(list(trail_Wx),list(trail_Wy),color='#FFF',lw=0.3,alpha=0.12,zorder=4)
             if len(trail_Bx)>1: ax.plot(list(trail_Bx),list(trail_By),color='#F33',lw=0.3,alpha=0.12,zorder=4)
 
-            # الذرة
+            # ذرة
             acx,acy=3.8,3.2; arad=0.5+0.35*S
-            ax.add_patch(plt.matplotlib.patches.Circle((acx,acy),0.15+0.25*S,color='#4488FF',alpha=0.8,zorder=7))
-            ax.add_patch(plt.matplotlib.patches.Circle((acx,acy),arad,color='#0FF',alpha=0.2,fill=False,lw=0.5,zorder=6))
-            ax.add_patch(plt.matplotlib.patches.Circle((acx+arad*np.cos(atom_angle),acy+arad*np.sin(atom_angle)),0.04,color='white',alpha=0.95,zorder=8))
-            ax.text(acx,acy-1.1,TXT('الذرة (فيزياء)','Atom'),color='#4488FF',fontsize=6,ha='center',alpha=0.8,fontweight='bold')
+            ax.add_patch(plt.matplotlib.patches.Circle((acx,acy),0.15+0.2*S,color='#4488FF',alpha=0.8,zorder=7))
+            ax.add_patch(plt.matplotlib.patches.Circle((acx,acy),arad,color='#0FF',alpha=0.15,fill=False,lw=0.5,zorder=6))
+            ax.add_patch(plt.matplotlib.patches.Circle((acx+arad*np.cos(atom_angle),acy+arad*np.sin(atom_angle)),0.04,color='white',alpha=0.9,zorder=8))
+            ax.text(acx,acy-1.0,TXT('الذرة','Atom'),color='#4488FF',fontsize=6,ha='center',alpha=0.8,fontweight='bold')
 
-            # الجزيء
+            # جزيء
             mcx,mcy=3.8,7.0; mdist=0.3+0.2*S
-            ax.add_patch(plt.matplotlib.patches.Circle((mcx-mdist,mcy),0.15,color='#FFD700',alpha=0.7,zorder=7))
-            ax.add_patch(plt.matplotlib.patches.Circle((mcx+mdist,mcy),0.15,color='#FFD700',alpha=0.7,zorder=7))
-            ax.plot([mcx-mdist,mcx+mdist],[mcy,mcy],color='#FFD700',lw=1.5,alpha=0.6,zorder=6)
-            ax.text(mcx,mcy-0.8,TXT('جزيء (كيمياء)','Molecule'),color='#FFD700',fontsize=6,ha='center',alpha=0.8,fontweight='bold')
+            ax.add_patch(plt.matplotlib.patches.Circle((mcx-mdist,mcy),0.12,color='#FFD700',alpha=0.7,zorder=7))
+            ax.add_patch(plt.matplotlib.patches.Circle((mcx+mdist,mcy),0.12,color='#FFD700',alpha=0.7,zorder=7))
+            ax.plot([mcx-mdist,mcx+mdist],[mcy,mcy],color='#FFD700',lw=1.2,alpha=0.6,zorder=6)
+            ax.text(mcx,mcy-0.7,TXT('جزيء','Molecule'),color='#FFD700',fontsize=6,ha='center',alpha=0.8,fontweight='bold')
 
-            # الخلية
+            # خلية
             ccx,ccy=24.2,3.2
-            ax.add_patch(plt.matplotlib.patches.Circle((ccx,ccy),0.35+0.45*S,color='#0F8',alpha=0.35,zorder=7,ec='#0F8',lw=1))
-            ax.add_patch(plt.matplotlib.patches.Circle((ccx,ccy),0.1+0.15*S,color='white',alpha=0.8,zorder=8))
-            ax.text(ccx,ccy-1.1,TXT('الخلية (بيولوجيا)','Cell'),color='#0F8',fontsize=6,ha='center',alpha=0.8,fontweight='bold')
+            ax.add_patch(plt.matplotlib.patches.Circle((ccx,ccy),0.35+0.4*S,color='#0F8',alpha=0.3,zorder=7,ec='#0F8',lw=1))
+            ax.add_patch(plt.matplotlib.patches.Circle((ccx,ccy),0.1+0.12*S,color='white',alpha=0.8,zorder=8))
+            ax.text(ccx,ccy-1.0,TXT('خلية','Cell'),color='#0F8',fontsize=6,ha='center',alpha=0.8,fontweight='bold')
 
-            # النجوم
+            # نجوم
             if N_curr > 0:
                 star_colors = []
                 for i in range(N_curr):
@@ -921,9 +900,9 @@ with tab6:
                     elif wv<0.45 and bv>=0.55: star_colors.append('#FF5252')
                     elif wv<0.45 and bv<0.45: star_colors.append('#FFB6C1')
                     else: star_colors.append('#888')
-                ax.scatter(sx, sy, s=35, c=star_colors, alpha=0.9, edgecolors='white', linewidths=0.4, zorder=5)
+                ax.scatter(sx, sy, s=30, c=star_colors, alpha=0.85, edgecolors='white', linewidths=0.3, zorder=5)
 
-            # الجزيئات الكيميائية مع الروابط
+            # جزيئات كيميائية
             if M_curr > 0:
                 chem_colors = []
                 for i in range(M_curr):
@@ -933,65 +912,12 @@ with tab6:
                     elif cw<0.45 and cb>=0.55: chem_colors.append('#FF5252')
                     elif cw<0.45 and cb<0.45: chem_colors.append('#FFB6C1')
                     else: chem_colors.append('#888')
-                ax.scatter(chem_x, chem_y, s=25, c=chem_colors, alpha=0.8, edgecolors='white', linewidths=0.4, zorder=6)
-                bonds = []
-                for i in range(M_curr):
-                    for j in range(i+1, M_curr):
-                        d = np.sqrt((chem_x[i]-chem_x[j])**2 + (chem_y[i]-chem_y[j])**2)
-                        si = chem_w[i]*chem_b[i]
-                        sj = chem_w[j]*chem_b[j]
-                        if d < 2.0 and si > 0.4 and sj > 0.4:
-                            bonds.append((i, j, min(si, sj)))
-                for (i, j, st) in bonds:
-                    ax.plot([chem_x[i], chem_x[j]], [chem_y[i], chem_y[j]], color='#FFD700', lw=0.5+1.0*st, alpha=0.3+0.5*st, zorder=4)
-
-            # الميزان الأخروي الخفي
-            akh_x, akh_y, akh_scale = cx, cy, 12.0
-            hasanat = W * 200
-            sayyiat = (1 - B) * 200
-            total_deeds = hasanat + sayyiat
-            max_deeds = 600
-            akh_alpha = min(0.25, total_deeds / max_deeds * 0.25)
-            akh_flicker = 0.6 + 0.4 * np.sin(frame * 0.03)
-            akh_alpha *= akh_flicker
-
-            # عمود
-            ax.plot([akh_x, akh_x], [1, 18], color='#FFD700', lw=0.3, alpha=akh_alpha*0.5, zorder=0, ls='-')
-            # عارضة
-            akh_balance = (hasanat - sayyiat) / max(hasanat + sayyiat, 1)
-            ax.plot([akh_x-akh_scale, akh_x+akh_scale], [17.5-akh_balance*2.5, 17.5+akh_balance*2.5], color='#FFD700', lw=0.4, alpha=akh_alpha*1.2, zorder=0)
-            # سلاسل
-            lpy = 7 - akh_balance * 2.5
-            rpy = 7 + akh_balance * 2.5
-            ax.plot([akh_x-akh_scale, akh_x-akh_scale], [17.5-akh_balance*2.5, lpy], color='#FFD700', lw=0.2, alpha=akh_alpha*0.8, zorder=0, ls=':')
-            ax.plot([akh_x+akh_scale, akh_x+akh_scale], [17.5+akh_balance*2.5, rpy], color='#FFD700', lw=0.2, alpha=akh_alpha*0.8, zorder=0, ls=':')
-            # كفتان
-            ax.add_patch(plt.matplotlib.patches.Circle((akh_x-akh_scale, lpy), 2.5, color='#FFF', alpha=akh_alpha*0.5, zorder=0, fill=False, lw=0.3, ls='--'))
-            ax.add_patch(plt.matplotlib.patches.Circle((akh_x+akh_scale, rpy), 2.5, color='#FFF', alpha=akh_alpha*0.5, zorder=0, fill=False, lw=0.3, ls='--'))
-            # أرقام
-            ax.text(akh_x-akh_scale, lpy-3.2, f'{hasanat:.0f}', color='white', fontsize=5, ha='center', alpha=akh_alpha*0.4, zorder=0)
-            ax.text(akh_x+akh_scale, rpy-3.2, f'{sayyiat:.0f}', color='white', fontsize=5, ha='center', alpha=akh_alpha*0.4, zorder=0)
-            # هالة
-            ax.add_patch(plt.matplotlib.patches.Circle((akh_x, akh_y), akh_scale+4+2*np.sin(frame*0.02), color='#FFD700', alpha=akh_alpha*0.25, zorder=0, fill=False, lw=0.2))
-            # أشعة
-            n_rays = 24
-            for i in range(n_rays):
-                angle = i * 2 * np.pi / n_rays
-                rs = 2
-                re = akh_scale + 5 + 2 * np.sin(frame * 0.02 + i)
-                xs = akh_x + rs * np.cos(angle)
-                ys = akh_y + rs * np.sin(angle)
-                xe = akh_x + re * np.cos(angle)
-                ye = akh_y + re * np.sin(angle)
-                ax.plot([xs, xe], [ys, ye], color='#FFD700', lw=0.15, alpha=akh_alpha*0.12, zorder=0)
-            # عين
-            ax.add_patch(plt.matplotlib.patches.Circle((akh_x, akh_y), 0.3, color='#FFD700', alpha=akh_alpha*0.4, zorder=0, fill=True))
-            ax.add_patch(plt.matplotlib.patches.Circle((akh_x, akh_y), 1.2+0.5*np.sin(frame*0.05), color='#FFD700', alpha=akh_alpha*0.3, zorder=0, fill=False, lw=0.2))
+                ax.scatter(chem_x, chem_y, s=20, c=chem_colors, alpha=0.75, edgecolors='white', linewidths=0.3, zorder=6)
 
             # لوحة الإثبات
             pax = ax.inset_axes([0.5, 0.02, 0.46, 0.10])
             pax.set_xlim(0, 300); pax.set_ylim(0, 1.05)
-            pax.set_title(TXT('S (ذهب) → E (سماوي) – الاستدراج', 'S (Gold) → E (Cyan) – Istidraj'), color='white', fontsize=7)
+            pax.set_title(TXT('S (ذهب) → E (سماوي)', 'S (Gold) → E (Cyan)'), color='white', fontsize=7)
             pax.tick_params(colors='white', labelsize=4); pax.grid(True, alpha=0.12)
             if list(hist_S):
                 pax.plot(list(hist_x), list(hist_S), color='#FFD700', lw=2)
@@ -999,15 +925,16 @@ with tab6:
 
             # شريط الحالة
             if N_curr > 0:
-                ng = np.sum((sw>=0.55)&(sb>=0.55))
-                nw = np.sum((sw>=0.55)&(sb<0.45))
-                nr = np.sum((sw<0.45)&(sb>=0.55))
-                npk = np.sum((sw<0.45)&(sb<0.45))
-                nb = len(bonds) if M_curr > 0 else 0
-                ax.text(14, 1.2, f'{phase} | 🟡{ng} ⚪{nw} 🔴{nr} 🩷{npk} | ⚗️{nb} | S={S:.2f} E={E:.2f}', color='white', fontsize=10, ha='center', fontweight='bold')
+                ng = int(np.sum((sw>=0.55)&(sb>=0.55)))
+                nw = int(np.sum((sw>=0.55)&(sb<0.45)))
+                nr = int(np.sum((sw<0.45)&(sb>=0.55)))
+                npk = int(np.sum((sw<0.45)&(sb<0.45)))
+                ax.text(14, 1.2, f'{phase} | 🟡{ng} ⚪{nw} 🔴{nr} 🩷{npk} | S={S:.2f} E={E:.2f}', 
+                        color='white', fontsize=10, ha='center', fontweight='bold')
 
             plt.tight_layout(pad=0)
             placeholder.pyplot(fig)
+
             buf = BytesIO()
             fig.savefig(buf, format='png', dpi=100, facecolor='#000010')
             buf.seek(0)
@@ -1026,7 +953,6 @@ with tab6:
     else:
         st.info(TXT("اضغط ▶️ تشغيل لبدء المحاكاة", "Press ▶️ Run to start"))
 
-# زر تحميل صورة المشهد الحي
 if 'live_image' in st.session_state:
     st.download_button(
         label=TXT("📥 تحميل صورة المشهد الحي", "📥 Download Live Scene Image"),
@@ -1054,5 +980,4 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-print("✅ المرحلة الرابعة مكتملة: المشهد الحي المتكامل مع الذرة والجزيء والخلية والميزان الأخروي الخفي، والتذييل")
-print("✅✅✅ تم بناء المنصة الذهبية – الدين القيم – بكافة أركانها وأدواتها ولوازمها بنجاح!")
+print("✅ المرحلة الرابعة مكتملة بنجاح – مشهد حي مستقر + تذييل")
