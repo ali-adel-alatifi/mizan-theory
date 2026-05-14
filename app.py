@@ -9,177 +9,102 @@ import json
 import warnings
 warnings.filterwarnings('ignore')
 
-# =============================================
-# الإعدادات العامة
-# =============================================
-st.set_page_config(
-    page_title="⚖️ الدين القيم – قانون التوازن الكوني",
-    page_icon="⚖️",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+st.set_page_config(page_title="⚖️ الدين القيم – المنارة العالمية", page_icon="⚖️", layout="wide", initial_sidebar_state="expanded")
 
-# =============================================
-# النظام اللغوي المتعدد
-# =============================================
-if "lang" not in st.session_state:
-    st.session_state.lang = "ar"
+if "lang" not in st.session_state: st.session_state.lang = "ar"
 LANG = st.session_state.lang
+TXT = lambda ar, en: ar if LANG == "ar" else en
 
-def TXT(ar_text, en_text):
-    return ar_text if LANG == "ar" else en_text
-
-# =============================================
-# الثوابت الوجودية – المعجم الهندسي (28 حرفاً)
-# =============================================
+# المعجم الهندسي (28 حرفاً)
 LETTERS_DB = {
-    'أ': 1, 'ل': 30, 'م': 40, 'ر': 200, 'س': 60,
-    'ح': 8, 'ط': 9, 'ق': 100, 'ك': 20, 'ص': 90,
-    'ع': 70, 'ي': 10, 'هـ': 5, 'ن': 50, 'ف': 80,
-    'و': 6, 'ب': 2, 'ظ': 900, 'ض': 800, 'غ': 1000,
-    'ذ': 700, 'خ': 600, 'ش': 300, 'ز': 7, 'ج': 3,
-    'ت': 400, 'ث': 500
+    'أ':1,'ل':30,'م':40,'ر':200,'س':60,'ح':8,'ط':9,'ق':100,'ك':20,'ص':90,
+    'ع':70,'ي':10,'هـ':5,'ن':50,'ف':80,'و':6,'ب':2,'ظ':900,'ض':800,
+    'غ':1000,'ذ':700,'خ':600,'ش':300,'ز':7,'ج':3,'ت':400,'ث':500
 }
 
-# =============================================
-# المؤشرات الوجودية – مجموعة واحدة مع الحروف والقيم
-# =============================================
-# كل مؤشر له: الاسم، الحرف، القيمة
+# المؤشرات الأخلاقية الأساسية (11 مؤشراً)
 INDICATORS_META = [
-    {"name_ar": "الصلاة (إقامة/تضييع)", "name_en": "Prayer (Establish/Neglect)", "letter": "ن", "value": 50},
-    {"name_ar": "الزكاة والصدقات (إيتاء/منع)", "name_en": "Zakat & Charity (Give/Withhold)", "letter": "ص", "value": 90},
-    {"name_ar": "الولاء لله ورسوله والمؤمنين (موالاة/معاداة)", "name_en": "Loyalty to Allah, Messenger & Believers", "letter": "أ", "value": 1},
-    {"name_ar": "تحكيم الشريعة (تحكيم/رفض)", "name_en": "Applying Sharia (Apply/Reject)", "letter": "ل", "value": 30},
-    {"name_ar": "العدل (عدل/ظلم)", "name_en": "Justice (Just/Unjust)", "letter": "ق", "value": 100},
-    {"name_ar": "الشورى (تشاور/استبداد)", "name_en": "Consultation - Shura (Consult/Tyranny)", "letter": "م", "value": 40},
-    {"name_ar": "البراءة من الطاغوت (براءة/موالاة)", "name_en": "Disavowal of Taghut (Disavow/Ally)", "letter": "هـ", "value": 5},
-    {"name_ar": "الرحمة والعطاء – الماعون (رحمة/قسوة)", "name_en": "Mercy & Giving - Al-Ma'un", "letter": "ح", "value": 8},
-    {"name_ar": "الأمر بالمعروف (أمر/نهي عن المعروف)", "name_en": "Enjoining Good", "letter": "ف", "value": 80},
-    {"name_ar": "النهي عن المنكر (نهي/أمر بالمنكر)", "name_en": "Forbidding Evil", "letter": "و", "value": 6},
-    {"name_ar": "النزاهة ومكافحة الفساد (نزاهة/فساد)", "name_en": "Integrity & Anti-Corruption", "letter": "ب", "value": 2},
-    {"name_ar": "السيادة والاستقلال (استقلال/تبعية)", "name_en": "Sovereignty & Independence", "letter": "م", "value": 40},
-    {"name_ar": "الاكتفاء الذاتي (اكتفاء/اعتماد)", "name_en": "Self-Sufficiency", "letter": "ق", "value": 100},
-    {"name_ar": "الإنتاج الزراعي (إنتاج/إهمال)", "name_en": "Agricultural Production", "letter": "ك", "value": 20},
-    {"name_ar": "الإنتاج الصناعي (صناعة/تخلف)", "name_en": "Industrial Production", "letter": "ص", "value": 90},
-    {"name_ar": "القوة العسكرية (قوة/ضعف)", "name_en": "Military Power", "letter": "ر", "value": 200},
-    {"name_ar": "التصميم والهندسة – ك (إبداع/جمود)", "name_en": "Design & Engineering - K", "letter": "ك", "value": 20},
-    {"name_ar": "التصنيع والتشكيل – هـ (إتقان/فوضى)", "name_en": "Manufacturing & Forming - H", "letter": "هـ", "value": 5},
-    {"name_ar": "التطوير والتحسين – ي (تجديد/ركود)", "name_en": "Development & Improvement - Y", "letter": "ي", "value": 10},
-    {"name_ar": "البحث والتطوير – ع (علم/جهل)", "name_en": "Research & Development - A", "letter": "ع", "value": 70},
-    {"name_ar": "الجودة والاستدامة – ص (ثبات/انهيار)", "name_en": "Quality & Sustainability - S", "letter": "ص", "value": 90},
+    {"ar": "الصلاة (إقامة/تضييع)", "en": "Prayer", "letter": "ن", "val": 50},
+    {"ar": "الزكاة والصدقات (إيتاء/منع)", "en": "Zakat & Charity", "letter": "ص", "val": 90},
+    {"ar": "الولاء لله ورسوله والمؤمنين", "en": "Loyalty to Allah & Believers", "letter": "أ", "val": 1},
+    {"ar": "تحكيم الشريعة (تحكيم/رفض)", "en": "Applying Sharia", "letter": "ل", "val": 30},
+    {"ar": "العدل (عدل/ظلم)", "en": "Justice", "letter": "ق", "val": 100},
+    {"ar": "الشورى (تشاور/استبداد)", "en": "Consultation", "letter": "م", "val": 40},
+    {"ar": "البراءة من الطاغوت (براءة/موالاة)", "en": "Disavowal of Taghut", "letter": "هـ", "val": 5},
+    {"ar": "الرحمة والعطاء – الماعون (رحمة/قسوة)", "en": "Mercy & Giving", "letter": "ح", "val": 8},
+    {"ar": "الأمر بالمعروف (أمر/نهي)", "en": "Enjoining Good", "letter": "ف", "val": 80},
+    {"ar": "النهي عن المنكر (نهي/أمر)", "en": "Forbidding Evil", "letter": "و", "val": 6},
+    {"ar": "النزاهة ومكافحة الفساد", "en": "Integrity & Anti-Corruption", "letter": "ب", "val": 2},
 ]
+N_IND = len(INDICATORS_META)  # 11 مؤشراً
 
 def get_indicator_label(i):
     meta = INDICATORS_META[i]
-    name = meta["name_ar"] if LANG == "ar" else meta["name_en"]
-    letter = meta["letter"]
-    value = meta["value"]
-    return f"{name}  [{letter}={value}]"
+    name = meta["ar"] if LANG == "ar" else meta["en"]
+    return f"{name}  [{meta['letter']}={meta['val']}]"
 
-# =============================================
-# المحكمة العليا – أربع بوابات منطقية قرآنية
-# =============================================
+# المحكمة العليا (4 بوابات)
 def supreme_court(W_raw, B_raw, W_pure, B_compassion, B_disavowal):
     if not W_pure:
-        return (0, TXT("بوابة الشرك", "Shirk Gate"),
-                TXT("⚠️ لا يغفر: ﴿إِنَّ اللَّهَ لَا يَغْفِرُ أَن يُشْرَكَ بِهِ﴾", "⚠️ Unforgivable"),
-                "🔴")
+        return (0, TXT("بوابة الشرك","Shirk Gate"), TXT("⚠️ لا يغفر: ﴿إِنَّ اللَّهَ لَا يَغْفِرُ أَن يُشْرَكَ بِهِ﴾","⚠️ Unforgivable"), "🔴")
     if B_compassion <= 0:
-        return (-1, TXT("بوابة الماعون", "Al-Ma'un Gate"),
-                TXT("⚠️ انهيار: ﴿فَوَيْلٌ لِّلْمُصَلِّينَ... وَيَمْنَعُونَ الْمَاعُونَ﴾", "⚠️ Collapse"),
-                "🔴")
+        return (-1, TXT("بوابة الماعون","Al-Ma'un Gate"), TXT("⚠️ انهيار: ﴿فَوَيْلٌ لِّلْمُصَلِّينَ...﴾","⚠️ Collapse"), "🔴")
     if W_raw > 0 and B_disavowal <= 0:
-        return (0, TXT("بوابة الإخلاص", "Sincerity Gate"),
-                TXT("⚠️ عبادة باطلة: ﴿يَعْبُدُونَنِي وَلَا يُشْرِكُونَ بِي شَيْئًا﴾", "⚠️ Void worship"),
-                "🟡")
+        return (0, TXT("بوابة الإخلاص","Sincerity Gate"), TXT("⚠️ عبادة باطلة: ﴿يَعْبُدُونَنِي...﴾","⚠️ Void"), "🟡")
     if W_raw > 0 and B_raw > 0:
-        return (1, TXT("بوابة الوعد", "Promise Gate"),
-                TXT("🟢 ثبات: ﴿فَلَهُمْ أَجْرٌ غَيْرُ مَمْنُونٍ﴾", "🟢 Stability"),
-                "🟢")
+        return (1, TXT("بوابة الوعد","Promise Gate"), TXT("🟢 ثبات: ﴿فَلَهُمْ أَجْرٌ غَيْرُ مَمْنُونٍ﴾","🟢 Stability"), "🟢")
     return None, None, None, None
 
 def calculate_S(W_raw, B_raw, E_raw, W_pure, B_compassion, B_disavowal):
     S_gate, gate_name, gate_msg, gate_color = supreme_court(W_raw, B_raw, W_pure, B_compassion, B_disavowal)
     if S_gate is not None:
         return S_gate, 0, gate_name, gate_msg, gate_color, 0
-    W = (W_raw + 1) / 2
-    B = (B_raw + 1) / 2
-    E = (E_raw + 1) / 2
+    W = (W_raw + 1) / 2; B = (B_raw + 1) / 2; E = (E_raw + 1) / 2
     W_boost = 1 + (LETTERS_DB['أ'] + LETTERS_DB['ر'] + LETTERS_DB['س'] + LETTERS_DB['ط']) / 1000
     B_boost = 1 + (LETTERS_DB['ل'] + LETTERS_DB['ح'] + LETTERS_DB['ط']) / 1000
     S_raw = (W * W_boost) * (B * B_boost) * (1 + LETTERS_DB['م'] / 1000)
     istidraj_gap = max(0, E - S_raw)
-    return min(1.0, S_raw), E, TXT("المعادلة العامة", "General Equation"), "", "⚪", istidraj_gap
+    return min(1.0, S_raw), E, TXT("المعادلة العامة","General"), "", "⚪", istidraj_gap
 
 def simulate_future(S, E, W_raw, B_raw, years=50):
     Sh, Eh = [S], [E]
     for _ in range(years):
-        nE = Eh[-1] + 0.02 * (Sh[-1] - Eh[-1])
-        nB = B_raw
+        nE = Eh[-1] + 0.02 * (Sh[-1] - Eh[-1]); nB = B_raw
         if nE > Sh[-1] + 0.2: nB -= 0.03
         elif nE < Sh[-1]: nB += 0.01
-        nS = ((W_raw + 1) / 2) * ((nB + 1) / 2) * (1 + sum(LETTERS_DB.values()) / 1000)
-        Sh.append(nS); Eh.append(nE)
+        Sh.append(((W_raw+1)/2) * ((nB+1)/2) * (1 + sum(LETTERS_DB.values())/1000))
+        Eh.append(nE)
     return Sh, Eh
 
-def call_ai_api(user_text):
-    try:
-        import openai
-        openai.api_key = st.secrets["OPENAI_API_KEY"]
-        indicators_desc = "\n".join([f"{i+1}. {get_indicator_label(i)}" for i in range(len(INDICATORS_META))])
-        prompt = f"""أنت محلل خبير في نظرية الميزان (S = W × B). اقرأ وصف الكيان وأعد تقديرات رقمية بصيغة JSON فقط.
-لديك {len(INDICATORS_META)} مؤشراً، كل منها بين -1 (سلبي) و +1 (إيجابي):
-{indicators_desc}
-W_pure: true/false
-analysis: تحليل موجز بالعربية
-أعد النتيجة بصيغة JSON فقط.
-مثال: {{"values":[0.5,0.4,...], "W_pure":true, "analysis":"..."}}
-الوصف: {user_text}"""
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[{"role":"system","content":"ترد بصيغة JSON فقط."},
-                      {"role":"user","content":prompt}],
-            temperature=0.3, max_tokens=600)
-        content = response.choices[0].message.content.strip()
-        if content.startswith("```"):
-            lines = content.split("\n")
-            content = "\n".join(lines[1:-1])
-        return json.loads(content)
-    except Exception as e:
-        st.error(TXT(f"خطأ في الاتصال بالذكاء الاصطناعي: {str(e)}", f"AI connection error: {str(e)}"))
-        return None
-
 def plot_quadrant_map(B_raw, W_raw, istidraj_gap):
-    fig, ax = plt.subplots(figsize=(7,7), facecolor='#0a0a2e')
-    ax.set_facecolor('#0a0a2e')
-    ax.set_xlim(-1.2,1.2); ax.set_ylim(-1.2,1.2)
+    fig, ax = plt.subplots(figsize=(6,6), facecolor='#0a0a2e')
+    ax.set_facecolor('#0a0a2e'); ax.set_xlim(-1.2,1.2); ax.set_ylim(-1.2,1.2)
     ax.axhline(0,color='grey',lw=0.5); ax.axvline(0,color='grey',lw=0.5)
-    ax.set_xlabel(TXT("B (الكفر بالطاغوت)", "B (Disavowal)"), color='white')
-    ax.set_ylabel(TXT("W (الإيمان بالله)", "W (Faith)"), color='white')
+    ax.set_xlabel(TXT("B (الكفر بالطاغوت)","B (Disavowal)"), color='white')
+    ax.set_ylabel(TXT("W (الإيمان بالله)","W (Faith)"), color='white')
     ax.fill_between([0,1.2],0,1.2,color='#FFD700',alpha=0.3,label=TXT('المؤمنون','Believers'))
-    ax.fill_between([-1.2,0],0,1.2,color='#FF5252',alpha=0.2,label=TXT('المغضوب عليهم','Those with Wrath'))
+    ax.fill_between([-1.2,0],0,1.2,color='#FF5252',alpha=0.2,label=TXT('المغضوب عليهم','Wrath'))
     ax.fill_between([-1.2,0],-1.2,0,color='#FFB6C1',alpha=0.2,label=TXT('المنافقون','Hypocrites'))
-    ax.fill_between([0,1.2],-1.2,0,color='#FFA500',alpha=0.2,label=TXT('الضالون','Those Astray'))
-    ax.scatter(B_raw,W_raw,s=400,c='cyan',edgecolors='white',linewidth=3,zorder=10)
-    ax.scatter(1,1,s=150,c='#FFD700',edgecolors='white',linewidth=2,zorder=10,marker='*')
-    ax.text(1,1.15,TXT('مقام إبراهيم','Station of Abraham'),color='#FFD700',fontsize=9,ha='center',fontweight='bold')
-    if istidraj_gap>0:
-        ax.text(0.5,-0.9,TXT(f"فجوة استدراج: {istidraj_gap:.2f}",f"Istidraj Gap: {istidraj_gap:.2f}"),
-                color='red',fontsize=10,ha='center',fontweight='bold')
-    ax.legend(facecolor='#0a0a2e',edgecolor='white',labelcolor='white',fontsize=8,loc='lower left')
+    ax.fill_between([0,1.2],-1.2,0,color='#FFA500',alpha=0.2,label=TXT('الضالون','Astray'))
+    ax.scatter(B_raw,W_raw,s=300,c='cyan',edgecolors='white',linewidth=2,zorder=10)
+    ax.scatter(1,1,s=100,c='#FFD700',edgecolors='white',linewidth=2,zorder=10,marker='*')
+    ax.text(1,1.15,TXT('مقام إبراهيم','Abraham'),color='#FFD700',fontsize=8,ha='center')
+    if istidraj_gap>0: ax.text(0.5,-0.9,TXT(f"فجوة:{istidraj_gap:.2f}",f"Gap:{istidraj_gap:.2f}"),color='red',fontsize=9,ha='center',fontweight='bold')
+    ax.legend(facecolor='#0a0a2e',edgecolor='white',labelcolor='white',fontsize=7,loc='lower left')
     ax.tick_params(colors='white')
     return fig
 
-print("✅ المرحلة الأولى مكتملة: الأساسيات، الثوابت، المؤشرات مع الحروف، المحكمة العليا، دوال الحساب، الذكاء الاصطناعي")
+print("✅ المرحلة الأولى مكتملة")
 
 # =============================================
-# المرحلة الثانية: الشريط الجانبي والمنزلقات الموحدة
+# المرحلة الثانية: الشريط الجانبي، المنزلقات، والحسابات
 # =============================================
 
-# تهيئة حالة الجلسة للقيم الافتراضية
+# تهيئة حالة الجلسة
 if "slider_values" not in st.session_state:
-    st.session_state.slider_values = {f"V{i}": 0.0 for i in range(len(INDICATORS_META))}
+    st.session_state.slider_values = {f"V{i}": 0.0 for i in range(N_IND)}
     st.session_state.slider_values["W_pure"] = True
+    st.session_state.slider_values["E_val"] = 0.5  # قيمة افتراضية للتمكين المادي
 
 if "ai_result" not in st.session_state:
     st.session_state.ai_result = None
@@ -187,13 +112,13 @@ if "ai_result" not in st.session_state:
 with st.sidebar:
     # شعار المنصة
     st.markdown(f"""
-    <div style='text-align:center;padding:10px;background:linear-gradient(135deg,#1a1a2e,#16213e);
+    <div style='text-align:center;padding:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);
     border-radius:10px;margin-bottom:15px;border:1px solid #FFD700'>
-        <p style='font-size:2.5em;margin:0;'>⚖️</p>
+        <p style='font-size:2em;margin:0;'>⚖️</p>
         <h2 style='color:#FFD700;margin:0;'>{TXT('الدِّينُ الْقَيِّم', 'Al-Deen Al-Qayyim')}</h2>
-        <p style='color:#e0e0e0;font-size:11px;margin:5px 0;'>{TXT('قانون التوازن الكوني', 'The Cosmic Law of Balance')}</p>
-        <p style='color:#FFD700;font-size:15px;margin:3px 0;font-weight:bold;'>S = W × B</p>
-        <p style='font-size:2.5em;margin:0;'>⚖️</p>
+        <p style='color:#e0e0e0;font-size:10px;margin:2px 0;'>{TXT('المنارة العالمية', 'The Global Beacon')}</p>
+        <p style='color:#FFD700;font-size:14px;margin:2px 0;font-weight:bold;'>S = W × B</p>
+        <p style='font-size:2em;margin:0;'>⚖️</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -207,150 +132,134 @@ with st.sidebar:
     # اختيار وضع الإدخال
     mode = st.radio(
         TXT("🎛️ اختر وضع الإدخال:", "🎛️ Select Input Mode:"),
-        [TXT("🧑‍⚖️ التقدير اليدوي (المنزلقات)", "🧑‍⚖️ Manual Estimation (Sliders)"),
+        [TXT("🧑‍⚖️ التقدير اليدوي", "🧑‍⚖️ Manual Estimation"),
          TXT("🤖 مساعد الذكاء الاصطناعي", "🤖 AI Assistant")]
     )
 
-    N_IND = len(INDICATORS_META)  # 21 مؤشراً
     slider_vals = [0.0] * N_IND
     W_pure = True
+    E_val = 0.5
 
     if TXT("يدوي", "Manual") in mode:
-        # جميع المؤشرات في مجموعة واحدة – كل حركة مولد طاقة
-        with st.expander(TXT("🎛️ مولدات الطاقة الوجودية", "🎛️ Existential Energy Generators"), expanded=True):
+        with st.expander(TXT("🎛️ مولدات الطاقة الروحية", "🎛️ Spiritual Energy Generators"), expanded=True):
             st.caption(TXT(
                 "كل حركة وسكنة في حياة الإنسان هي مولد طاقة دافعة نحو الولاية والبراءة معاً. حرّك المنزلقات لتقدير حالة الكيان. [الحرف=القيمة]",
-                "Every movement is an energy generator toward loyalty and disavowal. Adjust sliders. [Letter=Value]"
+                "Every movement is an energy generator toward loyalty and disavowal. Adjust sliders."
             ))
 
-            # عرض المنزلقات في عمودين لتوفير المساحة
             for i in range(0, N_IND, 2):
                 col_a, col_b = st.columns(2)
                 with col_a:
                     if i < N_IND:
                         slider_vals[i] = st.slider(
-                            get_indicator_label(i),
-                            -1.0, 1.0,
-                            st.session_state.slider_values.get(f"V{i}", 0.0),
-                            0.1,
-                            key=f"s_V{i}"
+                            get_indicator_label(i), -1.0, 1.0,
+                            st.session_state.slider_values.get(f"V{i}", 0.0), 0.1, key=f"s_V{i}"
                         )
                 with col_b:
                     if i + 1 < N_IND:
                         slider_vals[i+1] = st.slider(
-                            get_indicator_label(i+1),
-                            -1.0, 1.0,
-                            st.session_state.slider_values.get(f"V{i+1}", 0.0),
-                            0.1,
-                            key=f"s_V{i+1}"
+                            get_indicator_label(i+1), -1.0, 1.0,
+                            st.session_state.slider_values.get(f"V{i+1}", 0.0), 0.1, key=f"s_V{i+1}"
                         )
 
-            # مربع الإخلاص
             W_pure = st.checkbox(
                 TXT("الإخلاص لله (عدم الشرك)", "Sincerity to Allah (No Shirk)"),
-                value=st.session_state.slider_values.get("W_pure", True),
-                help=TXT("هل الولاء خالص لله وحده؟", "Is loyalty purely for Allah alone?")
+                value=st.session_state.slider_values.get("W_pure", True)
+            )
+
+        with st.expander(TXT("🌐 التمكين المادي (E)", "🌐 Material Empowerment (E)"), expanded=False):
+            E_val = st.slider(
+                TXT("مستوى التمكين (اقتصاد، قوة، نفوذ)", "Empowerment Level (Economy, Power, Influence)"),
+                0.0, 1.0, st.session_state.slider_values.get("E_val", 0.5), 0.05, key="s_E"
             )
 
         # تحديث حالة الجلسة
         for i in range(N_IND):
             st.session_state.slider_values[f"V{i}"] = slider_vals[i]
         st.session_state.slider_values["W_pure"] = W_pure
+        st.session_state.slider_values["E_val"] = E_val
 
     else:
-        # وضع الذكاء الاصطناعي
         st.info(TXT(
-            "🤖 اكتب وصفاً للكيان (دولة، مجتمع، فرد) ليقوم الذكاء الاصطناعي بتقدير المؤشرات.",
+            "🤖 اكتب وصفاً للكيان ليقوم الذكاء الاصطناعي بتقدير المؤشرات.",
             "🤖 Describe the entity for AI to estimate indicators."
         ))
-
         ai_text = st.text_area(
-            TXT("الوصف النصي:", "Description:"),
-            height=200,
-            placeholder=TXT(
-                "مثال: دولة إسلامية ذات أغلبية شابة، تعاني من فساد إداري لكنها تملك جيشاً قوياً...",
-                "Example: An Islamic country with a young majority..."
-            )
+            TXT("الوصف النصي:", "Description:"), height=200,
+            placeholder=TXT("مثال: شاب في الثلاثين، يصلي ويصوم لكنه يعاني من شح عاطفي...", "Example: A young man who prays but struggles with compassion...")
         )
-
         if st.button(TXT("تحليل بالذكاء الاصطناعي", "Analyze with AI"), type="primary", use_container_width=True):
             if not ai_text.strip():
                 st.warning(TXT("يرجى إدخال وصف نصي أولاً.", "Please enter a description first."))
             else:
                 with st.spinner(TXT("جاري التحليل...", "Analyzing...")):
-                    ai_result = call_ai_api(ai_text)
-                    if ai_result:
+                    # هنا يستدعي الذكاء الاصطناعي (يحتاج API)
+                    try:
+                        import openai
+                        openai.api_key = st.secrets.get("OPENAI_API_KEY", "")
+                        if not openai.api_key:
+                            raise ValueError("API key not found")
+                        prompt = f"""You are an expert in the Mizan theory. Analyze this entity and return JSON with these indicators (values between -1 and 1):
+{[f"{i+1}. {get_indicator_label(i)}" for i in range(N_IND)]}
+Also include "W_pure": true/false, "analysis": "brief analysis in Arabic", "E_val": 0.0-1.0.
+Return ONLY valid JSON. Description: {ai_text}"""
+                        response = openai.ChatCompletion.create(
+                            model="gpt-3.5-turbo",
+                            messages=[{"role":"system","content":"Return ONLY JSON."}, {"role":"user","content":prompt}],
+                            temperature=0.3, max_tokens=500
+                        )
+                        content = response.choices[0].message.content.strip()
+                        if content.startswith("```"): content = content.split("\n", 1)[1].rsplit("\n", 1)[0]
+                        ai_result = json.loads(content)
                         st.session_state.ai_result = ai_result
                         st.success(TXT("✅ تم التحليل!", "✅ Analysis complete!"))
-                        if "analysis" in ai_result:
-                            st.info(ai_result["analysis"])
+                        if "analysis" in ai_result: st.info(ai_result["analysis"])
+                    except Exception as e:
+                        st.error(f"AI Error: {e}")
 
-        # إذا كان هناك نتيجة سابقة من الذكاء الاصطناعي
-        if st.session_state.ai_result is not None:
+        if st.session_state.ai_result:
             r = st.session_state.ai_result
-            vals = r.get("values", [0.0] * N_IND)
-            if len(vals) >= N_IND:
-                slider_vals = vals[:N_IND]
-            else:
-                slider_vals = vals + [0.0] * (N_IND - len(vals))
+            vals = r.get("values", [0.0]*N_IND)[:N_IND]
+            slider_vals = vals + [0.0]*(N_IND - len(vals))
             W_pure = r.get("W_pure", True)
-            # تحديث حالة الجلسة
+            E_val = r.get("E_val", 0.5)
             for i in range(N_IND):
                 st.session_state.slider_values[f"V{i}"] = slider_vals[i]
             st.session_state.slider_values["W_pure"] = W_pure
+            st.session_state.slider_values["E_val"] = E_val
 
     # زر إعادة الضبط
     st.markdown("---")
     if st.button(TXT("🔄 إعادة ضبط جميع القيم", "🔄 Reset All Values"), use_container_width=True):
-        for i in range(N_IND):
-            st.session_state.slider_values[f"V{i}"] = 0.0
+        for i in range(N_IND): st.session_state.slider_values[f"V{i}"] = 0.0
         st.session_state.slider_values["W_pure"] = True
+        st.session_state.slider_values["E_val"] = 0.5
         st.session_state.ai_result = None
         st.rerun()
 
 # =============================================
-# المحرك الوجودي – الحساب
+# المحرك الوجودي – الحسابات
 # =============================================
-
-# استخراج القيم من المنزلقات أو الذكاء الاصطناعي
 vals = [st.session_state.slider_values.get(f"V{i}", 0.0) for i in range(N_IND)]
 W_pure = st.session_state.slider_values.get("W_pure", True)
+E_val = st.session_state.slider_values.get("E_val", 0.5)
 
-# توزيع المؤشرات:
-# 0-5: W, 6-10: B, 11-15: E, 16-20: I
+# تقسيم المؤشرات: أول 6 = W (الولاء)، آخر 5 = B (البراءة)
 W_vals = vals[0:6]
 B_vals = vals[6:11]
-E_vals = vals[11:16]
-I_vals = vals[16:21]
-
-# المتوسطات الخام
 W_raw = np.mean(W_vals)
 B_raw = np.mean(B_vals)
 
-# حساب E المرجح بقيم الحروف (م، ق، ك، ص، ر)
-E_LETTERS = ['م', 'ق', 'ك', 'ص', 'ر']
-E_weights_list = [LETTERS_DB[l] for l in E_LETTERS]
-
-# حساب مؤشر الصناعة المرجح من تفصيل الكهيعص
-IND_LETTERS = ['ك', 'هـ', 'ي', 'ع', 'ص']
-i_weights = [LETTERS_DB[l] for l in IND_LETTERS]
-I_weighted = np.average(I_vals, weights=i_weights)
-
-# استبدال المؤشر الصناعي في E (الفهرس 3) بالمؤشر المفصل
-E_vals_updated = E_vals.copy()
-E_vals_updated[3] = I_weighted
-E_raw = np.average(E_vals_updated, weights=E_weights_list)
-
 # قيم البوابات
-B_compassion = B_vals[1]  # الرحمة والعطاء (الماعون)
-B_disavowal = B_vals[0]   # البراءة من الطاغوت
+B_compassion = B_vals[1]  # الرحمة والعطاء (الماعون) – الفهرس 7
+B_disavowal = B_vals[0]   # البراءة من الطاغوت – الفهرس 6
 
 # حساب S النهائي
 S_final, E_norm, gate_name, gate_msg, gate_color, istidraj_gap = calculate_S(
-    W_raw, B_raw, E_raw, W_pure, B_compassion, B_disavowal
+    W_raw, B_raw, E_val, W_pure, B_compassion, B_disavowal
 )
 
-print("✅ المرحلة الثانية مكتملة: الشريط الجانبي، المنزلقات مع الحروف والقيم، الذكاء الاصطناعي، الحسابات")
+print("✅ المرحلة الثانية مكتملة: الشريط الجانبي، المنزلقات، الذكاء الاصطناعي، الحسابات")
 
 # =============================================
 # المرحلة الثالثة: العنوان، لوحة القيادة، التبويبات
@@ -361,7 +270,7 @@ st.markdown(f"""
 <div style="text-align:center;padding:25px 0 15px 0;">
     <p style="font-size:2.8em;margin:0;">⚖️</p>
     <h1 style="color:#FFD700;font-size:2.8em;margin:5px 0;font-weight:900;letter-spacing:3px;">{TXT('الدِّينُ الْقَيِّم', 'Al-Deen Al-Qayyim')}</h1>
-    <h2 style="color:#FFD700;font-size:1.3em;margin-top:0;font-weight:400;">{TXT('قانون التوازن الكوني من الأزل إلى الخلود', 'The Cosmic Law of Balance from Eternity to Eternity')}</h2>
+    <h2 style="color:#FFD700;font-size:1.3em;margin-top:0;font-weight:400;">{TXT('المنارة العالمية – بوصلة التائهين وحبل نجاة الغارقين', 'The Global Beacon – Compass for the Lost, Lifeline for the Drowning')}</h2>
     <p style="font-size:2.2em;color:#FFD700;margin:15px 0;font-weight:bold;">S = W × B</p>
     <p style="color:#CCC;font-size:1.1em;line-height:2;">﴿فَمَن يَكْفُرْ بِالطَّاغُوتِ وَيُؤْمِن بِاللَّهِ فَقَدِ اسْتَمْسَكَ بِالْعُرْوَةِ الْوُثْقَىٰ لَا انفِصَامَ لَهَا﴾</p>
     <p style="font-size:2.8em;margin:0;">⚖️</p>
@@ -375,7 +284,7 @@ col1, col2, col3, col4, col5 = st.columns(5)
 col1.metric(TXT("W (الولاء)", "W (Loyalty)"), f"{W_raw:+.2f}")
 col2.metric(TXT("B (البراءة)", "B (Disavowal)"), f"{B_raw:+.2f}")
 col3.metric(TXT("S (الثبات)", "S (Stability)"), f"{S_final:.2f}")
-col4.metric(TXT("E (التمكين)", "E (Empowerment)"), f"{E_norm:.2f}")
+col4.metric(TXT("E (التمكين)", "E (Empowerment)"), f"{E_val:.2f}")
 col5.metric(TXT("فجوة الاستدراج", "Istidraj Gap"), f"{istidraj_gap:.2f}")
 
 # عرض حكم المحكمة العليا
@@ -390,186 +299,214 @@ if gate_msg:
 
 # إنذار الاستدراج
 if istidraj_gap > 0.3:
-    st.error(f"🚨 {TXT('إنذار استدراج', 'Istidraj Alert')}: E={E_norm:.2f} > S={S_final:.2f} ({TXT('فجوة', 'Gap')} {istidraj_gap:.2f})")
+    st.error(f"🚨 {TXT('إنذار استدراج', 'Istidraj Alert')}: E={E_val:.2f} > S={S_final:.2f} ({TXT('فجوة', 'Gap')} {istidraj_gap:.2f})")
 elif istidraj_gap > 0.1:
     st.warning(f"⚡ {TXT('تحذير: فجوة استدراج متوسطة', 'Warning: Moderate Istidraj Gap')} ({istidraj_gap:.2f})")
 
 # =============================================
 # التبويبات الرئيسية
 # =============================================
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    TXT("🗺️ خريطة الوجود", "🗺️ Existence Map"),
-    TXT("⏳ المحاكي الزمني", "⏳ Time Simulator"),
-    TXT("🏥 المستشفى", "🏥 The Hospital"),
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    TXT("🗺️ المختبر الجماعي", "🗺️ Collective Lab"),
+    TXT("🧍 البوصلة الشخصية", "🧍 Personal Compass"),
+    TXT("📐 هندسة الصراط", "📐 Path Geometry"),
     TXT("📖 المعجم الهندسي", "📖 Geometric Lexicon"),
-    TXT("📜 رسالة الترحيب", "📜 Welcome Message"),
-    TXT("🌌 المشهد الحي", "🌌 Live Scene")
+    TXT("📜 رسالة الترحيب", "📜 Welcome Message")
 ])
 
 # =============================================
-# تبويب 1: خريطة الوجود
+# تبويب 1: المختبر الجماعي (الخريطة + المحاكي + المستشفى)
 # =============================================
 with tab1:
-    st.subheader(TXT("فضاء القيم – موقع الكيان", "Value Space – Entity Position"))
-    st.markdown(TXT(
-        "الخريطة الرباعية تُظهر موقعك في فضاء القيم بناءً على قيمتي الولاء (W) والبراءة (B).",
-        "The quadrant map shows your position in Value Space based on Loyalty (W) and Disavowal (B)."
-    ))
+    st.subheader(TXT("المختبر الجماعي – تشخيص الأمة", "Collective Lab – Nation Diagnosis"))
     
-    fig = plot_quadrant_map(B_raw, W_raw, istidraj_gap)
-    st.pyplot(fig)
-    
-    # إحصائيات إضافية
-    col_a, col_b, col_c = st.columns(3)
+    col_a, col_b = st.columns(2)
     with col_a:
-        dist_to_abraham = np.sqrt((1 - (W_raw + 1) / 2)**2 + (1 - (B_raw + 1) / 2)**2)
-        st.metric(TXT("المسافة إلى مقام إبراهيم", "Distance to Abraham's Station"), f"{dist_to_abraham:.3f}")
+        st.markdown(TXT("### 🗺️ خريطة الوجود", "### 🗺️ Existence Map"))
+        fig = plot_quadrant_map(B_raw, W_raw, istidraj_gap)
+        st.pyplot(fig)
     with col_b:
-        if W_raw >= 0 and B_raw >= 0:
-            quadrant_name = TXT("الربع الأول (المؤمنون)", "Q1 (Believers)")
-        elif W_raw >= 0 and B_raw < 0:
-            quadrant_name = TXT("الربع الثاني (المغضوب عليهم)", "Q2 (Those with Wrath)")
-        elif W_raw < 0 and B_raw < 0:
-            quadrant_name = TXT("الربع الثالث (المنافقون)", "Q3 (Hypocrites)")
-        else:
-            quadrant_name = TXT("الربع الرابع (الضالون)", "Q4 (Those Astray)")
-        st.metric(TXT("الربع الحالي", "Current Quadrant"), quadrant_name)
-    with col_c:
-        st.metric(TXT("نوع البوابة", "Gate Type"), gate_name if gate_name else TXT("لا يوجد", "None"))
-
-# =============================================
-# تبويب 2: المحاكي الزمني
-# =============================================
-with tab2:
-    st.subheader(TXT("المحاكي الزمني – حتمية المصير", "Time Simulator – Inevitable Fate"))
-    st.markdown(TXT(
-        "هذه المحاكاة تظهر كيف ستتغير قيم S وE عبر الزمن. منطقة الاستدراج تظهر عندما يتجاوز التمكين (E) الثبات (S).",
-        "This simulation shows how S and E will change over time. The Istidraj zone appears when Empowerment (E) exceeds Stability (S)."
-    ))
+        st.markdown(TXT("### ⏳ المحاكي الزمني", "### ⏳ Time Simulator"))
+        years = st.slider(TXT("سنوات", "Years"), 10, 100, 50, 10, key="yrs_lab")
+        S_hist, E_hist = simulate_future(S_final, E_val, W_raw, B_raw, years)
+        fig, ax = plt.subplots(figsize=(5, 3), facecolor='#0a0a2e')
+        ax.set_facecolor('#0a0a2e')
+        ax.plot(S_hist, label='S', color='#FFD700', lw=2)
+        ax.plot(E_hist, label='E', color='#0FF', lw=1.5, ls='--')
+        ax.fill_between(range(years + 1), S_hist, E_hist, where=(np.array(E_hist) > np.array(S_hist)), color='red', alpha=0.2)
+        ax.set_xlabel(TXT('سنوات', 'Years'), color='white')
+        ax.set_ylabel(TXT('قيمة', 'Value'), color='white')
+        ax.legend(facecolor='#0a0a2e', edgecolor='white', labelcolor='white', fontsize=6)
+        ax.tick_params(colors='white', labelsize=6)
+        ax.grid(True, alpha=0.2)
+        st.pyplot(fig)
     
-    years = st.slider(TXT("عدد سنوات المحاكاة:", "Simulation Years:"), 10, 100, 50, 10)
-    S_hist, E_hist = simulate_future(S_final, E_norm, W_raw, B_raw, years)
-    
-    fig, ax = plt.subplots(figsize=(10, 5), facecolor='#0a0a2e')
-    ax.set_facecolor('#0a0a2e')
-    ax.plot(S_hist, label=TXT('S (الثبات)', 'S (Stability)'), color='#FFD700', linewidth=2.5)
-    ax.plot(E_hist, label=TXT('E (التمكين)', 'E (Empowerment)'), color='#00FFFF', linewidth=2, linestyle='--')
-    ax.fill_between(range(years + 1), S_hist, E_hist, 
-                     where=(np.array(E_hist) > np.array(S_hist)), 
-                     color='red', alpha=0.25, label=TXT('منطقة الاستدراج', 'Istidraj Zone'))
-    ax.axhline(y=0, color='red', linestyle=':')
-    ax.set_xlabel(TXT('السنوات', 'Years'), color='white')
-    ax.set_ylabel(TXT('القيمة', 'Value'), color='white')
-    ax.legend(facecolor='#0a0a2e', edgecolor='white', labelcolor='white')
-    ax.tick_params(colors='white')
-    ax.grid(True, alpha=0.2)
-    st.pyplot(fig)
-    
-    st.markdown(f"""
-    **{TXT('ملخص المحاكاة:', 'Simulation Summary:')}**
-    - S {TXT('النهائي بعد', 'final after')} {years} {TXT('سنة:', 'years:')} **{S_hist[-1]:.3f}**
-    - E {TXT('النهائي بعد', 'final after')} {years} {TXT('سنة:', 'years:')} **{E_hist[-1]:.3f}**
-    - {TXT('الفجوة النهائية:', 'Final Gap:')} **{max(0, E_hist[-1] - S_hist[-1]):.3f}**
-    """)
-
-# =============================================
-# تبويب 3: المستشفى – التشخيص والوصفة العلاجية
-# =============================================
-with tab3:
-    st.subheader(TXT("🏥 المستشفى – التشخيص والوصفة العلاجية", "🏥 The Hospital – Diagnosis & Prescription"))
-    
-    all_vals = vals.copy()
+    st.markdown("---")
+    st.markdown(TXT("### 🏥 المستشفى – التشخيص والوصفة", "### 🏥 The Hospital – Diagnosis & Prescription"))
     wW = np.argmin(W_vals)
     wB = np.argmin(B_vals)
-    wE_idx = np.argmin(E_vals_updated)
-    wAll = np.argmin(all_vals)
+    W_L = [get_indicator_label(i) for i in range(6)]
+    B_L = [get_indicator_label(i+6) for i in range(5)]
     
-    # الحصول على أسماء المؤشرات
-    inds_ar = [m["name_ar"] for m in INDICATORS_META]
-    inds_en = [m["name_en"] for m in INDICATORS_META]
-    inds_display = inds_ar if LANG == "ar" else inds_en
-    
-    # التشخيص
-    st.markdown(TXT("### 🔍 التشخيص", "### 🔍 Diagnosis"))
     if gate_name == TXT("بوابة الشرك", "Shirk Gate"):
-        st.error(TXT(
-            "العلاج: تجديد التوحيد وإخلاص العبادة لله وحده. لا ينفع مع الشرك أي عمل.",
-            "Treatment: Renew Tawheed and sincerity to Allah alone. No deed benefits with shirk."
-        ))
+        st.error(TXT("العلاج: تجديد التوحيد وإخلاص العبادة لله.", "Treatment: Renew Tawheed and sincerity."))
     elif gate_name == TXT("بوابة الماعون", "Al-Ma'un Gate"):
-        st.error(TXT(
-            f"الأولوية القصوى: إصلاح مؤشر '{inds_display[wAll]}'. بدون رحمة وعطاء، لا تنفع أي عبادة.",
-            f"Top priority: Fix the '{inds_display[wAll]}' indicator. Without mercy and giving, no worship benefits."
-        ))
+        st.error(f"🎯 أصلح '{B_L[wB]}' أولاً. بدون رحمة لا تنفع عبادة.")
     elif gate_name == TXT("بوابة الإخلاص", "Sincerity Gate"):
-        st.warning(TXT(
-            f"الأولوية: تنقية '{inds_display[wAll]}' من شوائب الشرك والرياء.",
-            f"Priority: Purify '{inds_display[wAll]}' from shirk and hypocrisy."
-        ))
+        st.warning(f"🎯 نقِّ '{W_L[wW]}' من شوائب الشرك.")
     elif istidraj_gap > 0.3:
-        st.error(TXT(
-            f"الأولوية: سد فجوة الاستدراج ({istidraj_gap:.2f}) عبر رفع '{inds_display[wAll]}'.",
-            f"Priority: Close the Istidraj gap ({istidraj_gap:.2f}) by raising '{inds_display[wAll]}'."
-        ))
+        st.error(f"🎯 سد فجوة الاستدراج عبر '{W_L[wW]}' أو '{B_L[wB]}'.")
     else:
-        st.info(TXT(
-            f"للتقدم نحو مقام إبراهيم: عزز '{inds_display[wAll]}'.",
-            f"To advance to the Station of Abraham: strengthen '{inds_display[wAll]}'."
-        ))
+        st.info(f"🎯 للتقدم نحو مقام إبراهيم: عزز '{W_L[wW]}' و'{B_L[wB]}'.")
+
+# =============================================
+# تبويب 2: البوصلة الشخصية (28 سؤالاً)
+# =============================================
+with tab2:
+    st.subheader(TXT("البوصلة الشخصية – اكتشف موقعك", "Personal Compass – Discover Your Position"))
+    if 'compass_answers' not in st.session_state:
+        st.session_state.compass_answers = {}
     
-    # جدول المؤشرات
-    st.markdown(TXT("### 📊 تفصيل المؤشرات", "### 📊 Indicator Details"))
+    q_w = [
+        "هل تعيش لله وحده؟", "هل تقيم الصلاة بخشوع؟", "هل تؤدي الزكاة وتتصدق؟",
+        "هل تصوم رمضان وتطوعاً؟", "هل تحج أو تسعى للحج؟", "هل تحب الله ورسوله أكثر من كل شيء؟",
+        "هل تصدق في أقوالك وأفعالك؟", "هل تؤدي الأمانات؟", "هل تتوكل على الله مع الأخذ بالأسباب؟",
+        "هل تشكر في الرخاء وتصبر في البلاء؟", "هل تحمل هم الإسلام والمسلمين؟", "هل تفي بالعهد؟",
+        "هل أنت راضٍ بما قسم الله لك؟", "هل تنصر المؤمن إذا ظُلم؟"
+    ]
+    q_b = [
+        "هل تأمر بالمعروف؟", "هل تنهى عن المنكر؟", "هل أنت مستعد لبذل النفس والمال في سبيل الله؟",
+        "هل تتبرأ من الشرك وأهله؟", "هل ترفض الكفر والإلحاد؟", "هل تكره النفاق والتلون؟",
+        "هل تجاهد نفسك على ترك الكذب؟", "هل تتجنب الغش في معاملاتك؟", "هل تفي بعهودك ولا تخون؟",
+        "هل ترفض الظلم بكل صوره؟", "هل تجاهد نفسك على ترك الفواحش؟", "هل تخلص عملك لله وتجتنب الرياء؟",
+        "هل تسلم لله في قسمته ولا تحسد؟", "هل تحب في الله وتبغض في الله؟"
+    ]
     
-    groups = (
-        [TXT('ولاء', 'Loyalty')]*6 + 
-        [TXT('براءة', 'Disavowal')]*5 + 
-        [TXT('تمكين', 'Empowerment')]*5 + 
-        [TXT('صناعة', 'Industry')]*5
-    )
+    col_q1, col_q2 = st.columns(2)
+    with col_q1:
+        st.markdown("##### 🤍 أسئلة الولاء (W)")
+        for i, q in enumerate(q_w):
+            key = f"cw_{i}"
+            ans = st.radio(q, [TXT("نعم (10)", "Yes (10)"), TXT("أحياناً (5)", "Sometimes (5)"), TXT("لا (0)", "No (0)")], key=key, index=None)
+            if ans:
+                st.session_state.compass_answers[key] = 10 if TXT("نعم", "Yes") in ans else (5 if TXT("أحياناً", "Sometimes") in ans else 0)
+    with col_q2:
+        st.markdown("##### ❤️ أسئلة البراءة (B)")
+        for i, q in enumerate(q_b):
+            key = f"cb_{i}"
+            ans = st.radio(q, [TXT("نعم (10)", "Yes (10)"), TXT("أحياناً (5)", "Sometimes (5)"), TXT("لا (0)", "No (0)")], key=key, index=None)
+            if ans:
+                st.session_state.compass_answers[key] = 10 if TXT("نعم", "Yes") in ans else (5 if TXT("أحياناً", "Sometimes") in ans else 0)
     
-    df_all = pd.DataFrame({
-        TXT('المؤشر', 'Indicator'): inds_display,
-        TXT('القيمة', 'Value'): all_vals,
-        TXT('المجموعة', 'Group'): groups
-    })
+    if len(st.session_state.compass_answers) == 28:
+        w_score = sum(st.session_state.compass_answers[f"cw_{i}"] for i in range(14)) / 140.0
+        b_score = sum(st.session_state.compass_answers[f"cb_{i}"] for i in range(14)) / 140.0
+        s_score = w_score * b_score
+        
+        q_name, q_color = "", "#888"
+        if w_score >= 0.5 and b_score >= 0.5:
+            q_name, q_color = TXT("مؤمن", "Believer"), '#FFD700'
+        elif w_score >= 0.5 and b_score < 0.5:
+            q_name, q_color = TXT("مغضوب عليه", "Wrath"), '#FF5252'
+        elif w_score < 0.5 and b_score < 0.5:
+            q_name, q_color = TXT("منافق", "Hypocrite"), '#FFB6C1'
+        else:
+            q_name, q_color = TXT("ضال", "Astray"), '#FFA500'
+        
+        st.divider()
+        st.subheader("📊 نتيجة البوصلة")
+        c1, c2, c3 = st.columns(3)
+        c1.metric("W", f"{w_score:.2f}")
+        c2.metric("B", f"{b_score:.2f}")
+        c3.metric("S", f"{s_score:.2f}")
+        st.markdown(f"<h2 style='color:{q_color};text-align:center;'>{q_name}</h2>", unsafe_allow_html=True)
+        
+        fig, ax = plt.subplots(figsize=(5, 5), facecolor='#0a0a2e')
+        ax.set_facecolor('#0a0a2e')
+        ax.set_xlim(-1.2, 1.2); ax.set_ylim(-1.2, 1.2)
+        ax.axhline(0, color='grey', lw=0.5); ax.axvline(0, color='grey', lw=0.5)
+        ax.fill_between([0, 1], 0, 1, color='#FFD700', alpha=0.2)
+        ax.fill_between([-1, 0], 0, 1, color='#FF5252', alpha=0.2)
+        ax.fill_between([-1, 0], -1, 0, color='#FFB6C1', alpha=0.2)
+        ax.fill_between([0, 1], -1, 0, color='#FFA500', alpha=0.2)
+        ax.scatter(b_score*2-1, w_score*2-1, s=200, c='cyan', edgecolors='white', linewidth=2, zorder=10)
+        ax.scatter(1, 1, s=80, c='#FFD700', marker='*', zorder=10)
+        ax.text(1, 1.1, TXT('إبراهيم', 'Abraham'), color='#FFD700', fontsize=7, ha='center')
+        ax.tick_params(colors='white')
+        st.pyplot(fig)
+        
+        if st.button(TXT("🔄 إعادة الاختبار", "🔄 Retake Test"), use_container_width=True):
+            st.session_state.compass_answers = {}
+            st.rerun()
+
+# =============================================
+# تبويب 3: هندسة الصراط
+# =============================================
+with tab3:
+    st.subheader(TXT("هندسة الصراط – انحناء المسار", "Path Geometry – Curvature"))
+    st.markdown(TXT(
+        "الصراط المستقيم هو المسار الذي انحناؤه صفر (κ=0). أي انحراف عن هذا المسار هو معصية أو فتنة. الهدف هو الوصول إلى مقام إبراهيم (1,1).",
+        "The straight path has zero curvature (κ=0). Any deviation is sin or trial. The goal is Abraham's Station (1,1)."
+    ))
     
-    st.dataframe(
-        df_all.style.format({TXT('القيمة', 'Value'): '{:+.2f}'})
-        .background_gradient(subset=[TXT('القيمة', 'Value')], cmap='RdYlGn'),
-        hide_index=True,
-        use_container_width=True
-    )
+    if 'path_W' not in st.session_state:
+        st.session_state.path_W = [W_raw]
+    if 'path_B' not in st.session_state:
+        st.session_state.path_B = [B_raw]
+    
+    if st.button(TXT("➕ سجل حالتك الحالية", "➕ Record Current State")):
+        st.session_state.path_W.append(W_raw)
+        st.session_state.path_B.append(B_raw)
+        st.rerun()
+    
+    pW = st.session_state.path_W
+    pB = st.session_state.path_B
+    
+    if len(pW) > 1:
+        fig, ax = plt.subplots(figsize=(6, 6), facecolor='#0a0a2e')
+        ax.set_facecolor('#0a0a2e')
+        ax.set_xlim(-1.2, 1.2); ax.set_ylim(-1.2, 1.2)
+        ax.axhline(0, color='grey', lw=0.5); ax.axvline(0, color='grey', lw=0.5)
+        ax.plot([pB[0], 1], [pW[0], 1], '--', color='#FFD700', lw=1.5, alpha=0.6, label=TXT('الجيوديسي (κ=0)', 'Geodesic (κ=0)'))
+        ax.plot(pB, pW, 'o-', color='#0FF', lw=2, markersize=4, label=TXT('مسارك', 'Your Path'))
+        ax.scatter(pB[-1], pW[-1], s=100, c='cyan', edgecolors='white', linewidth=2, zorder=10)
+        ax.scatter(1, 1, s=100, c='#FFD700', marker='*', zorder=10, label=TXT('مقام إبراهيم', 'Abraham'))
+        ax.set_xlabel("B", color='white'); ax.set_ylabel("W", color='white')
+        ax.legend(facecolor='#0a0a2e', edgecolor='white', labelcolor='white', fontsize=7)
+        ax.tick_params(colors='white')
+        st.pyplot(fig)
+        
+        try:
+            dW = np.gradient(pW); dB = np.gradient(pB)
+            ddW = np.gradient(dW); ddB = np.gradient(dB)
+            num = abs(dW[-1]*ddB[-1] - dB[-1]*ddW[-1])
+            denom = (dW[-1]**2 + dB[-1]**2 + 1e-10)**1.5
+            kappa = num / denom
+            st.metric(TXT("انحناء المسار (κ)", "Path Curvature (κ)"), f"{kappa:.4f}")
+            if kappa < 0.03: st.success(TXT("✅ أنت على الصراط المستقيم", "✅ You are on the straight path"))
+            elif kappa < 0.1: st.warning(TXT("⚠️ انحراف طفيف", "⚠️ Slight deviation"))
+            else: st.error(TXT("🚨 انحراف خطير", "🚨 Dangerous deviation"))
+        except:
+            st.info(TXT("تحتاج إلى 3 نقاط على الأقل لحساب الانحناء", "Need at least 3 points to calculate curvature"))
+    else:
+        st.info(TXT("سجل حالتك الحالية لتتبع مسارك نحو مقام إبراهيم.", "Record your current state to track your path."))
 
 # =============================================
 # تبويب 4: المعجم الهندسي
 # =============================================
 with tab4:
-    st.subheader(TXT("📖 المعجم الهندسي – الحروف وقيمها", "📖 Geometric Lexicon – Letters & Values"))
-    st.markdown(TXT(
-        "هذا المعجم يربط كل حرف بقيمته العددية (حساب الجمل) ودوره الوجودي في معادلة الميزان.",
-        "This lexicon links each letter to its numerical value and existential role in the Mizan equation."
-    ))
-    
+    st.subheader(TXT("📖 المعجم الهندسي – الحروف وقيمها", "📖 Geometric Lexicon"))
     letters_data = {
-        TXT('الفئة الأولى: الذات الإلهية (المصدر)', 'Category 1: Divine Essence'): 
-            {'ك': 20, 'ن': 50},
-        TXT('الفئة الثانية: الازدواج', 'Category 2: Duality'): 
-            {'ق': 100, 'ص': 90},
-        TXT('الفئة الثالثة: التجلي الإلهي', 'Category 3: Divine Manifestation'): 
-            {'أ': 1, 'ل': 30, 'م': 40, 'ر': 200, 'س': 60, 'ح': 8, 'ط': 9},
-        TXT('الفئة الرابعة: الاشتراك (الجسور)', 'Category 4: Bridges'): 
-            {'ع': 70, 'ي': 10, 'هـ': 5},
-        TXT('الفئة الخامسة: المشغلات', 'Category 5: Operators'): 
-            {'ف': 80, 'و': 6, 'ب': 2},
-        TXT('الفئة السادسة: أعمال الخلق', 'Category 6: Actions of Creation'): 
-            {'ج': 3, 'خ': 600, 'د': 4, 'ذ': 700, 'ز': 7, 'ش': 300, 
-             'ت': 400, 'ث': 500, 'ض': 800, 'ظ': 900, 'غ': 1000},
+        TXT('الفئة الأولى: الذات الإلهية', 'Category 1: Divine Essence'): {'ك': 20, 'ن': 50},
+        TXT('الفئة الثانية: الازدواج', 'Category 2: Duality'): {'ق': 100, 'ص': 90},
+        TXT('الفئة الثالثة: التجلي الإلهي', 'Category 3: Manifestation'): {'أ': 1, 'ل': 30, 'م': 40, 'ر': 200, 'س': 60, 'ح': 8, 'ط': 9},
+        TXT('الفئة الرابعة: الاشتراك', 'Category 4: Bridges'): {'ع': 70, 'ي': 10, 'هـ': 5},
+        TXT('الفئة الخامسة: المشغلات', 'Category 5: Operators'): {'ف': 80, 'و': 6, 'ب': 2},
+        TXT('الفئة السادسة: أعمال الخلق', 'Category 6: Actions'): {'ج': 3, 'خ': 600, 'د': 4, 'ذ': 700, 'ز': 7, 'ش': 300, 'ت': 400, 'ث': 500, 'ض': 800, 'ظ': 900, 'غ': 1000},
     }
-    
-    for category, letters in letters_data.items():
-        st.markdown(f"**{category}**")
-        df = pd.DataFrame(list(letters.items()), columns=[TXT('الحرف', 'Letter'), TXT('القيمة', 'Value')])
-        st.dataframe(df, hide_index=True, use_container_width=True)
+    for cat, lets in letters_data.items():
+        st.markdown(f"**{cat}**")
+        st.dataframe(pd.DataFrame(list(lets.items()), columns=[TXT('حرف', 'Letter'), TXT('قيمة', 'Value')]), hide_index=True)
 
 # =============================================
 # تبويب 5: رسالة الترحيب
@@ -578,63 +515,48 @@ with tab5:
     st.subheader(TXT("📜 رسالة الترحيب", "📜 Welcome Message"))
     st.markdown(f"""
     <div style="text-align:center;color:#CCC;line-height:2.2;font-size:1.1em;">
-    
-    > "{TXT('هل يوجد قانون واحد يحكم الذرة والحضارة؟', 'Is there a single law governing the atom and civilization?')}"<br>
-    > {TXT('هذا هو نموذج الميزان الذي يثبت أن', 'This is the Mizan Model that proves that')} <b style="color:#FFD700;">S = W × B</b>
-    
+    > "{TXT('هل يوجد قانون واحد يحكم الذرة والحضارة؟', 'Is there a single law?')}"<br>
+    > {TXT('نعم. إنه', 'Yes. It is')} <b style="color:#FFD700;">S = W × B</b>.
     <br><br>
-    
-    **{TXT('الدين القيم', 'Al-Deen Al-Qayyim')}** = {TXT('قانون السببية الكوني', 'The cosmic law of causality')}.<br>
-    **{TXT('الإسلام الحنيف', 'Al-Islam Al-Hanif')}** = {TXT('الاستجابة المثلى لهذا القانون', 'The optimal response to this law')}.<br>
-    **{TXT('الميزان', 'Al-Mizan')}** = {TXT('المعادلة التي تحكم كل شيء', 'The equation that governs everything')}: <b style="color:#FFD700;">S = W × B</b>.
-    
+    <b style="color:#FFD700;">﴿أَفَغَيْرَ دِينِ اللَّهِ يَبْغُونَ...﴾</b>
     <br><br>
-    
-    <b style="color:#FFD700;">﴿أَفَغَيْرَ دِينِ اللَّهِ يَبْغُونَ وَلَهُ أَسْلَمَ مَن فِي السَّمَاوَاتِ وَالْأَرْضِ طَوْعًا وَكَرْهًا﴾</b>
-    
+    {TXT('هذه المنصة هي منارة للعالمين، وبوصلة للتائهين، وحبل نجاة للغارقين، ومشفى لكل ضر، ومحكمة عادلة لا تستأنف.', 
+    'This platform is a beacon for the world, a compass for the lost, and a just court.')}
     <br><br>
-    
-    <b style="color:#FFD700;">﴿فَأَقِمْ وَجْهَكَ لِلدِّينِ حَنِيفًا فِطْرَتَ اللَّهِ الَّتِي فَطَرَ النَّاسَ عَلَيْهَا لَا تَبْدِيلَ لِخَلْقِ اللَّهِ ذَٰلِكَ الدِّينُ الْقَيِّمُ﴾</b>
-    
-    <br><br>
-    
-    > "{TXT('أيها البشر، لستم في فوضى. هناك قانون. هناك نظام. هناك ميزان.', 'O humanity, you are not in chaos. There is a law. There is a system. There is a balance.')}"<br>
-    > "{TXT('إنها معادلة. إنها', 'It is an equation. It is')} <b style="color:#FFD700;">S = W × B</b>."
-    
+    > "{TXT('أيها البشر، لستم في فوضى. هناك قانون. هناك نظام. هناك ميزان.', 'O humanity, you are not in chaos.')}"
     </div>
     """, unsafe_allow_html=True)
 
-print("✅ المرحلة الثالثة مكتملة: العنوان، لوحة القيادة، خريطة الوجود، المحاكي الزمني، المستشفى، المعجم الهندسي، رسالة الترحيب")
+print("✅ المرحلة الثالثة مكتملة")
 
     # =============================================
-# المرحلة الرابعة (معدلة): مشهد حي مستقر + تذييل
+# المرحلة الرابعة: المشهد الحي المستقر + التذييل
 # =============================================
-with tab6:
+
+# نضيف المشهد الحي إلى أسفل تبويب "المختبر الجماعي" (tab1)
+with tab1:
+    st.markdown("---")
     st.subheader(TXT("🌌 المشهد الحي – المحاكاة الكونية", "🌌 Live Scene – Cosmic Simulation"))
     st.markdown(TXT(
-        "هذا المشهد يحاكي تفاعل النجوم (الأفراد) مع قطبي الميزان W وB. "
-        "النجوم الذهبية = مؤمنون متوازنون، البيضاء = ولاء بلا براءة، الحمراء = براءة بلا ولاء، الوردية = لا هذا ولا ذاك.",
-        "Stars interact with the Mizan poles. Gold = balanced believers, White = loyalty only, Red = disavowal only, Pink = neither."
+        "النجوم (الأفراد) تتفاعل مع قطبي الميزان. 🟡 ذهبي = متوازن، ⚪ أبيض = ولاء بلا براءة، 🔴 أحمر = براءة بلا ولاء، 🩷 وردي = لا هذا ولا ذاك.",
+        "Stars (individuals) interact with the Mizan poles. Gold=Balanced, White=Loyalty only, Red=Disavowal only, Pink=Neither."
     ))
 
-    # إعدادات
-    with st.expander(TXT("⚙️ إعدادات المشهد الحي", "⚙️ Settings"), expanded=False):
-        c1, c2, c3, c4 = st.columns(4)
+    # إعدادات المشهد الحي
+    with st.expander(TXT("⚙️ إعدادات المشهد", "⚙️ Scene Settings"), expanded=False):
+        c1, c2 = st.columns(2)
         with c1:
-            live_speed = st.slider(TXT("سرعة", "Speed"), 0.01, 0.2, 0.08, 0.01, key="ls")
+            live_speed = st.slider(TXT("السرعة", "Speed"), 0.05, 0.3, 0.12, 0.01, key="live_speed")
         with c2:
-            live_stars = st.slider(TXT("نجوم", "Stars"), 50, 300, 150, 25, key="lst")
-        with c3:
-            live_trail = st.slider(TXT("أثر", "Trail"), 20, 150, 80, 10, key="ltl")
-        with c4:
-            live_chem = st.slider(TXT("جزيئات", "Molecules"), 5, 50, 25, 5, key="lch")
+            live_stars = st.slider(TXT("عدد النجوم", "Stars"), 30, 200, 100, 10, key="live_stars")
 
+    # أزرار التحكم
     col_btn1, col_btn2, col_btn3 = st.columns(3)
     with col_btn1:
-        if st.button(TXT("▶️ تشغيل", "▶️ Run"), use_container_width=True, type="primary"):
+        if st.button(TXT("▶️ تشغيل المشهد", "▶️ Run Scene"), use_container_width=True, type="primary"):
             st.session_state.live_run = True
     with col_btn2:
-        if st.button(TXT("⏹️ إيقاف", "⏹️ Stop"), use_container_width=True):
+        if st.button(TXT("⏹️ إيقاف المشهد", "⏹️ Stop Scene"), use_container_width=True):
             st.session_state.live_run = False
     with col_btn3:
         if st.button(TXT("🔄 إعادة ضبط", "🔄 Reset"), use_container_width=True):
@@ -642,290 +564,114 @@ with tab6:
                 if k.startswith("live_"): del st.session_state[k]
             st.rerun()
 
-    # --- التهيئة ---
-    if 'live_init' not in st.session_state:
-        st.session_state.live_init = False
+    # --- التهيئة السريعة ---
     if 'live_run' not in st.session_state:
         st.session_state.live_run = False
 
-    if not st.session_state.live_init:
-        try:
-            cx, cy = 14.0, 10.0
-            st.session_state.live_cx = cx
-            st.session_state.live_cy = cy
-
-            N = max(10, live_stars)
-            angles = np.random.uniform(0, 2 * np.pi, N)
-            radii = np.random.uniform(1.5, 9, N)
-            st.session_state.live_sx = cx + radii * np.cos(angles)
-            st.session_state.live_sy = cy + radii * np.sin(angles) * 0.65
-            st.session_state.live_sw = np.random.uniform(0.2, 0.9, N)
-            st.session_state.live_sb = np.random.uniform(0.2, 0.9, N)
-
-            M = max(3, live_chem)
-            chem_angles = np.random.uniform(0, 2 * np.pi, M)
-            chem_radii = np.random.uniform(2, 7, M)
-            st.session_state.live_chem_x = cx + chem_radii * np.cos(chem_angles)
-            st.session_state.live_chem_y = cy + chem_radii * np.sin(chem_angles) * 0.65
-            st.session_state.live_chem_w = np.random.uniform(0.3, 0.9, M)
-            st.session_state.live_chem_b = np.random.uniform(0.3, 0.9, M)
-
-            st.session_state.live_W = W_raw
-            st.session_state.live_B = B_raw
-            st.session_state.live_E = E_norm
-            st.session_state.live_S = S_final
-            st.session_state.live_phase = TXT("توازن", "Balance")
-            st.session_state.live_aW = 0.0
-            st.session_state.live_aB = np.pi * 0.5
-            st.session_state.live_atom_angle = 0.0
-
-            st.session_state.live_trail_Wx = deque(maxlen=live_trail)
-            st.session_state.live_trail_Wy = deque(maxlen=live_trail)
-            st.session_state.live_trail_Bx = deque(maxlen=live_trail)
-            st.session_state.live_trail_By = deque(maxlen=live_trail)
-
-            st.session_state.live_hist_S = deque(maxlen=300)
-            st.session_state.live_hist_E = deque(maxlen=300)
-            st.session_state.live_hist_x = deque(maxlen=300)
-            st.session_state.live_frame = 0
-
-            st.session_state.live_init = True
-        except Exception as e:
-            st.error(f"Init error: {e}")
-            st.session_state.live_init = False
+    if not st.session_state.get("live_init", False):
+        N = min(live_stars, 200)
+        st.session_state.live_sx = np.random.uniform(1, 27, N)
+        st.session_state.live_sy = np.random.uniform(2, 18, N)
+        st.session_state.live_sw = np.random.uniform(0.2, 0.9, N)
+        st.session_state.live_sb = np.random.uniform(0.2, 0.9, N)
+        st.session_state.live_W = 0.5
+        st.session_state.live_B = 0.5
+        st.session_state.live_S = 0.25
+        st.session_state.live_E = 0.3
+        st.session_state.live_frame = 0
+        st.session_state.live_init = True
 
     # --- تشغيل المحاكاة ---
-    if st.session_state.get("live_run", False):
+    if st.session_state.live_run:
         placeholder = st.empty()
-
         try:
-            # استخراج الحالة
-            cx = st.session_state.live_cx
-            cy = st.session_state.live_cy
+            N = len(st.session_state.live_sx)
+            cx, cy = 14.0, 10.0
+            mr = 8.5
+
             sx = st.session_state.live_sx
             sy = st.session_state.live_sy
             sw = st.session_state.live_sw
             sb = st.session_state.live_sb
-            chem_x = st.session_state.live_chem_x
-            chem_y = st.session_state.live_chem_y
-            chem_w = st.session_state.live_chem_w
-            chem_b = st.session_state.live_chem_b
             W = st.session_state.live_W
             B = st.session_state.live_B
-            E = st.session_state.live_E
             S = st.session_state.live_S
-            phase = st.session_state.live_phase
-            aW = st.session_state.live_aW
-            aB = st.session_state.live_aB
-            atom_angle = st.session_state.live_atom_angle
-            trail_Wx = st.session_state.live_trail_Wx
-            trail_Wy = st.session_state.live_trail_Wy
-            trail_Bx = st.session_state.live_trail_Bx
-            trail_By = st.session_state.live_trail_By
-            hist_S = st.session_state.live_hist_S
-            hist_E = st.session_state.live_hist_E
-            hist_x = st.session_state.live_hist_x
+            E = st.session_state.live_E
             frame = st.session_state.live_frame
 
-            N = len(sx)
-            M = len(chem_x)
-            mr = 8.5
-
-            # --- التحديث باستخدام عمليات مصفوفات ---
-            # 1. النجوم
-            sw += (W - sw) * 0.01 + np.random.uniform(-0.02, 0.02, N)
-            sb += (B - sb) * 0.01 + np.random.uniform(-0.02, 0.02, N)
-
-            # تأثير الجيران (مسافة < 2.0)
-            # مصفوفة المسافات (تقريبية لتسريع)
-            for i in range(N):
-                dx = sx[i] - sx
-                dy = sy[i] - sy
-                dist_sq = dx*dx + dy*dy
-                close = (dist_sq < 4.0) & (np.arange(N) != i)  # 4.0 = 2^2
-                if np.any(close):
-                    sw[i] += (np.mean(sw[close]) - sw[i]) * 0.02
-                    sb[i] += (np.mean(sb[close]) - sb[i]) * 0.02
-
+            # تحديث القيم بشكل أبسط
+            sw += (W - sw) * 0.02 + np.random.uniform(-0.02, 0.02, N)
+            sb += (B - sb) * 0.02 + np.random.uniform(-0.02, 0.02, N)
             sw = np.clip(sw, 0.01, 1.0)
             sb = np.clip(sb, 0.01, 1.0)
 
-            # 2. الجزيئات
-            if M > 0:
-                chem_w += (W - chem_w) * 0.015 + np.random.uniform(-0.02, 0.02, M)
-                chem_b += (B - chem_b) * 0.015 + np.random.uniform(-0.02, 0.02, M)
-                chem_w = np.clip(chem_w, 0.01, 1.0)
-                chem_b = np.clip(chem_b, 0.01, 1.0)
-
-            # 3. صدمات
-            if random.random() < 0.005:
-                aff = np.random.choice(N, size=max(1, N//10), replace=False)
-                sw[aff] *= random.uniform(0.5, 0.8)
-                sb[aff] *= random.uniform(0.5, 0.8)
-                if M > 0:
-                    aff_c = np.random.choice(M, size=max(1, M//10), replace=False)
-                    chem_w[aff_c] *= random.uniform(0.6, 0.9)
-                    chem_b[aff_c] *= random.uniform(0.6, 0.9)
-                phase = TXT("💥 صدمة", "💥 Shock")
-
-            # 4. المتوسطات والكواكب
             avg_W = np.mean(sw)
             avg_B = np.mean(sb)
-            avg_S_stars = np.mean(sw * sb)
-
-            W += (avg_W - W) * 0.03
-            B += (avg_B - B) * 0.03
+            W += (avg_W - W) * 0.05
+            B += (avg_B - B) * 0.05
             W = np.clip(W, 0.01, 1.0)
             B = np.clip(B, 0.01, 1.0)
             S = W * B
             E += 0.02 * (S - E)
 
-            # الطور
-            if S > 0.7: phase = TXT("🌟 ثبات", "🌟 Stability")
-            elif S > 0.4: phase = TXT("⚖️ توازن", "⚖️ Balance")
-            elif S > 0.2: phase = TXT("⚠️ اهتزاز", "⚠️ Shaking")
-            elif S > 0.05: phase = TXT("📉 انهيار", "📉 Collapse")
-            else: phase = TXT("💀 قاع", "💀 Bottom")
-            if E > S + 0.2: phase = TXT("🚨 استدراج", "🚨 Istidraj")
-
-            # زوايا الكواكب
-            aW += 0.02 + random.uniform(-0.01, 0.01) * (1 - W)**2
-            aB += 0.02 + random.uniform(-0.01, 0.01) * (1 - B)**2
-            atom_angle += 0.12
-
-            orbit_W = 7 - 2.5 * W
-            orbit_B = 5 - 1.5 * B
-            wx = cx + orbit_W * np.cos(aW)
-            wy = cy + orbit_W * np.sin(aW) * 0.7
-            bx = cx + orbit_B * np.cos(aB)
-            by = cy + orbit_B * np.sin(aB) * 0.7
-
-            trail_Wx.append(wx); trail_Wy.append(wy)
-            trail_Bx.append(bx); trail_By.append(by)
-
-            # حركة النجوم والجزيئات
-            instability = 1 - avg_S_stars
-            sx += np.random.uniform(-0.05, 0.05, N) * instability
-            sy += np.random.uniform(-0.05, 0.05, N) * instability
+            # حركة النجوم
+            sx += np.random.uniform(-0.08, 0.08, N)
+            sy += np.random.uniform(-0.08, 0.08, N)
             sx = np.clip(sx, cx - 13, cx + 13)
             sy = np.clip(sy, cy - 9, cy + 9)
 
-            if M > 0:
-                chem_x += np.random.uniform(-0.04, 0.04, M) * instability
-                chem_y += np.random.uniform(-0.04, 0.04, M) * instability
-                chem_x = np.clip(chem_x, cx - 8, cx + 8)
-                chem_y = np.clip(chem_y, cy - 6, cy + 6)
-
-            # التاريخ
             frame += 1
-            if frame % 2 == 0:
-                hist_S.append(S); hist_E.append(E); hist_x.append(len(hist_x))
 
             # حفظ الحالة
-            st.session_state.live_sx = sx; st.session_state.live_sy = sy
-            st.session_state.live_sw = sw; st.session_state.live_sb = sb
-            st.session_state.live_chem_x = chem_x; st.session_state.live_chem_y = chem_y
-            st.session_state.live_chem_w = chem_w; st.session_state.live_chem_b = chem_b
-            st.session_state.live_W = W; st.session_state.live_B = B
-            st.session_state.live_E = E; st.session_state.live_S = S
-            st.session_state.live_phase = phase
-            st.session_state.live_aW = aW; st.session_state.live_aB = aB
-            st.session_state.live_atom_angle = atom_angle
-            st.session_state.live_trail_Wx = trail_Wx; st.session_state.live_trail_Wy = trail_Wy
-            st.session_state.live_trail_Bx = trail_Bx; st.session_state.live_trail_By = trail_By
-            st.session_state.live_hist_S = hist_S; st.session_state.live_hist_E = hist_E
-            st.session_state.live_hist_x = hist_x; st.session_state.live_frame = frame
+            st.session_state.live_sx = sx
+            st.session_state.live_sy = sy
+            st.session_state.live_sw = sw
+            st.session_state.live_sb = sb
+            st.session_state.live_W = W
+            st.session_state.live_B = B
+            st.session_state.live_S = S
+            st.session_state.live_E = E
+            st.session_state.live_frame = frame
 
             # --- الرسم ---
-            fig, ax = plt.subplots(figsize=(15, 11), facecolor='#000010')
+            fig, ax = plt.subplots(figsize=(12, 8), facecolor='#000010')
             ax.set_xlim(0, 28); ax.set_ylim(0, 20); ax.axis('off')
 
-            # النواة
-            for r, a, c in [(0.5,0.98,'#FFF'),(1,0.65,'#FFD700'),(1.7,0.3,'#FFD700'),
-                             (2.6,0.12,'#FFA500'),(3.8,0.05,'#FF6347'),(5.5,0.02,'#FF4500')]:
-                ax.add_patch(plt.matplotlib.patches.Circle((cx,cy), r*(0.5+2.8*S), color=c, alpha=a, zorder=15))
-            ax.text(cx,cy,'S',color='#1a1000',fontsize=16,ha='center',va='center',fontweight='bold')
+            # نواة S
+            ax.add_patch(plt.matplotlib.patches.Circle((cx, cy), 0.5 + 3.0 * S, color='#FFD700', alpha=0.8, zorder=10))
+            ax.text(cx, cy, 'S', color='#1a1000', fontsize=12, ha='center', va='center', fontweight='bold')
 
             # هالة E
-            ax.add_patch(plt.matplotlib.patches.Circle((cx,cy), 0.5+14*E, color='#0FF', alpha=0.2*(1-min(E,1))+0.03, zorder=7))
+            ax.add_patch(plt.matplotlib.patches.Circle((cx, cy), 0.5 + 14 * E, color='#0FF', alpha=0.15, zorder=5))
 
             # غشاء
-            ax.add_patch(plt.matplotlib.patches.Circle((cx,cy), mr, color='#0F8', alpha=0.12, fill=False, lw=2.5, zorder=2))
+            ax.add_patch(plt.matplotlib.patches.Circle((cx, cy), mr, color='#0F8', alpha=0.1, fill=False, lw=2, zorder=3))
 
-            # كواكب
-            ax.add_patch(plt.matplotlib.patches.Circle((wx,wy), 0.25+0.45*W, color='#FFF', alpha=1, zorder=13))
-            ax.add_patch(plt.matplotlib.patches.Circle((bx,by), 0.25+0.45*B, color='#F33', alpha=0.8, zorder=13))
-            ax.text(wx,wy+0.7,'W',color='#FFF',fontsize=9,ha='center')
-            ax.text(bx,by+0.7,'B',color='#F33',fontsize=9,ha='center')
-            if len(trail_Wx)>1: ax.plot(list(trail_Wx),list(trail_Wy),color='#FFF',lw=0.3,alpha=0.12,zorder=4)
-            if len(trail_Bx)>1: ax.plot(list(trail_Bx),list(trail_By),color='#F33',lw=0.3,alpha=0.12,zorder=4)
-
-            # ذرة
-            acx,acy=3.8,3.2; arad=0.5+0.35*S
-            ax.add_patch(plt.matplotlib.patches.Circle((acx,acy),0.15+0.2*S,color='#4488FF',alpha=0.8,zorder=7))
-            ax.add_patch(plt.matplotlib.patches.Circle((acx,acy),arad,color='#0FF',alpha=0.15,fill=False,lw=0.5,zorder=6))
-            ax.add_patch(plt.matplotlib.patches.Circle((acx+arad*np.cos(atom_angle),acy+arad*np.sin(atom_angle)),0.04,color='white',alpha=0.9,zorder=8))
-            ax.text(acx,acy-1.0,TXT('الذرة','Atom'),color='#4488FF',fontsize=6,ha='center',alpha=0.8,fontweight='bold')
-
-            # جزيء
-            mcx,mcy=3.8,7.0; mdist=0.3+0.2*S
-            ax.add_patch(plt.matplotlib.patches.Circle((mcx-mdist,mcy),0.12,color='#FFD700',alpha=0.7,zorder=7))
-            ax.add_patch(plt.matplotlib.patches.Circle((mcx+mdist,mcy),0.12,color='#FFD700',alpha=0.7,zorder=7))
-            ax.plot([mcx-mdist,mcx+mdist],[mcy,mcy],color='#FFD700',lw=1.2,alpha=0.6,zorder=6)
-            ax.text(mcx,mcy-0.7,TXT('جزيء','Molecule'),color='#FFD700',fontsize=6,ha='center',alpha=0.8,fontweight='bold')
-
-            # خلية
-            ccx,ccy=24.2,3.2
-            ax.add_patch(plt.matplotlib.patches.Circle((ccx,ccy),0.35+0.4*S,color='#0F8',alpha=0.3,zorder=7,ec='#0F8',lw=1))
-            ax.add_patch(plt.matplotlib.patches.Circle((ccx,ccy),0.1+0.12*S,color='white',alpha=0.8,zorder=8))
-            ax.text(ccx,ccy-1.0,TXT('خلية','Cell'),color='#0F8',fontsize=6,ha='center',alpha=0.8,fontweight='bold')
-
-            # نجوم ملونة
-            star_cols = np.full(N, '#888')
-            gold = (sw>=0.55) & (sb>=0.55)
-            white = (sw>=0.55) & (sb<0.45)
-            red = (sw<0.45) & (sb>=0.55)
-            pink = (sw<0.45) & (sb<0.45)
-            star_cols[gold] = '#FFD700'
-            star_cols[white] = '#E0E0E0'
-            star_cols[red] = '#FF5252'
-            star_cols[pink] = '#FFB6C1'
-            ax.scatter(sx, sy, s=30, c=star_cols, alpha=0.85, edgecolors='white', linewidths=0.3, zorder=5)
-
-            # جزيئات كيميائية
-            if M > 0:
-                chem_cols = np.full(M, '#888')
-                c_gold = (chem_w>=0.55) & (chem_b>=0.55)
-                c_white = (chem_w>=0.55) & (chem_b<0.45)
-                c_red = (chem_w<0.45) & (chem_b>=0.55)
-                c_pink = (chem_w<0.45) & (chem_b<0.45)
-                chem_cols[c_gold] = '#FFD700'
-                chem_cols[c_white] = '#E0E0E0'
-                chem_cols[c_red] = '#FF5252'
-                chem_cols[c_pink] = '#FFB6C1'
-                ax.scatter(chem_x, chem_y, s=20, c=chem_cols, alpha=0.75, edgecolors='white', linewidths=0.3, zorder=6)
-
-            # لوحة الإثبات
-            pax = ax.inset_axes([0.5, 0.02, 0.46, 0.10])
-            pax.set_xlim(0, 300); pax.set_ylim(0, 1.05)
-            pax.set_title(TXT('S (ذهب) → E (سماوي)', 'S (Gold) → E (Cyan)'), color='white', fontsize=7)
-            pax.tick_params(colors='white', labelsize=4); pax.grid(True, alpha=0.12)
-            if hist_S:
-                pax.plot(list(hist_x), list(hist_S), color='#FFD700', lw=2)
-                pax.plot(list(hist_x), list(hist_E), color='#0FF', lw=1.5)
+            # نجوم
+            colors = []
+            for i in range(N):
+                w, b = sw[i], sb[i]
+                if w >= 0.55 and b >= 0.55: colors.append('#FFD700')
+                elif w >= 0.55 and b < 0.45: colors.append('#E0E0E0')
+                elif w < 0.45 and b >= 0.55: colors.append('#FF5252')
+                elif w < 0.45 and b < 0.45: colors.append('#FFB6C1')
+                else: colors.append('#888888')
+            ax.scatter(sx, sy, s=30, c=colors, alpha=0.85, edgecolors='white', linewidths=0.3, zorder=8)
 
             # شريط الحالة
-            ng, nw, nr, npk = np.sum(gold), np.sum(white), np.sum(red), np.sum(pink)
+            ng = int(np.sum((sw >= 0.55) & (sb >= 0.55)))
+            nw = int(np.sum((sw >= 0.55) & (sb < 0.45)))
+            nr = int(np.sum((sw < 0.45) & (sb >= 0.55)))
+            npk = int(np.sum((sw < 0.45) & (sb < 0.45)))
+            phase = "⚖️"
+            if S > 0.7: phase = "🌟"
+            elif S < 0.2: phase = "⚠️"
+            if E > S + 0.2: phase = "🚨"
             ax.text(14, 1.2, f'{phase} | 🟡{ng} ⚪{nw} 🔴{nr} 🩷{npk} | S={S:.2f} E={E:.2f}', 
                     color='white', fontsize=10, ha='center', fontweight='bold')
 
             plt.tight_layout(pad=0)
             placeholder.pyplot(fig)
-
-            buf = BytesIO()
-            fig.savefig(buf, format='png', dpi=100, facecolor='#000010')
-            buf.seek(0)
-            st.session_state.live_image = buf
             plt.close(fig)
 
             time.sleep(live_speed)
@@ -935,23 +681,11 @@ with tab6:
             st.error(f"Simulation error: {e}")
             st.session_state.live_run = False
 
-    elif st.session_state.live_init and 'live_image' in st.session_state:
-        st.image(st.session_state.live_image, caption=TXT("آخر حالة", "Last State"), use_column_width=True)
-        st.info(TXT("اضغط ▶️ تشغيل", "Press ▶️ Run"))
-    else:
-        st.info(TXT("اضغط ▶️ تشغيل لبدء المحاكاة", "Press ▶️ Run to start"))
-
-# زر تحميل الصورة
-if 'live_image' in st.session_state:
-    st.download_button(
-        label=TXT("📥 تحميل صورة المشهد", "📥 Download Scene Image"),
-        data=st.session_state.live_image,
-        file_name="al_deen_al_qayyim_scene.png",
-        mime="image/png", key="dl_live"
-    )
+    elif st.session_state.get("live_init", False):
+        st.info(TXT("اضغط ▶️ تشغيل المشهد لبدء المحاكاة", "Press ▶️ Run Scene to start simulation"))
 
 # =============================================
-# التذييل
+# التذييل النهائي
 # =============================================
 st.markdown("---")
 st.markdown(f"""
@@ -959,13 +693,13 @@ st.markdown(f"""
     <p style="font-size:2em;margin:0;">⚖️</p>
     <p style="color:#FFD700;font-size:1.5em;font-weight:bold;">{TXT('الدِّينُ الْقَيِّم', 'Al-Deen Al-Qayyim')}</p>
     <p style="color:#FFD700;font-size:1.2em;">S = W × B</p>
-    <p>{TXT('قانون التوازن الكوني – من الذرة إلى الحضارة', 'The Cosmic Law of Balance – From Atom to Civilization')}</p>
+    <p>{TXT('المنارة العالمية – بوصلة التائهين وحبل نجاة الغارقين', 'The Global Beacon – Compass for the Lost, Lifeline for the Drowning')}</p>
     <p>﴿وَقُلِ الْحَمْدُ لِلَّهِ سَيُرِيكُمْ آيَاتِهِ فَتَعْرِفُونَهَا﴾</p>
     <p>{TXT('علي عادل العاطفي', 'Ali Adel Alatifi')} | 2026</p>
-    <p style="font-size:0.8em;margin-top:10px;">{TXT('جميع الحقوق محفوظة', 'All Rights Reserved')} | MIT License</p>
-    <p style="font-size:0.8em;">{TXT('المنصة الذهبية – مختبر الميزان', 'The Golden Platform – The Mizan Lab')} v3.0</p>
+    <p style="font-size:0.8em;margin-top:10px;">MIT License | {TXT('المنصة الذهبية v3.0', 'Golden Platform v3.0')}</p>
     <p style="font-size:2em;margin:0;">⚖️</p>
 </div>
 """, unsafe_allow_html=True)
 
-print("✅ المرحلة الرابعة (معدلة) مكتملة: مشهد حي مستقر + تذييل")
+print("✅ المرحلة الرابعة مكتملة: المشهد الحي المستقر + التذييل")
+print("✅✅✅ تم بناء المنصة الذهبية – الدين القيم – المنارة العالمية بنجاح!")
