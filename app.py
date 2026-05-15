@@ -1046,7 +1046,7 @@ with tab6:
 print("✅ المرحلة الثالثة مكتملة: مختبر الأمة، مقارنة الحضارات، الشواهد التاريخية")
 
 # =============================================
-# المرحلة الرابعة: هندسة الصراط والتذييل
+# المرحلة الرابعة (معدلة): هندسة الصراط والتذييل
 # =============================================
 
 # --- الثوابت الإبراهيمية ---
@@ -1199,6 +1199,17 @@ with tab7:
     
     st.markdown("---")
     
+    # --- التأكد من تهيئة متغيرات المسار ---
+    if 'path_W' not in st.session_state:
+        st.session_state.path_W = [0.5]
+    if 'path_B' not in st.session_state:
+        st.session_state.path_B = [0.5]
+    if 'path_kappa' not in st.session_state:
+        st.session_state.path_kappa = [0.0]
+    for l in ["faith","worship","transactions","morals","enjoining","hudud","jihad"]:
+        if f"path_{l}" not in st.session_state:
+            setattr(st.session_state, f"path_{l}", [0.5])
+    
     # --- أزرار التفاعل ---
     c1, c2, c3 = st.columns(3)
     
@@ -1280,6 +1291,9 @@ with tab7:
         st.rerun()
     
     # --- رسم المسار ---
+    pW = st.session_state.path_W
+    pB = st.session_state.path_B
+    
     fig, axes = plt.subplots(1, 2, figsize=(16, 7), facecolor='#0a0f1e')
     
     ax1 = axes[0]
@@ -1293,7 +1307,6 @@ with tab7:
     ax1.scatter([1], [1], s=200, c='#FFD700', edgecolors='white', linewidth=3, zorder=10, 
                 label=T("⭐ مقام إبراهيم (الكمال: 1,1)", "⭐ Station of Abraham (Perfection: 1,1)"))
     
-    pW = st.session_state.path_W; pB = st.session_state.path_B
     if len(pW) > 1:
         for i in range(1, len(pW)):
             kv = st.session_state.path_kappa[i] if i < len(st.session_state.path_kappa) else 0
@@ -1335,7 +1348,10 @@ with tab7:
     ]
     
     for i, (key, label, color) in enumerate(levels_labels):
-        val = getattr(st.session_state, f"path_{key}")[-1]
+        if hasattr(st.session_state, f"path_{key}") and len(getattr(st.session_state, f"path_{key}")) > 0:
+            val = getattr(st.session_state, f"path_{key}")[-1]
+        else:
+            val = 0.0
         with cols[i]:
             st.markdown(f"""
             <div style="text-align:center;padding:6px;background:rgba(20,30,60,0.8);border-radius:6px;border:1px solid {color};">
@@ -1393,5 +1409,5 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-print("✅ المرحلة الرابعة مكتملة: هندسة الصراط والتذييل")
+print("✅ المرحلة الرابعة (معدلة) مكتملة: هندسة الصراط مع تهيئة آمنة للمتغيرات والتذييل")
 print("✅✅✅ تم بناء مختبر الميزان – المنصة الذهبية – النسخة النهائية المتكاملة بنجاح!")
