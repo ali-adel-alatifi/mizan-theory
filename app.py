@@ -15,6 +15,9 @@ warnings.filterwarnings('ignore')
 # =============================================
 st.set_page_config(page_title="⚖️ الدين القيم – المنارة العالمية", page_icon="⚖️", layout="wide")
 
+# =============================================
+# اللغة
+# =============================================
 if "lang" not in st.session_state:
     st.session_state.lang = "ar"
 L = st.session_state.lang
@@ -57,7 +60,7 @@ LETTERS_DB = {
 INDICATORS_META = [
     {"ar": "الصلاة (إقامة/تضييع)", "en": "Prayer", "letter": "ن", "val": 50},
     {"ar": "الزكاة والصدقات (إيتاء/منع)", "en": "Zakat & Charity", "letter": "ص", "val": 90},
-    {"ar": "الولاء لله ورسوله والمؤمنين", "en": "Loyalty", "letter": "أ", "val": 1},
+    {"ar": "الولاء لله ورسوله والمؤمنين", "en": "Loyalty to Allah & Believers", "letter": "أ", "val": 1},
     {"ar": "تحكيم الشريعة (تحكيم/رفض)", "en": "Applying Sharia", "letter": "ل", "val": 30},
     {"ar": "العدل (عدل/ظلم)", "en": "Justice", "letter": "ق", "val": 100},
     {"ar": "الشورى (تشاور/استبداد)", "en": "Consultation", "letter": "م", "val": 40},
@@ -65,7 +68,7 @@ INDICATORS_META = [
     {"ar": "الرحمة والعطاء – الماعون (رحمة/قسوة)", "en": "Mercy & Giving", "letter": "ح", "val": 8},
     {"ar": "الأمر بالمعروف (أمر/نهي)", "en": "Enjoining Good", "letter": "ف", "val": 80},
     {"ar": "النهي عن المنكر (نهي/أمر)", "en": "Forbidding Evil", "letter": "و", "val": 6},
-    {"ar": "النزاهة ومكافحة الفساد", "en": "Integrity", "letter": "ب", "val": 2},
+    {"ar": "النزاهة ومكافحة الفساد", "en": "Integrity & Anti-Corruption", "letter": "ب", "val": 2},
 ]
 N_IND = len(INDICATORS_META)
 
@@ -128,7 +131,7 @@ def plot_quadrant_map(B_raw, W_raw, istidraj_gap):
     return fig
 
 # =============================================
-# بوصلة الإسلام الحنيف – الأسئلة الأصلية الكاملة (19 سؤالاً)
+# بوصلة الإسلام الحنيف – الأسئلة الكاملة (19 سؤالاً)
 # =============================================
 COMPASS_DATA = [
     {"id":1,"topic":T("القوانين الوضعية وتحكيم الشريعة","Man-Made Laws vs. Sharia"),"letter":"ق","value":100,
@@ -143,57 +146,57 @@ COMPASS_DATA = [
                 (T("أحاول أن أوازن بين ولائي للإسلام وانتمائي العرقي أو الحزبي","I try to balance"),0.3,-0.2),
                 (T("ولائي لديني ضعيف، وأميل للفخر بعرقي أو حزبي أكثر","Weak religious loyalty"),-0.2,0.1),
                 (T("لا أرى مشكلة في تقديم العرق أو الحزب على الدين، فهذا واقع العصر","Race over religion"),-0.5,-0.3)]},
-    {"id":3,"topic":T("الاستهزاء بالمقدسات وحرية التعبير","Mockery of Sanctities"),"letter":"هـ","value":5,
+    {"id":3,"topic":T("الاستهزاء بالمقدسات وحرية التعبير","Mockery of Sanctities & Free Speech"),"letter":"هـ","value":5,
      "text":T("في زمن تُباح فيه 'حرية التعبير' للاستهزاء بالدين والمقدسات، كمسلم: ما هو موقفك؟","In an age of free speech..."),
      "answers":[(T("أبغض في الله المستهزئين، وأدين فعلهم بكل وضوح","I hate and condemn mockers"),0.3,0.7),
                 (T("أستنكر الاستهزاء في قلبي، لكني لا أعلن موقفي جهارًا","I disapprove in heart"),0.1,-0.1),
                 (T("أرى أنها 'حرية رأي' ولا داعي للغضب","Free speech, no anger"),-0.2,0.1),
                 (T("أضحك معهم أحيانًا، ولا أرى في ذلك ضررًا كبيرًا","I laugh with them"),-0.3,-0.3)]},
-    {"id":4,"topic":T("الربا والنظام المالي العالمي","Usury and Global Finance"),"letter":"ص","value":90,
+    {"id":4,"topic":T("الربا والنظام المالي العالمي","Usury and the Global Financial System"),"letter":"ص","value":90,
      "text":T("في زمن يقوم فيه النظام المالي العالمي على الربا، وأصبح التعامل بالفوائد 'أمرًا طبيعيًا'، كمسلم: ما هو موقفك؟","In an age of usury..."),
      "answers":[(T("أتجنب الربا بكل صوره وأبحث عن البدائل الإسلامية ولو خسرت ربحًا","I avoid all usury"),0.3,0.7),
                 (T("أكره الربا، لكني مضطر للتعامل به أحيانًا بحكم الواقع","I hate it but forced"),0.1,-0.2),
                 (T("أتعامل بالربا كالجميع، ولا أرى مشكلة حقيقية في ذلك","I deal with it like everyone"),-0.2,0.1),
                 (T("الربا ضرورة اقتصادية، وتحريمه كان لزمن غير زمننا","Usury is a necessity"),-0.3,-0.3)]},
-    {"id":5,"topic":T("العلمانية وفصل الدين عن الدولة","Secularism"),"letter":"ك","value":20,
+    {"id":5,"topic":T("العلمانية وفصل الدين عن الدولة","Secularism: Separating Religion from State"),"letter":"ك","value":20,
      "text":T("في زمن تسود فيه العلمانية، وتُرفع شعارات 'فصل الدين عن الدولة'، كمسلم: ما هو موقفك؟","In an age of secularism..."),
      "answers":[(T("أرفض العلمانية، وأؤمن أن الإسلام دين ودولة وشريعة تحكم كل الحياة","I reject secularism"),0.4,0.6),
                 (T("أرى أن العلمانية قد تكون حلاً مؤقتًا لحين استعداد المجتمع","Temporary solution"),0.1,-0.1),
                 (T("لا أمانع فصل الدين عن السياسة، فالدين علاقة شخصية بالله","I don't mind separation"),-0.2,0.1),
                 (T("العلمانية هي الطريق الصحيح للتقدم، والدين يجب أن يبقى في المسجد فقط","Secularism is correct"),-0.3,-0.3)]},
-    {"id":6,"topic":T("إقامة الحدود الشرعية","Sharia Penalties"),"letter":"ح","value":8,
+    {"id":6,"topic":T("إقامة الحدود الشرعية","Establishing Sharia Penalties"),"letter":"ح","value":8,
      "text":T("في زمن تُلغى فيه الحدود الشرعية (كقطع يد السارق ورجم الزاني) بدعوى 'الهمجية' و'عدم الإنسانية'، كمسلم: ما هو موقفك؟","In an age of abolishing penalties..."),
      "answers":[(T("الحدود الشرعية رحمة وعدل، وأؤمن بضرورة إقامتها لحماية المجتمع","Penalties are mercy and justice"),0.3,0.7),
                 (T("الحدود حق، لكن الظروف الحالية لا تسمح بتطبيقها","Right but conditions hard"),0.1,-0.1),
                 (T("أشعر بالحرج من بعض الحدود، وأراها قاسية","I feel embarrassed"),-0.2,0.1),
                 (T("الحدود الشرعية همجية ولا تصلح للعصر الحديث","Penalties are barbaric"),-0.3,-0.3)]},
-    {"id":7,"topic":T("الإلحاد وإنكار الخالق","Atheism"),"letter":"ن","value":50,
+    {"id":7,"topic":T("الإلحاد وإنكار الخالق","Atheism: Denying the Creator"),"letter":"ن","value":50,
      "text":T("في زمن ينتشر فيه الإلحاد، ويُقدَّم العلم على أنه ينفي وجود الله، كمسلم: ما هو موقفك؟","In an age of atheism..."),
      "answers":[(T("أؤمن بالله يقينًا لا يتزعزع، وأرى في العلم دليلاً على وجوده","I believe in Allah certainly"),0.4,0.6),
                 (T("أؤمن بالله، لكني لا أملك حججًا للرد على شبهات الملحدين","I believe but lack arguments"),0.1,-0.1),
                 (T("تساورني أحيانًا شكوك، لكني أعود للإيمان","Doubts sometimes cross my mind"),-0.2,0.1),
                 (T("أعتقد أن الإلحاد طرح فكري يحترم، والدين مجرد أساطير","Atheism is respectable"),-0.3,-0.3)]},
-    {"id":8,"topic":T("الجهاد ونصرة المستضعفين","Jihad"),"letter":"ر","value":200,
-     "text":T("في زمن يُشوَّه فيه الجهاد ويوصم بـ 'الإرهاب'، ويُخذل فيه المستضعفون من المسلمين، كمسلم: ما هو موقفك؟","In an age of distorting jihad..."),
-     "answers":[(T("الجهاد ذروة سنام الإسلام، وأتمنى أن أكون في صفوف المجاهدين لنصرة المستضعفين","Jihad is the peak"),0.3,0.7),
+    {"id":8,"topic":T("الجهاد ونصرة المستضعفين","Jihad and Supporting the Oppressed"),"letter":"ر","value":200,
+     "text":T("في زمن يُشوَّه فيه الجهاد ويوصم بـ 'الإرهاب'، ويُخذل فيه المستضعفون من المسلمين، كمسلم: ما هو موقفك من نصرة المستضعفين وقتال المعتدين؟","In an age of distorting jihad..."),
+     "answers":[(T("الجهاد ذروة سنام الإسلام، وأتمنى أن أكون في صفوف المجاهدين لنصرة المستضعفين","Jihad is the peak of Islam"),0.3,0.7),
                 (T("الجهاد حق، وأدعمه بقلبي ومالي إن استطعت، لكني لا أقاتل الآن","Jihad is right, I support"),0.1,-0.1),
                 (T("أخشى من الجهاد، وأرى أنه يجلب المشاكل للمسلمين","I fear jihad"),-0.2,0.1),
                 (T("الجهاد أصبح إرهابًا، ولا مكان له في هذا العصر","Jihad became terrorism"),-0.3,-0.3)]},
-    {"id":9,"topic":T("حقوق المرأة بين الإسلام والتغريب","Women's Rights"),"letter":"هـ","value":5,
+    {"id":9,"topic":T("حقوق المرأة بين الإسلام والتغريب","Women's Rights: Islam vs. Westernization"),"letter":"هـ","value":5,
      "text":T("في زمن تُطرح فيه 'حقوق المرأة' بصيغة غربية تنتزعها من فطرتها، وتُتهم الشريعة بظلمها، كمسلم: ما هو موقفك؟","In an age of women's rights..."),
      "answers":[(T("أؤمن أن الإسلام كرم المرأة ورفع شأنها، وأن أحكامه هي عين العدل","Islam honored women"),0.4,0.6),
                 (T("أؤمن بالإسلام، لكني أرى ضرورة 'تحديث' بعض الأحكام لتواكب العصر","I believe but need update"),0.1,-0.1),
                 (T("أشعر بالحرج من بعض أحكام الإسلام الخاصة بالمرأة","Embarrassed by some rulings"),-0.2,0.1),
                 (T("أعتقد أن الإسلام ظلم المرأة، وأن تحريرها يكون بالعلمانية","Islam oppressed women"),-0.3,-0.3)]},
-    {"id":10,"topic":T("العولمة، الذوبان الحضاري، الموضة، والاستهلاك","Globalization & Fashion"),"letter":"م","value":40,
-     "text":T("في زمن العولمة التي تسعى لطمس الهويات... وتحول فيه الاستهلاك إلى ثقافة... والموضة العالمية تفرض أزياء تخالف الفطرة... كمسلم: ما هو موقفك؟","In an age of globalization..."),
-     "answers":[(T("أتمسك بهويتي الإسلامية، وأتبرأ من تقليد الكفار... وأزهد في الدنيا...","I hold fast to my Islamic identity..."),0.4,0.6),
-                (T("أحاول أن أوازن... وأوفق بين التمتع بالحلال والزهد","I try to balance"),0.1,-0.1),
-                (T("أقلد الغرب في كثير من ثقافته وأزيائه واستهلاكه...","I imitate the West..."),-0.2,0.1),
-                (T("الثقافة الغربية هي ثقافة التقدم... والحياة فرصة للاستمتاع...","Western culture is progress..."),-0.3,-0.3)]},
-    {"id":11,"topic":T("الديمقراطية والتشريع","Democracy"),"letter":"ل","value":30,
+    {"id":10,"topic":T("العولمة، الذوبان الحضاري، الموضة، والاستهلاك","Globalization, Cultural Dissolution, Fashion & Consumerism"),"letter":"م","value":40,
+     "text":T("في زمن العولمة التي تسعى لطمس الهويات، وجعل الثقافة الغربية هي المعيار، وتحول فيه الاستهلاك إلى ثقافة، وأصبح الترف هدفاً، والموضة العالمية تفرض أزياء تخالف الفطرة والشرع، وأصبح الناس 'عبيداً للمادة'، كمسلم: ما هو موقفك؟","In an age of globalization..."),
+     "answers":[(T("أتمسك بهويتي الإسلامية، وأتبرأ من تقليد الكفار في ثقافتهم وأزيائهم، وأزهد في الدنيا، وألتزم باللباس الشرعي المحتشم، ولا أبالي بموضات تخالف ديني، وأجعل الآخرة هدفي","I hold fast to my Islamic identity"),0.4,0.6),
+                (T("أحاول أن أوازن بين هويتي الإسلامية ومتطلبات العصر، وأوفق بين التمتع بالحلال والزهد","I try to balance"),0.1,-0.1),
+                (T("أقلد الغرب في كثير من ثقافته وأزيائه واستهلاكه، ولا أرى بأساً في ذلك","I imitate the West"),-0.2,0.1),
+                (T("الثقافة الغربية هي ثقافة التقدم، ويجب أن نندمج فيها كلياً، والحياة فرصة للاستمتاع، ولن أضيعها بالزهد، والموضة هي ما يفرضه العصر","Western culture is progress"),-0.3,-0.3)]},
+    {"id":11,"topic":T("الديمقراطية والتشريع","Democracy and Legislation"),"letter":"ل","value":30,
      "text":T("في زمن تُقدَّس فيه الديمقراطية وتُجعل الشعب هو مصدر التشريع، كمسلم: ما هو موقفك؟","In an age of democracy..."),
-     "answers":[(T("أرفض جعل الشعب مشرعًا، فالتشريع لله وحده، والشورى لا تعني الالتفاف على الشرع...","I reject people as legislators..."),0.4,0.6),
+     "answers":[(T("أرفض جعل الشعب مشرعًا، فالتشريع لله وحده، والشورى لا تعني الالتفاف على الشرع، بل هي طاعة لله في تطبيق ما شرع","I reject people as legislators"),0.4,0.6),
                 (T("أرى أن الديمقراطية وسيلة يمكن استخدامها لتحقيق بعض المصالح","Democracy is a tool"),0.1,-0.1),
                 (T("أفضّل النظام الديمقراطي على الأنظمة الاستبدادية","I prefer democracy over dictatorship"),-0.2,0.1),
                 (T("الديمقراطية هي أفضل نظام حكم، والشريعة لا تصلح للتطبيق السياسي","Democracy is best"),-0.3,-0.3)]},
@@ -203,27 +206,27 @@ COMPASS_DATA = [
                 (T("الإسلام هو الحق، لكني لا أحكم على أصحاب الديانات الأخرى","Islam is truth but I don't judge"),0.1,-0.1),
                 (T("أرى أن كل الأديان فيها جزء من الحق","All religions have truth"),-0.2,0.1),
                 (T("كل الأديان سواء، ولا يحق لأحد أن يدعي امتلاك الحقيقة المطلقة","All religions are equal"),-0.3,-0.3)]},
-    {"id":13,"topic":T("الحب في الله والبغض في الله","Love & Hatred for Allah"),"letter":"ق","value":100,
+    {"id":13,"topic":T("الحب في الله والبغض في الله","Love for Allah and Hatred for Allah"),"letter":"ق","value":100,
      "text":T("في زمن أصبحت فيه المصلحة هي المعيار الأساسي في العلاقات، واختفى معنى 'الحب في الله والبغض في الله'، كمسلم: ما هو موقفك؟","In an age of interests..."),
-     "answers":[(T("أحب في الله أولياءه وأبغض في الله أعداءه، وهذا أوثق عرى إيماني، ولا أجعل مصلحتي فوق هذا","I love and hate for Allah"),0.4,0.6),
+     "answers":[(T("أحب في الله أولياءه وأبغض في الله أعداءه، وهذا أوثق عرى إيماني، ولا أجعل مصلحتي الشخصية فوق هذا","I love and hate for Allah"),0.4,0.6),
                 (T("أحاول، لكن علاقاتي تغلب عليها المصالح والمنافع أحيانًا","I try but interests dominate"),0.1,-0.1),
                 (T("أتعامل مع الجميع بالمثل، لا حب ولا بغض في الله، فالمصلحة هي الأساس","I deal equally with all"),-0.2,0.1),
                 (T("علاقاتي كلها تقوم على مصلحتي الشخصية، ولا دخل للدين فيها","My relationships are interests only"),-0.3,-0.3)]},
-    {"id":14,"topic":T("التحلي بالأخلاق الحميدة – الكذب والغش والخيانة","Noble Character"),"letter":"ط","value":9,
-     "text":T("في زمن أصبح الخداع والكذب والغش ذكاءً، وخان الناس الأمانات والعهود، كمسلم: ما هو موقفك من الصدق والأمانة والوفاء؟","In an age of deception..."),
+    {"id":14,"topic":T("التحلي بالأخلاق الحميدة – الكذب والغش والخيانة","Embodying Noble Character"),"letter":"ط","value":9,
+     "text":T("في زمن أصبح الخداع والكذب والغش ذكاءً، وخان الناس الأمانات والعهود، كمسلم: ما هو موقفك من الصدق والأمانة والوفاء بالعهد؟","In an age of deception..."),
      "answers":[(T("الصدق والأمانة والوفاء دين، وألتزم بها ولو خسرت دنيويًا، ولا أخون ولا أغش ولا أكذب","Truthfulness is my religion"),0.4,0.6),
                 (T("أحاول الالتزام بها، لكني قد أضطر للكذب أو التغاضي عن بعض الأمانات أحيانًا","I try but may be forced"),0.1,-0.1),
                 (T("أرى أن المبالغة في الصدق سذاجة، والواقع يفرض بعض 'المرونة' في الكذب والغش","Excessive honesty is naivety"),-0.2,0.1),
                 (T("الكذب والغش والخيانة أدوات ضرورية للنجاح في هذا العصر","Lying and fraud are success tools"),-0.3,-0.3)]},
-    {"id":15,"topic":T("الغيرة على المحارم والأمر بالمعروف","Protective Jealousy"),"letter":"ب","value":2,
+    {"id":15,"topic":T("الغيرة على المحارم والأمر بالمعروف","Protective Jealousy & Enjoining Good"),"letter":"ب","value":2,
      "text":T("في زمن انتشرت فيه الفواحش، وصار إنكار المنكر 'تطرفًا'، كمسلم: ما هو موقفك من الأمر بالمعروف والنهي عن المنكر؟","In an age of indecency..."),
      "answers":[(T("آمر بالمعروف وأنهى عن المنكر بكل استطاعتي، فهذا واجبي","I enjoin and forbid as much as I can"),0.3,0.7),
                 (T("أنكر بقلبي، وأحيانًا بلساني إذا لم أخف ضررًا كبيرًا","I reject in my heart sometimes"),0.1,-0.1),
                 (T("أسكت عن المنكر حفاظًا على علاقاتي ومصالحي","I remain silent for my interests"),-0.2,0.1),
                 (T("لا داعي للأمر والنهي، فكل إنسان حر في تصرفاته","No need for enjoining/forbidding"),-0.3,-0.3)]},
-    {"id":16,"topic":T("الوطنية والحزبية والمذهبية","Patriotism, Partisanship"),"letter":"ف","value":80,
+    {"id":16,"topic":T("الوطنية والحزبية والمذهبية","Patriotism, Partisanship, and Sectarianism"),"letter":"ف","value":80,
      "text":T("في زمن تُقدَّس فيه الوطنية والحزبية والمذهبية، ويُرفع شعار 'الوطن أو الحزب أو المذهب أولاً'، كمسلم: ما هو موقفك؟","In an age of sanctifying patriotism..."),
-     "answers":[(T("ولائي للإسلام فوق كل وطن وحزب ومذهب، وأتبرأ من كل دعوة جاهلية تفرق المسلمين","My loyalty to Islam above all"),0.4,0.6),
+     "answers":[(T("ولائي للإسلام فوق كل وطن وحزب ومذهب، وأتبرأ من كل دعوة جاهلية تفرق المسلمين","My loyalty to Islam is above all"),0.4,0.6),
                 (T("أحب وطني وحزبي ومذهبي، لكني أقدّم الإسلام عليها","I love my country but prioritize Islam"),0.1,-0.1),
                 (T("أشعر أن انتمائي لوطني أو حزبي أو مذهبي أهم من انتمائي للإسلام","My national belonging is more important"),-0.2,0.1),
                 (T("لا أرى مشكلة في تقديم الوطن أو الحزب أو المذهب على الدين، فهذا واقع العصر","No problem with nationalism"),-0.3,-0.3)]},
@@ -239,7 +242,7 @@ COMPASS_DATA = [
                 (T("أصوم الفرض فقط، ولا أستطيع صيام النفل","I fast only obligatory"),0.1,-0.1),
                 (T("أصوم رمضان كعادة اجتماعية، ولا أشعر بروحانيته","I fast Ramadan as a habit"),-0.2,0.1),
                 (T("لا أصوم، وأرى أن العصر لا يتناسب مع فكرة الصيام","I don't fast"),-0.3,-0.3)]},
-    {"id":19,"topic":T("الزكاة والصدقة في زمن الأنانية","Zakat & Charity in Selfishness"),"letter":"ط","value":9,
+    {"id":19,"topic":T("الزكاة والصدقة في زمن الأنانية","Zakat and Charity in an Age of Selfishness"),"letter":"ط","value":9,
      "text":T("في زمن طغت فيه الأنانية، وضعف فيه التكافل، وأصبح المال 'إلهًا'، كمسلم: ما هو موقفك من الزكاة والصدقة؟","In an age of selfishness..."),
      "answers":[(T("أؤدي الزكاة طيبة بها نفسي، وأعترف أن المال مال الله، وفيها طهارة لنفسي وعونًا لإخوتي","I pay Zakat willingly"),0.4,0.6),
                 (T("أؤدي الزكاة فقط، وأحيانًا أتصدق","I pay only Zakat"),0.1,-0.1),
@@ -375,7 +378,9 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     T("📐 هندسة الصراط","📐 Path")
 ])
 
-# --- تبويب ١: البوصلة ---
+# =============================================
+# تبويب ١: بوصلة الإسلام الحنيف
+# =============================================
 with tab1:
     st.header(T("🧍 بوصلة الإسلام الحنيف – اكتشف موقعك بدقة","🧍 Compass"))
     if 'compass_answers' not in st.session_state: st.session_state.compass_answers = {}
@@ -408,9 +413,11 @@ with tab1:
         ax.tick_params(colors='white'); st.pyplot(fig)
         if st.button(T("🔄 إعادة","🔄 Retake")): st.session_state.compass_answers={}; st.rerun()
 
-# --- تبويب ٢: مختبر الأمة (مع الذكاء الاصطناعي) ---
+# =============================================
+# تبويب ٢: مختبر الأمة (مع الذكاء الاصطناعي)
+# =============================================
 with tab2:
-    st.header(T("🏛️ مختبر الأمة","🏛️ Nation Lab"))
+    st.header(T("🏛️ مختبر الأمة – المنزلقات والذكاء الاصطناعي","🏛️ Nation Lab"))
     with st.expander(T("🎛️ مؤشرات الطاقة الروحية","🎛️ Indicators"), expanded=True):
         for i in range(0,N_IND,2):
             ca,cb=st.columns(2)
@@ -424,14 +431,14 @@ with tab2:
                     st.session_state.slider_values[f"V{i+1}"]=val
         col_pure,col_E=st.columns(2)
         with col_pure:
-            W_pure=st.checkbox(T("الإخلاص لله [أ=1]","Sincerity [A=1]"),value=st.session_state.slider_values.get("W_pure",True))
+            W_pure=st.checkbox(T("الإخلاص لله (عدم الشرك) [أ=1]","Sincerity [A=1]"),value=st.session_state.slider_values.get("W_pure",True))
             st.session_state.slider_values["W_pure"]=W_pure
         with col_E:
-            E_val=st.slider(T("التمكين [ق=100]","Empowerment [Q=100]"),0.0,1.0,st.session_state.slider_values.get("E_val",0.5),0.05,key="lab_E")
+            E_val=st.slider(T("التمكين (E) [ق=100]","Empowerment [Q=100]"),0.0,1.0,st.session_state.slider_values.get("E_val",0.5),0.05,key="lab_E")
             st.session_state.slider_values["E_val"]=E_val
     st.markdown("---"); st.subheader(T("🤖 مساعد الذكاء الاصطناعي","🤖 AI Assistant"))
     ai_text=st.text_area(T("الوصف:","Description:"),height=80,placeholder=T("مثال: دولة إسلامية...","Example..."))
-    if st.button(T("تحليل بالذكاء الاصطناعي","Analyze with AI"),use_container_width=True):
+    if st.button(T("تحليل بالذكاء الاصطناعي وملء المنزلقات","Analyze & Fill Sliders"),use_container_width=True):
         if not ai_text.strip(): st.warning(T("أدخل وصفاً","Enter description"))
         else:
             with st.spinner(T("جاري التحليل...","Analyzing...")):
@@ -485,25 +492,238 @@ with tab2:
     elif istidraj_gap>0.3: st.error(f"🎯 سد الفجوة عبر '{W_L[wW]}' أو '{B_L[wB]}'.")
     else: st.info(f"🎯 عزز '{W_L[wW]}' و'{B_L[wB]}'.")
 
-# --- تبويب ٣: المشهد الكوني (موجود في المرحلة السابقة) ---
-# (نفس كود المشهد الكوني السابق)
+# =============================================
+# تبويب ٣: المشهد الكوني الحي
+# =============================================
+with tab3:
+    st.header(T("🌌 المشهد الكوني الحي","🌌 Live Cosmic Scene"))
+    with st.expander(T("⚙️ إعدادات","⚙️ Settings"), expanded=False):
+        c1,c2=st.columns(2)
+        with c1: live_speed=st.slider(T("السرعة","Speed"),0.01,0.2,0.06,0.01,key="live_speed")
+        with c2: live_stars=st.slider(T("النجوم","Stars"),50,300,150,25,key="live_stars")
+    col_btn1,col_btn2,col_btn3=st.columns(3)
+    with col_btn1:
+        if st.button(T("▶️ تشغيل","▶️ Run"),use_container_width=True,type="primary"): st.session_state.run=True
+    with col_btn2:
+        if st.button(T("⏹️ إيقاف","⏹️ Stop"),use_container_width=True): st.session_state.run=False
+    with col_btn3:
+        if st.button(T("🔄 إعادة","🔄 Reset"),use_container_width=True):
+            for k in list(st.session_state.keys()):
+                if k.startswith("live_"): del st.session_state[k]
+            st.rerun()
+    placeholder=st.empty()
+    if st.session_state.get("run",False):
+        if not st.session_state.get("live_init",False):
+            N=live_stars; cx,cy=st.session_state.cx,st.session_state.cy
+            st.session_state.live_sx=np.random.uniform(cx-13,cx+13,N)
+            st.session_state.live_sy=np.random.uniform(cy-9,cy+9,N)
+            st.session_state.live_sw=np.random.uniform(0.1,1.0,N)
+            st.session_state.live_sb=np.random.uniform(0.1,1.0,N)
+            st.session_state.live_W=st.session_state.W; st.session_state.live_B=st.session_state.B
+            st.session_state.live_E=st.session_state.E; st.session_state.live_S=st.session_state.S
+            st.session_state.live_aW=st.session_state.aW; st.session_state.live_aB=st.session_state.aB
+            st.session_state.live_frame=0; st.session_state.live_init=True
+        try:
+            cx,cy=st.session_state.cx,st.session_state.cy
+            sx=st.session_state.live_sx.copy(); sy=st.session_state.live_sy.copy()
+            sw=st.session_state.live_sw.copy(); sb=st.session_state.live_sb.copy()
+            W=st.session_state.live_W; B=st.session_state.live_B
+            E=st.session_state.live_E; S=st.session_state.live_S
+            aW=st.session_state.live_aW; aB=st.session_state.live_aB
+            frame=st.session_state.live_frame; N=len(sx)
+            for i in range(N):
+                sw[i]+=(W-sw[i])*0.02+np.random.uniform(-0.02,0.02)
+                sb[i]+=(B-sb[i])*0.02+np.random.uniform(-0.02,0.02)
+                dist=np.sqrt((sx[i]-sx)**2+(sy[i]-sy)**2)
+                close=(dist<2.0)&(np.arange(N)!=i)
+                if np.any(close):
+                    sw[i]+=(np.mean(sw[close])-sw[i])*0.03
+                    sb[i]+=(np.mean(sb[close])-sb[i])*0.03
+                sw[i]=np.clip(sw[i],0.01,1.0); sb[i]=np.clip(sb[i],0.01,1.0)
+            if random.random()<0.005:
+                aff=np.random.choice(N,size=int(N*0.2),replace=False)
+                sw[aff]*=random.uniform(0.5,0.8); sb[aff]*=random.uniform(0.5,0.8)
+            avgW=np.mean(sw); avgB=np.mean(sb)
+            W+=(avgW-W)*0.04; B+=(avgB-B)*0.04
+            W=np.clip(W,0.01,1.0); B=np.clip(B,0.01,1.0); S=W*B; E+=0.03*(S-E)
+            aW+=0.02+random.uniform(-0.02,0.02)*(1-W)**2
+            aB+=0.02+random.uniform(-0.02,0.02)*(1-B)**2
+            wx=cx+(7-2.5*W)*np.cos(aW); wy=cy+(7-2.5*W)*np.sin(aW)*0.7
+            bx=cx+(5-1.5*B)*np.cos(aB); by=cy+(5-1.5*B)*np.sin(aB)*0.7
+            instability=1-np.mean(sw*sb)
+            sx+=np.random.uniform(-0.07,0.07,N)*instability; sy+=np.random.uniform(-0.07,0.07,N)*instability
+            sx=np.clip(sx,cx-13,cx+13); sy=np.clip(sy,cy-9,cy+9)
+            frame+=1
+            st.session_state.live_sx=sx; st.session_state.live_sy=sy; st.session_state.live_sw=sw; st.session_state.live_sb=sb
+            st.session_state.live_W=W; st.session_state.live_B=B; st.session_state.live_E=E; st.session_state.live_S=S
+            st.session_state.live_aW=aW; st.session_state.live_aB=aB; st.session_state.live_frame=frame
+            fig,ax=plt.subplots(figsize=(14,10),facecolor='#0a0f1e')
+            ax.set_xlim(0,28); ax.set_ylim(0,20); ax.axis('off')
+            for r,a,c in [(0.5,0.98,'#FFF'),(1,0.6,'#FFD700'),(1.8,0.3,'#FFD700'),(2.8,0.1,'#FFA500'),(4,0.03,'#FF4500')]:
+                ax.add_patch(Circle((cx,cy),r*(0.5+3*S),color=c,alpha=a,zorder=15))
+            ax.text(cx,cy,'S',color='#000',fontsize=14,ha='center',va='center',fontweight='bold')
+            ax.add_patch(Circle((cx,cy),0.5+16*E,color='#0FF',alpha=0.15,zorder=7))
+            ax.add_patch(Circle((wx,wy),0.2+0.6*W,color='#FFF',alpha=1,zorder=13))
+            ax.add_patch(Circle((bx,by),0.2+0.6*B,color='#F33',alpha=0.8,zorder=13))
+            ax.text(wx,wy+0.8,'W',color='#FFF',fontsize=10,ha='center'); ax.text(bx,by+0.8,'B',color='#F33',fontsize=10,ha='center')
+            colors=[]
+            for i in range(N):
+                w,b=sw[i],sb[i]
+                if w>=0.55 and b>=0.55: colors.append('#FFD700')
+                elif w>=0.55 and b<0.45: colors.append('#E0E0E0')
+                elif w<0.45 and b>=0.55: colors.append('#FF5252')
+                elif w<0.45 and b<0.45: colors.append('#FFB6C1')
+                else: colors.append('#888')
+            ax.scatter(sx,sy,s=20,c=colors,alpha=0.9,edgecolors='white',linewidths=0.2,zorder=5)
+            ax.text(14,1.2,f'S={S:.2f} | E={E:.2f}',color='#CCC',fontsize=9,ha='center')
+            plt.tight_layout(pad=0); placeholder.pyplot(fig); plt.close(fig); time.sleep(live_speed); st.rerun()
+        except Exception as e: st.error(f"Simulation error: {e}"); st.session_state.run=False
+    else: st.info(T("اضغط ▶️ تشغيل","Press ▶️ Run"))
 
-# --- تبويب ٤: المعجم الهندسي (موجود في المرحلة السابقة) ---
-# (نفس كود المعجم السابق)
+# =============================================
+# تبويب ٤: المعجم الهندسي
+# =============================================
+with tab4:
+    st.header(T("📖 المعجم الهندسي – الحروف وقيمها","📖 Geometric Lexicon"))
+    letters_data = {
+        T('الفئة الأولى: الذات الإلهية (المصدر)','Cat 1: Divine Essence'):{'ك':20,'ن':50},
+        T('الفئة الثانية: الازدواج','Cat 2: Duality'):{'ق':100,'ص':90},
+        T('الفئة الثالثة: التجلي الإلهي','Cat 3: Manifestation'):{'أ':1,'ل':30,'م':40,'ر':200,'س':60,'ح':8,'ط':9},
+        T('الفئة الرابعة: الاشتراك (الجسور)','Cat 4: Bridges'):{'ع':70,'ي':10,'هـ':5},
+        T('الفئة الخامسة: المشغلات','Cat 5: Operators'):{'ف':80,'و':6,'ب':2},
+        T('الفئة السادسة: أعمال الخلق','Cat 6: Actions'):{'ج':3,'خ':600,'د':4,'ذ':700,'ز':7,'ش':300,'ت':400,'ث':500,'ض':800,'ظ':900,'غ':1000},
+    }
+    for cat,lets in letters_data.items():
+        st.markdown(f"**{cat}**")
+        st.dataframe(pd.DataFrame(list(lets.items()),columns=[T('الحرف','Letter'),T('القيمة','Value')]),hide_index=True)
 
-# --- تبويب ٥: الشواهد (موجود في المرحلة السابقة) ---
-# (نفس كود الشواهد السابق)
+# =============================================
+# قاعدة بيانات الشواهد التاريخية
+# =============================================
+HISTORICAL_DATA = {
+    T("الخلافة الراشدة (٦٣٢-٦٦١م)","Rashidun Caliphate"):{"W":0.95,"B":0.95,"E":0.90,"desc":T("أعلى فترات التوازن في التاريخ الإسلامي. الثبات الذاتي.","Highest balance period.")},
+    T("الدولة الأموية – أوج التوسع (٧٢٠م)","Umayyad – Peak Expansion"):{"W":0.50,"B":0.40,"E":0.95,"desc":T("التمكين امتداد لرصيد الخلافة الراشدة. بداية الاستدراج.","Empowerment extended from Rashidun reserve. Beginning of Istidraj.")},
+    T("الدولة الأموية – قبل السقوط (٧٤٠م)","Umayyad – Before Fall"):{"W":0.25,"B":0.20,"E":0.70,"desc":T("انهيار W و B مع استمرار التمكين ظاهرياً. استدراج متقدم.","W and B collapsed while empowerment continued. Advanced Istidraj.")},
+    T("الدولة العثمانية – أواخر (١٨٠٠م)","Ottoman Empire – Late"):{"W":0.35,"B":0.25,"E":0.60,"desc":T("الرجل المريض: فجوة استدراج طويلة.","The sick man: Long Istidraj gap.")},
+    T("الاتحاد السوفيتي (١٩٢٢-١٩٩١م)","Soviet Union"):{"W":0.05,"B":0.10,"E":0.70,"desc":T("W = صفر تقريباً: انهيار مفاجئ.","W ≈ 0: Sudden collapse.")},
+}
 
-# --- تبويب ٦: هندسة الصراط (موجود في المرحلة السابقة) ---
-# (نفس كود الصراط السابق)
+# =============================================
+# تبويب ٥: الشواهد التاريخية
+# =============================================
+with tab5:
+    st.header(T("📜 الشواهد التاريخية – حين ينطق التاريخ مصدقًا للمعادلة","📜 Historical Evidence"))
+    sel=st.selectbox(T("اختر دولة:","Select a nation:"),list(HISTORICAL_DATA.keys()))
+    if sel:
+        d=HISTORICAL_DATA[sel]; S=d['W']*d['B']
+        st.markdown(f"**{sel}**"); st.markdown(d['desc'])
+        c1,c2,c3,c4=st.columns(4)
+        c1.metric("W",f"{d['W']:.2f}"); c2.metric("B",f"{d['B']:.2f}"); c3.metric("S",f"{S:.2f}"); c4.metric("E",f"{d['E']:.2f}")
+        fig,ax=plt.subplots(figsize=(8,5),facecolor='#0a0f1e'); ax.set_facecolor('#0a0f1e')
+        cats=['W (الولاء)','B (البراءة)','S (الثبات)','E (التمكين)']; vals=[d['W'],d['B'],S,d['E']]; colors_bar=['gold','#FF5252','#0F8','#0FF']
+        ax.bar(cats,vals,color=colors_bar,edgecolor='white',linewidth=1.5)
+        if d['E']>S*1.3: ax.annotate(T('فجوة الاستدراج','Istidraj Gap'),xy=(3,d['E']),xytext=(3.5,d['E']+0.1),arrowprops=dict(arrowstyle='->',color='red',lw=2),color='red',fontsize=10,fontweight='bold')
+        ax.set_ylim(0,1.1); ax.set_title(T("مؤشرات الدولة التاريخية","Historical Nation Indicators"),color='white',fontsize=13)
+        ax.tick_params(colors='white'); ax.grid(True,alpha=0.2); st.pyplot(fig)
+        if d['E']>S*1.5: st.warning(T("⚠️ حالة استدراج واضحة","⚠️ Clear Istidraj"))
+        elif S>0.7: st.success(T("✅ حالة توازن عالٍ","✅ High balance"))
+        else: st.info(T("ℹ️ حالة متوسطة","ℹ️ Moderate"))
 
-# --- التذييل ---
+# =============================================
+# تبويب ٦: هندسة الصراط
+# =============================================
+with tab6:
+    st.header(T("📐 هندسة الصراط – البرهان النبوي والنموذج الإبراهيمي","📐 Path Geometry"))
+    st.markdown(T("""
+    <div style="background:rgba(20,30,60,0.8);border-radius:15px;padding:25px;border:2px solid #FFD700;margin:20px 0;text-align:center;">
+        <h3 style="color:#FFD700;margin-top:0;">🕋 البرهان النبوي</h3>
+        <p style="color:#CCC;font-size:1.1em;line-height:2.2;direction:rtl;">«أَوْثَقُ عُرَى الْإِيمَانِ: الْحُبُّ فِي اللَّهِ، وَالْبُغْضُ فِي اللَّهِ»</p>
+        <p style="color:#AAA;font-size:0.85em;">رواه الإمام أحمد وأبو داود والطبراني، وصححه الألباني</p>
+        <hr style="border-color:rgba(255,215,0,0.3);margin:20px 0;">
+        <p style="color:#FFD700;font-size:1.3em;font-weight:bold;">S = W x B</p>
+        <p style="color:#AAA;">الحب في الله = W (الولاء). البغض في الله = B (البراءة).<br>أوثق عرى الإيمان = S (الثبات).</p>
+    </div>
+    """, """
+    <div style="background:rgba(20,30,60,0.8);border-radius:15px;padding:25px;border:2px solid #FFD700;margin:20px 0;text-align:center;">
+        <h3 style="color:#FFD700;margin-top:0;">🕋 The Prophetic Proof</h3>
+        <p style="color:#CCC;font-size:1.1em;line-height:2.2;">"The firmest handhold of faith is: love for the sake of Allah, and hatred for the sake of Allah."</p>
+        <hr style="border-color:rgba(255,215,0,0.3);margin:20px 0;">
+        <p style="color:#FFD700;font-size:1.3em;font-weight:bold;">S = W x B</p>
+        <p style="color:#AAA;">Love for Allah = W. Hatred for Allah = B.<br>The firmest handhold = S.</p>
+    </div>
+    """), unsafe_allow_html=True)
+    if 'path_W' not in st.session_state: st.session_state.path_W=[0.5]
+    if 'path_B' not in st.session_state: st.session_state.path_B=[0.5]
+    if 'path_kappa' not in st.session_state: st.session_state.path_kappa=[0.0]
+    def curvature(W,B):
+        if len(W)<3: return 0
+        dW=np.gradient(list(W)); dB=np.gradient(list(B))
+        ddW=np.gradient(dW); ddB=np.gradient(dB)
+        num=abs(dW[-1]*ddB[-1]-dB[-1]*ddW[-1]); denom=(dW[-1]**2+dB[-1]**2+1e-10)**1.5
+        return num/denom
+    c1,c2,c3=st.columns(3)
+    with c1:
+        if st.button(T("▶️ خطوة نحو الكمال","▶️ Step Forward"),use_container_width=True):
+            nW=min(1.0,st.session_state.path_W[-1]+0.05); nB=min(1.0,st.session_state.path_B[-1]+0.05)
+            st.session_state.path_W.append(nW); st.session_state.path_B.append(nB)
+            st.session_state.path_kappa.append(curvature(st.session_state.path_W,st.session_state.path_B))
+            st.rerun()
+    with c2:
+        sin_str=st.slider(T("شدة المعصية","Sin Strength"),0.01,0.3,0.1,0.01)
+        if st.button(T("⚠️ معصية","⚠️ Sin"),use_container_width=True):
+            nW=max(0.0,st.session_state.path_W[-1]-sin_str*random.uniform(0.5,1.5))
+            nB=max(0.0,st.session_state.path_B[-1]-sin_str*random.uniform(0.5,1.5))
+            st.session_state.path_W.append(nW); st.session_state.path_B.append(nB)
+            st.session_state.path_kappa.append(curvature(st.session_state.path_W,st.session_state.path_B))
+            st.rerun()
+    with c3:
+        if st.button(T("🕌 توبة","🕌 Repent"),use_container_width=True):
+            nW=min(1.0,st.session_state.path_W[-1]+0.8*(1-st.session_state.path_W[-1]))
+            nB=min(1.0,st.session_state.path_B[-1]+0.8*(1-st.session_state.path_B[-1]))
+            st.session_state.path_W.append(nW); st.session_state.path_B.append(nB)
+            st.session_state.path_kappa.append(0.0)
+            st.rerun()
+    if st.button(T("🔄 إعادة الرحلة","🔄 Reset Path"),use_container_width=True):
+        st.session_state.path_W=[0.5]; st.session_state.path_B=[0.5]; st.session_state.path_kappa=[0.0]; st.rerun()
+    pW=st.session_state.path_W; pB=st.session_state.path_B
+    if len(pW)>1:
+        fig,axes=plt.subplots(1,2,figsize=(16,7),facecolor='#0a0f1e')
+        ax1=axes[0]; ax1.set_facecolor('#0a0f1e'); ax1.set_xlim(0,1); ax1.set_ylim(0,1)
+        ax1.set_xlabel("B",color='white'); ax1.set_ylabel("W",color='white')
+        ax1.plot([0.5,1],[0.5,1],'--',color='#FFD700',lw=3,alpha=0.8,label=T("مسار إبراهيم","Abraham's Path"))
+        ax1.scatter([1],[1],s=200,c='#FFD700',edgecolors='white',linewidth=3,label=T("مقام إبراهيم","Station of Abraham"))
+        for i in range(1,len(pW)):
+            kv=st.session_state.path_kappa[i] if i<len(st.session_state.path_kappa) else 0
+            cl='#00FFFF' if kv<0.05 else '#FF4444'; ax1.plot(pB[i-1:i+1],pW[i-1:i+1],color=cl,lw=2)
+        ax1.scatter([pB[0]],[pW[0]],s=80,c='white',edgecolors='cyan',label=T("البداية","Start"))
+        ax1.scatter([pB[-1]],[pW[-1]],s=120,c='#00FFFF',label=T("الآن","Now"))
+        ax1.legend(facecolor='#0a0f1e',edgecolor='white',labelcolor='white',fontsize=8); ax1.grid(True,alpha=0.2); ax1.tick_params(colors='white')
+        ax2=axes[1]; ax2.set_facecolor('#0a0f1e')
+        ax2.plot(st.session_state.path_kappa,color='#FFD700',lw=2,marker='o')
+        ax2.axhline(y=0.05,color='#FF4444',ls='--',label=T("حد الخطر","Danger"))
+        ax2.axhline(y=0.0,color='#00FF88',ls='--',label=T("الصراط","Straight Path"))
+        ax2.set_title(T("منحنى الانحناء (κ)","Curvature Over Time"),color='white'); ax2.set_xlabel(T("الخطوات","Steps"),color='white')
+        ax2.legend(facecolor='#0a0f1e',edgecolor='white',labelcolor='white',fontsize=8); ax2.grid(True,alpha=0.2); ax2.tick_params(colors='white')
+        max_kappa=max(st.session_state.path_kappa) if st.session_state.path_kappa else 0.1
+        ax2.set_ylim(-0.01,max(0.2,max_kappa*1.2)); plt.tight_layout(); st.pyplot(fig)
+        k=st.session_state.path_kappa[-1]
+        st.metric(T("انحناء (κ)","Curvature"),f"{k:.4f}")
+        if k<0.03: st.success(T("✅ على الصراط","✅ On path"))
+        elif k<0.1: st.warning(T("⚠️ انحراف","⚠️ Deviation"))
+        else: st.error(T("🚨 انحراف خطير","🚨 Dangerous"))
+        dist=np.sqrt((1-pW[-1])**2+(1-pB[-1])**2)
+        st.markdown(f"📏 {T('المسافة إلى مقام إبراهيم','Distance to Abraham')}: {dist:.3f}")
+
+# =============================================
+# 🏁 التذييل
+# =============================================
 st.markdown("---")
 st.markdown(f"""
 <div style="text-align:center;color:#888;font-size:0.9em;line-height:1.8;">
     <p style="color:#FFD700;font-size:1.5em;">⚖️ مختبر الميزان</p>
+    <p style="font-size:1.1em;">{T('سفينة نوح الرقمية – القانون الواحد من الذرة إلى الحضارة','The Digital Ark – The One Law')}</p>
     <p style="color:#FFD700;font-size:1.3em;">S = W x B</p>
     <p>© 2026 علي عادل العاطفي | Ali Adel Alatifi</p>
-    <p style="font-size:0.8em;">{T('هذا المختبر ليس إلا محاولة متواضعة...','This lab is but a humble attempt...')}</p>
+    <p style="color:#FFD700;font-size:1.2em;">﴿وَقُلِ الْحَمْدُ لِلَّهِ سَيُرِيكُمْ آيَاتِهِ فَتَعْرِفُونَهَا﴾</p>
 </div>
 """, unsafe_allow_html=True)
