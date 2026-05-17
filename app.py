@@ -660,7 +660,7 @@ Description: {ai_text}"""
                         st.rerun()
                 except Exception as e:
                     st.error(f"خطأ في الاتصال بالذكاء الاصطناعي: {str(e)}")
-# --- عرض النتائج ---
+# --- عرض النتائج (بصيغة الجمع) ---
     st.markdown("---")
     vals = [st.session_state.slider_values.get(f"V{i}", 0.0) for i in range(N_IND)]
     W_pure = st.session_state.slider_values.get("W_pure", True)
@@ -672,35 +672,41 @@ Description: {ai_text}"""
         W_raw, B_raw, E_val, W_pure, B_compassion, B_disavowal
     )
     
-    # --- تحديد الربع بدقة مع وصف الحالة ---
+    # --- تحديد الربع بدقة مع وصف الحالة (بصيغة الجمع) ---
     if W_raw >= 0.1 and B_raw >= 0.1:
         quadrant_name = TXT("الربع الأول: المؤمنون", "Q1: Believers")
         quadrant_color = '#FFD700'
         quadrant_desc = TXT(
-            "أنت في منطقة الثبات. الولاء (W) والبراءة (B) متوازنان، مما يمنحك استقرارًا وجوديًا. "
-            "هذه هي منطقة 'العروة الوثقى' التي وعد الله بها من يكفر بالطاغوت ويؤمن بالله.",
-            "You are in the stability zone. Loyalty (W) and Disavowal (B) are balanced, giving you existential stability. "
-            "This is the zone of 'the firm handhold' promised by Allah to those who disbelieve in Taghut and believe in Allah."
+            "هذه الأمة/المجتمع في منطقة الثبات. الولاء (W) والبراءة (B) متوازنان، مما يمنحها استقرارًا وجوديًا. "
+            "هذه هي منطقة 'العروة الوثقى' التي وعد الله بها من يكفر بالطاغوت ويؤمن بالله. "
+            "استمروا في الحفاظ على هذا التوازن، فهو سر القوة والمنعة.",
+            "This nation/community is in the stability zone. Loyalty (W) and Disavowal (B) are balanced, giving it existential stability. "
+            "This is the zone of 'the firm handhold' promised by Allah. "
+            "Continue maintaining this balance, for it is the secret of strength and resilience."
         )
     elif W_raw >= 0.1 and B_raw < 0.1:
         quadrant_name = TXT("الربع الثاني: المغضوب عليهم", "Q2: Those with Wrath")
         quadrant_color = '#FF5252'
         quadrant_desc = TXT(
-            "لديك ولاء (W) لكن براءتك (B) ضعيفة جدًا. أنت تحب الله وتعبده، لكنك لا تتبرأ من الطاغوت وأهله. "
+            "هذه الأمة/المجتمع لديها ولاء (W) لكن براءتها (B) ضعيفة جدًا. "
+            "هي تحب الله وتعظمه، لكنها لا تتبرأ من الطاغوت وأهله، ولا تميز نفسها عن أعداء الله. "
             "هذه حالة خطيرة تشبه 'المغضوب عليهم' الذين عرفوا الحق ولم يعملوا به. "
-            "ضعف البراءة يؤدي إلى الذوبان في الباطل وفقدان المناعة الروحية.",
-            "You have loyalty (W) but your disavowal (B) is very weak. You love Allah but don't disavow Taghut. "
+            "ضعف البراءة يؤدي إلى الذوبان الحضاري وفقدان المناعة الروحية والتميز.",
+            "This nation/community has loyalty (W) but its disavowal (B) is very weak. "
+            "It loves Allah but does not disavow Taghut or distinguish itself from Allah's enemies. "
             "This is a dangerous state similar to 'those with wrath' who knew the truth but didn't act on it. "
-            "Weak disavowal leads to dissolution in falsehood and loss of spiritual immunity."
+            "Weak disavowal leads to cultural dissolution and loss of spiritual immunity and distinction."
         )
     elif W_raw < 0.1 and B_raw >= 0.1:
         quadrant_name = TXT("الربع الرابع: الضالون", "Q4: Those Astray")
         quadrant_color = '#FFA500'
         quadrant_desc = TXT(
-            "لديك براءة (B) لكن ولاءك (W) ضعيف جدًا. أنت ترفض الباطل وتتبرأ منه، لكنك لا تملك أساسًا إيمانيًا قويًا. "
+            "هذه الأمة/المجتمع لديها براءة (B) لكن ولاءها (W) ضعيف جدًا. "
+            "هي ترفض الباطل وتتبرأ منه، لكنها لا تملك أساسًا إيمانيًا قويًا يوجهها. "
             "هذه حالة 'الضالين' الذين يعملون بلا علم، ويحاربون بلا عقيدة راسخة. "
             "قد تتحول البراءة بدون ولاء إلى تطرف أو قسوة أو فراغ روحي.",
-            "You have disavowal (B) but your loyalty (W) is very weak. You reject falsehood but lack a strong faith foundation. "
+            "This nation/community has disavowal (B) but its loyalty (W) is very weak. "
+            "It rejects falsehood but lacks a strong faith foundation to guide it. "
             "This is the state of 'those astray' who act without knowledge and fight without firm creed. "
             "Disavowal without loyalty may turn into extremism, harshness, or spiritual emptiness."
         )
@@ -708,12 +714,12 @@ Description: {ai_text}"""
         quadrant_name = TXT("الربع الثالث: المنافقون", "Q3: Hypocrites")
         quadrant_color = '#FFB6C1'
         quadrant_desc = TXT(
-            "لا ولاء قوي (W) ولا براءة قوية (B). أنت في حالة انهيار وجودي. "
+            "هذه الأمة/المجتمع في حالة انهيار وجودي. لا ولاء قوي (W) ولا براءة قوية (B). "
             "هذه منطقة 'المنافقين' الذين يظهرون الإيمان ويبطنون الكفر، أو 'الغافلين' الذين فقدوا البوصلة تمامًا. "
-            "هذه أخطر منطقة لأن صاحبها قد لا يشعر بخطورة موقفه. العودة تبدأ بالتوبة الصادقة وتجديد الإيمان.",
-            "Neither strong loyalty (W) nor strong disavowal (B). You are in a state of existential collapse. "
+            "هذه أخطر منطقة لأن أهلها قد لا يشعرون بخطورة موقفهم. العودة تبدأ بالتوبة الصادقة وتجديد الإيمان.",
+            "This nation/community is in a state of existential collapse. Neither strong loyalty (W) nor strong disavowal (B). "
             "This is the zone of 'hypocrites' who show faith and hide disbelief, or 'the heedless' who lost their compass. "
-            "This is the most dangerous zone because one may not feel its gravity. Return begins with sincere repentance."
+            "This is the most dangerous zone because its people may not feel its gravity. Return begins with sincere repentance."
         )
     
     # --- عرض لوحة القيادة ---
@@ -746,10 +752,10 @@ Description: {ai_text}"""
     if istidraj_gap > 0.3:
         st.error(f"🚨 {TXT('إنذار استدراج', 'Istidraj Alert')}: E={E_val:.2f} > S={S_final:.2f}")
         st.markdown(TXT(
-            "التمكين المادي يتجاوز الثبات الأخلاقي بكثير. هذه حالة 'استدراج' خطيرة. "
-            "قد يبدو الكيان قويًا من الخارج لكنه هش من الداخل. الانهيار قادم لا محالة ما لم تُصحح الأسباب.",
-            "Material empowerment far exceeds moral stability. This is a dangerous 'Istidraj' state. "
-            "The entity may appear strong externally but is fragile internally. Collapse is inevitable unless causes are corrected."
+            "التمكين المادي لهذه الأمة/المجتمع يتجاوز ثباتها الأخلاقي بكثير. هذه حالة 'استدراج' خطيرة. "
+            "قد تبدو قوية من الخارج لكنها هشة من الداخل. الانهيار قادم لا محالة ما لم تُصحح الأسباب.",
+            "The material empowerment of this nation/community far exceeds its moral stability. This is a dangerous 'Istidraj' state. "
+            "It may appear strong externally but is fragile internally. Collapse is inevitable unless causes are corrected."
         ))
     elif istidraj_gap > 0.1:
         st.warning(f"⚡ {TXT('فجوة استدراج متوسطة', 'Moderate Gap')}: {istidraj_gap:.2f}")
@@ -775,63 +781,63 @@ Description: {ai_text}"""
         ax.tick_params(colors='white', labelsize=6); ax.grid(True, alpha=0.2)
         st.pyplot(fig)
     
-    # --- المستشفى ---
+    # --- المستشفى – الوصفة العلاجية (بصيغة الجمع) ---
     st.markdown("---")
     st.markdown(TXT("### 🏥 المستشفى – الوصفة العلاجية", "### 🏥 Hospital – Prescription"))
     wW, wB = np.argmin(W_vals), np.argmin(B_vals)
     W_L = [get_indicator_label(i) for i in range(6)]
     B_L = [get_indicator_label(i+6) for i in range(5)]
     
-    # وصفة علاجية مفصلة بناءً على الربع
+    # وصفة علاجية مفصلة بصيغة الجمع
     if gate_name == TXT("بوابة الشرك", "Shirk Gate"):
         st.error(TXT(
-            "**العلاج:** تجديد التوحيد وإخلاص العبادة لله وحده. لا ينفع مع الشرك أي عمل. "
-            "ابدأ بتدبر معنى 'لا إله إلا الله' وتطبيق مقتضاها في حياتك.",
-            "**Treatment:** Renew Tawheed and sincerity to Allah alone. No deed benefits with shirk. "
-            "Start by reflecting on the meaning of 'There is no god but Allah' and applying its requirements."
+            f"**العلاج:** على هذه الأمة تجديد التوحيد وإخلاص العبادة لله وحده. لا ينفع مع الشرك أي عمل. "
+            f"البداية تكون بتدبر معنى 'لا إله إلا الله' وتطبيق مقتضاها في حياة الأمة.",
+            f"**Treatment:** This nation must renew Tawheed and sincerity to Allah alone. No deed benefits with shirk. "
+            f"Start by reflecting on the meaning of 'There is no god but Allah' and applying it in the nation's life."
         ))
     elif gate_name == TXT("بوابة الماعون", "Al-Ma'un Gate"):
         st.error(TXT(
-            f"**العلاج:** أصلح مؤشر '{B_L[wB]}' فورًا. بدون رحمة وعطاء، لا تنفع أي عبادة. "
-            f"ابدأ بالصدقة اليومية ولو بالقليل، وتفقد أحوال الجيران والمحتاجين.",
-            f"**Treatment:** Fix '{B_L[wB]}' immediately. Without mercy and giving, no worship benefits. "
-            f"Start with daily charity even a little, and check on neighbors and those in need."
+            f"**العلاج:** على هذه الأمة إصلاح مؤشر '{B_L[wB]}' فورًا. بدون رحمة وعطاء، لا تنفع أي عبادة. "
+            f"يجب تفعيل التكافل الاجتماعي، وتفقد أحوال المحتاجين، وإغاثة الملهوفين.",
+            f"**Treatment:** This nation must fix '{B_L[wB]}' immediately. Without mercy and giving, no worship benefits. "
+            f"Activate social solidarity, check on those in need, and aid the distressed."
         ))
     elif gate_name == TXT("بوابة الإخلاص", "Sincerity Gate"):
         st.warning(TXT(
-            f"**العلاج:** نقِّ '{W_L[wW]}' من شوائب الشرك والرياء. "
-            f"راقب نيتك في كل عمل، وتذكر أن الله لا يقبل من العمل إلا ما كان خالصًا لوجهه.",
-            f"**Treatment:** Purify '{W_L[wW]}' from shirk and hypocrisy. "
-            f"Watch your intention in every deed, and remember Allah only accepts what is purely for Him."
+            f"**العلاج:** على هذه الأمة تنقية '{W_L[wW]}' من شوائب الشرك والرياء. "
+            f"يجب مراقبة النوايا في كل عمل، وتذكر أن الله لا يقبل من العمل إلا ما كان خالصًا لوجهه.",
+            f"**Treatment:** This nation must purify '{W_L[wW]}' from shirk and hypocrisy. "
+            f"Watch intentions in every deed, and remember Allah only accepts what is purely for Him."
         ))
     elif istidraj_gap > 0.3:
         st.error(TXT(
-            f"**العلاج:** سد فجوة الاستدراج ({istidraj_gap:.2f}) عبر رفع '{W_L[wW]}' أو '{B_L[wB]}' بشكل عاجل. "
+            f"**العلاج:** على هذه الأمة سد فجوة الاستدراج ({istidraj_gap:.2f}) عبر رفع '{W_L[wW]}' أو '{B_L[wB]}' بشكل عاجل. "
             f"التمكين المادي وحده لا ينفع إذا انهار الثبات الأخلاقي.",
-            f"**Treatment:** Close the Istidraj gap ({istidraj_gap:.2f}) by urgently raising '{W_L[wW]}' or '{B_L[wB]}'. "
+            f"**Treatment:** This nation must close the Istidraj gap ({istidraj_gap:.2f}) by urgently raising '{W_L[wW]}' or '{B_L[wB]}'. "
             f"Material empowerment alone is useless if moral stability collapses."
         ))
     elif W_raw < 0.1 and B_raw < 0.1:
         st.error(TXT(
-            f"**العلاج:** أنت في حالة انهيار. ابدأ فورًا بـ '{W_L[wW]}' و '{B_L[wB]}'. "
-            f"عد إلى الأساسيات: الصلاة، الذكر، التوبة، الصحبة الصالحة.",
-            f"**Treatment:** You are in collapse. Start immediately with '{W_L[wW]}' and '{B_L[wB]}'. "
-            f"Return to basics: prayer, remembrance, repentance, righteous company."
+            f"**العلاج:** هذه الأمة في حالة انهيار. عليها البدء فورًا بإصلاح '{W_L[wW]}' و '{B_L[wB]}'. "
+            f"العودة إلى الأساسيات: إقامة الصلاة، إحياء الذكر، نشر التوبة، وتقوية الصحبة الصالحة.",
+            f"**Treatment:** This nation is in collapse. It must immediately start fixing '{W_L[wW]}' and '{B_L[wB]}'. "
+            f"Return to basics: establishing prayer, reviving remembrance, spreading repentance, strengthening righteous company."
         ))
     elif W_raw < 0.1:
         st.warning(TXT(
-            f"**العلاج:** ركز على تقوية '{W_L[wW]}' لتأسيس قاعدة إيمانية متينة قبل أن تتحول براءتك إلى تطرف.",
-            f"**Treatment:** Focus on strengthening '{W_L[wW]}' to build a solid faith foundation before your disavowal turns into extremism."
+            f"**العلاج:** على هذه الأمة التركيز على تقوية '{W_L[wW]}' لتأسيس قاعدة إيمانية متينة قبل أن تتحول براءتها إلى تطرف.",
+            f"**Treatment:** This nation must focus on strengthening '{W_L[wW]}' to build a solid faith foundation before its disavowal turns into extremism."
         ))
     elif B_raw < 0.1:
         st.warning(TXT(
-            f"**العلاج:** ركز على تقوية '{B_L[wB]}' لبناء مناعة روحية تحمي إيمانك من الذوبان.",
-            f"**Treatment:** Focus on strengthening '{B_L[wB]}' to build spiritual immunity that protects your faith."
+            f"**العلاج:** على هذه الأمة التركيز على تقوية '{B_L[wB]}' لبناء مناعة روحية تحمي إيمانها من الذوبان.",
+            f"**Treatment:** This nation must focus on strengthening '{B_L[wB]}' to build spiritual immunity that protects its faith."
         ))
     else:
         st.info(TXT(
-            f"**للتقدم نحو مقام إبراهيم:** عزز '{W_L[wW]}' و '{B_L[wB]}' معًا. أنت في طريقك، فاثبت.",
-            f"**To advance toward Abraham's Station:** Strengthen '{W_L[wW]}' and '{B_L[wB]}' together. You are on your way, remain steadfast."
+            f"**للتقدم نحو مقام إبراهيم:** على هذه الأمة تعزيز '{W_L[wW]}' و '{B_L[wB]}' معًا. هي في طريقها، فلتثبت.",
+            f"**To advance toward Abraham's Station:** This nation must strengthen '{W_L[wW]}' and '{B_L[wB]}' together. It is on its way, so let it remain steadfast."
         ))
     
     # --- تفصيل المؤشرات ---
@@ -853,7 +859,6 @@ Description: {ai_text}"""
             hide_index=True,
             use_container_width=True
         )
-
 # =============================================
 # تبويب ٣: المشهد الكوني الحي
 # =============================================
