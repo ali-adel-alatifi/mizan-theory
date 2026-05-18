@@ -1,7 +1,7 @@
 # mizan/logic.py
 """
 وحدة المنطق الرياضي والمحاكاة
-تحتوي: المحكمة العليا، حساب S، المحاكاة الزمنية، حساب البوصلة، الانحناء
+تحتوي: المحكمة العليا، حساب S (الأساسية والموسعة)، المحاكاة الزمنية، حساب البوصلة، الانحناء
 """
 
 import numpy as np
@@ -52,7 +52,7 @@ def supreme_court(W_raw, B_raw, W_pure, B_compassion, B_disavowal):
 
 
 # =============================================
-# 2. حساب S (المعادلة العامة)
+# 2. حساب S (المعادلة العامة الأساسية)
 # =============================================
 def calculate_S(W_raw, B_raw, E_raw, W_pure, B_compassion, B_disavowal):
     """
@@ -83,7 +83,56 @@ def calculate_S(W_raw, B_raw, E_raw, W_pure, B_compassion, B_disavowal):
 
 
 # =============================================
-# 3. المحاكاة الزمنية
+# 3. حساب S (المعادلة الموسعة - للنمذجة المتقدمة)
+# =============================================
+def calc_S_final(W, B, E, source_constants, dual_constants, manifestation_vars,
+                 connection_vars, creation_positive, creation_negative, operators):
+    """
+    المعادلة الموسعة لنظرية الميزان - تأخذ بالاعتبار جميع فئات الحروف.
+    """
+    S = W * B
+    
+    # ثوابت المصدر (ك، ن)
+    source_factor = (source_constants.get('ك', 20) * 20 + source_constants.get('ن', 50) * 50) / 2
+    S *= (0.5 + 0.5 * source_factor / 100)
+    
+    # الثوابت المزدوجة (ق، ص)
+    dual_factor = (dual_constants.get('ق', 100) * 100 + dual_constants.get('ص', 90) * 90) / 2
+    S *= (0.6 + 0.4 * dual_factor / 100)
+    
+    # حروف التجلي
+    if manifestation_vars:
+        manifestation_boost = sum(manifestation_vars.values()) / len(manifestation_vars)
+        S *= (0.5 + 0.5 * manifestation_boost)
+    
+    # حروف الوصل
+    if connection_vars:
+        connection_balance = sum(connection_vars.values()) / len(connection_vars)
+        S *= (0.8 + 0.4 * connection_balance)
+    
+    # الأسباب الإيجابية
+    if creation_positive:
+        pos_boost = sum(creation_positive.values()) / len(creation_positive)
+        S *= (1 + 0.2 * pos_boost)
+    
+    # الأسباب السلبية
+    if creation_negative:
+        neg_effect = sum(creation_negative.values()) / len(creation_negative)
+        S *= (1 - 0.3 * neg_effect)
+    
+    # المشغلات
+    op_factor = operators.get('ف', 0.5) * operators.get('و', 0.5)
+    S *= (0.8 + 0.4 * op_factor)
+    
+    # تأثير الاستدراج
+    if E > S:
+        S -= operators.get('غ', 0.2) * (E - S) * 0.3
+    
+    return np.clip(S, 0.001, 1.0)
+
+
+# =============================================
+# 4. المحاكاة الزمنية
 # =============================================
 def simulate_future(S, E, W_raw, B_raw, years=50):
     """
@@ -113,7 +162,7 @@ def simulate_future(S, E, W_raw, B_raw, years=50):
 
 
 # =============================================
-# 4. حساب البوصلة من الإجابات
+# 5. حساب البوصلة من الإجابات
 # =============================================
 def compute_compass(answers_dict, compass_data):
     """
@@ -139,7 +188,7 @@ def compute_compass(answers_dict, compass_data):
 
 
 # =============================================
-# 5. حساب الانحناء (κ)
+# 6. حساب الانحناء (κ)
 # =============================================
 def curvature(W_list, B_list):
     """
@@ -164,7 +213,7 @@ def curvature(W_list, B_list):
 
 
 # =============================================
-# 6. لون النجمة في المشهد الكوني
+# 7. لون النجمة في المشهد الكوني
 # =============================================
 def star_color(w, b):
     """
