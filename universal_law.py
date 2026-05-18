@@ -22,14 +22,49 @@ def render_universal_law():
     st.subheader(TXT("⚛️ أركان الإسلام والقوى الأربع", "⚛️ Pillars of Islam & the Four Forces"))
     
     cosmic_table = [
-        ("الصلاة", "النووية القوية", "التخليق (Synthesis)", "التنفس الخلوي – إنتاج الطاقة", "W (الولاء)", "تجديد العهد 5 مرات يومياً"),
-        ("الزكاة", "الكهرومغناطيسية", "التوازن (Equilibrium)", "الدورة الدموية – توزيع المغذيات", "B (البراءة)", "تطهير المال من الشح"),
-        ("الصوم", "النووية الضعيفة", "التفكك (Decomposition)", "الالتهام الذاتي – تنظيف الخلية", "B (البراءة)", "كبح الشهوات"),
-        ("الحج", "الجاذبية", "الترسيب (Precipitation)", "الهجرة الخلوية – التجمع نحو المركز", "W (الولاء)", "الوفادة إلى الله"),
+        [
+            TXT("الصلاة", "Prayer"),
+            TXT("النووية القوية", "Strong Nuclear"),
+            TXT("التخليق (Synthesis)", "Synthesis"),
+            TXT("التنفس الخلوي – إنتاج الطاقة", "Cellular Respiration – Energy Production"),
+            TXT("W (الولاء)", "W (Loyalty)"),
+            TXT("تجديد العهد 5 مرات يومياً", "Renewing the covenant 5 times daily")
+        ],
+        [
+            TXT("الزكاة", "Zakat"),
+            TXT("الكهرومغناطيسية", "Electromagnetism"),
+            TXT("التوازن (Equilibrium)", "Equilibrium"),
+            TXT("الدورة الدموية – توزيع المغذيات", "Blood Circulation – Distributing Nutrients"),
+            TXT("B (البراءة)", "B (Disavowal)"),
+            TXT("تطهير المال من الشح", "Purifying wealth from stinginess")
+        ],
+        [
+            TXT("الصوم", "Fasting"),
+            TXT("النووية الضعيفة", "Weak Nuclear"),
+            TXT("التفكك (Decomposition)", "Decomposition"),
+            TXT("الالتهام الذاتي – تنظيف الخلية", "Autophagy – Cleaning the Cell"),
+            TXT("B (البراءة)", "B (Disavowal)"),
+            TXT("كبح الشهوات", "Restraining desires")
+        ],
+        [
+            TXT("الحج", "Hajj"),
+            TXT("الجاذبية", "Gravity"),
+            TXT("الترسيب (Precipitation)", "Precipitation"),
+            TXT("الهجرة الخلوية – التجمع نحو المركز", "Chemotaxis – Moving toward the Center"),
+            TXT("W (الولاء)", "W (Loyalty)"),
+            TXT("الوفادة إلى الله", "Delegation to Allah")
+        ],
     ]
     
     cols = st.columns([1, 1.2, 1.2, 1.2, 0.8, 1.2])
-    headers = [TXT("الركن", "Pillar"), TXT("الفيزياء", "Physics"), TXT("الكيمياء", "Chemistry"), TXT("البيولوجيا", "Biology"), TXT("القطب", "Pole"), TXT("التأثير", "Effect")]
+    headers = [
+        TXT("الركن", "Pillar"),
+        TXT("الفيزياء", "Physics"),
+        TXT("الكيمياء", "Chemistry"),
+        TXT("البيولوجيا", "Biology"),
+        TXT("القطب", "Pole"),
+        TXT("التأثير", "Effect")
+    ]
     for col, h in zip(cols, headers):
         col.markdown(f"**{h}**")
     for row in cosmic_table:
@@ -44,31 +79,31 @@ def render_universal_law():
     st.subheader(TXT("🔤 جدول الحروف الكامل – التصنيف الجديد", "🔤 Complete Letter Classification"))
     
     letters_classification = [
-        ("ك", 20, "ثابت المصدر", "الأمر (كن)", 1, "﴿كُن فَيَكُونُ﴾"),
-        ("ن", 50, "ثابت المصدر", "النور", 1, "﴿ن ۚ وَالْقَلَمِ﴾"),
-        ("ق", 100, "ثابت مزدوج (وجهان)", "الثابت: الحق / القيوم — المتجلي: القسط / العدل / الدِّينُ القَيِّم", 2, "﴿ق ۚ وَالْقُرْآنِ الْمَجِيدِ﴾"),
-        ("ص", 90, "ثابت مزدوج", "الصمد / الصبر والصدق", 4, "﴿ص ۚ وَالْقُرْآنِ ذِي الذِّكْرِ﴾"),
-        ("أ", 1, "تجلي إلهي", "الوحدانية", 13, "﴿اللَّهُ أَحَدٌ﴾"),
-        ("ل", 30, "تجلي إلهي", "المُلك والعدل", 13, "﴿الْمُلْكُ يَوْمَئِذٍ لِّلَّهِ﴾"),
-        ("م", 40, "تجلي إلهي", "الجمع", 17, "﴿مَالِكِ يَوْمِ الدِّينِ﴾"),
-        ("ر", 200, "تجلي إلهي", "الطاقة المشتركة", 6, "﴿الرَّحْمَٰنُ عَلَّمَ الْقُرْآنَ﴾"),
-        ("ح", 8, "تجلي إلهي", "الكمال والدوام", 7, "﴿حَم ۚ تَنزِيلُ الْكِتَابِ﴾"),
-        ("س", 60, "تجلي إلهي", "السمع", 5, "﴿سَمِيعٌ بَصِيرٌ﴾"),
-        ("ط", 9, "تجلي إلهي", "الطهارة", 4, "﴿طه ۚ مَا أَنزَلْنَا عَلَيْكَ الْقُرْآنَ لِتَشْقَىٰ﴾"),
-        ("ع", 70, "صفة مشتركة", "العلم والإدراك", 2, "﴿عَلَّمَ الْإِنسَانَ مَا لَمْ يَعْلَمْ﴾"),
-        ("ي", 10, "صفة مشتركة", "الاستجابة والدعاء", 2, "﴿وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ﴾"),
-        ("هـ", 5, "صفة مشتركة", "الهوية والهدى", 2, "﴿هُوَ اللَّهُ الْخَالِقُ الْبَارِئُ﴾"),
-        ("ف", 80, "مشغّل", "السببية (=)", "-", "﴿فَمَن يَكْفُرْ بِالطَّاغُوتِ وَيُؤْمِن بِاللَّهِ فَقَدِ اسْتَمْسَكَ﴾"),
-        ("و", 6, "مشغّل", "العطف (× أو +)", "-", "﴿وَالَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ﴾"),
-        ("ب", 2, "مشغّل", "الاستعانة (بـ)", "-", "﴿بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ﴾"),
-        ("ل (المشغّل)", 30, "مشغّل", "التعليل (→)", "-", "﴿وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ﴾"),
-        ("ج", 3, "خلق", "الجهاد / الجهل", "-", "﴿وَجَاهِدُوا فِي اللَّهِ حَقَّ جِهَادِهِ﴾"),
-        ("خ", 600, "خلق", "الخير / الخيانة", "-", "﴿وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ﴾"),
-        ("ش", 300, "خلق", "الشكر / الشهوة", "-", "﴿لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ﴾"),
-        ("ض", 800, "خلق", "الضبط / الضلال", "-", "﴿وَمَا يَضِلُّ بِهِ إِلَّا الْفَاسِقِينَ﴾"),
-        ("ظ", 900, "خلق", "الظفر / الظلم", "-", "﴿وَلَا تَحْسَبَنَّ اللَّهَ غَافِلًا عَمَّا يَعْمَلُ الظَّالِمُونَ﴾"),
-        ("غ", 1000, "خلق", "الغفران / الغل", "-", "﴿وَاللَّهُ يَعِدُكُم مَّغْفِرَةً مِّنْهُ﴾"),
-        ("ت", 400, "خلق / مشغّل", "الاتخاذ والتبعية", "-", "انظر الشرح أدناه"),
+        ("ك", 20, TXT("ثابت المصدر", "Source Constant"), TXT("الأمر (كن)", "The Command (Be)"), 1, "﴿كُن فَيَكُونُ﴾"),
+        ("ن", 50, TXT("ثابت المصدر", "Source Constant"), TXT("النور", "The Light"), 1, "﴿ن ۚ وَالْقَلَمِ﴾"),
+        ("ق", 100, TXT("ثابت مزدوج (وجهان)", "Dual Constant (Two Faces)"), TXT("الثابت: الحق / القيوم — المتجلي: القسط / العدل / الدِّينُ القَيِّم", "Fixed: Al-Haqq / Al-Qayyum — Manifest: Al-Qist / Justice / Ad-Deen Al-Qayyim"), 2, "﴿ق ۚ وَالْقُرْآنِ الْمَجِيدِ﴾"),
+        ("ص", 90, TXT("ثابت مزدوج", "Dual Constant"), TXT("الصمد / الصبر والصدق", "Al-Samad / Patience and Truthfulness"), 4, "﴿ص ۚ وَالْقُرْآنِ ذِي الذِّكْرِ﴾"),
+        ("أ", 1, TXT("تجلي إلهي", "Divine Manifestation"), TXT("الوحدانية", "Oneness"), 13, "﴿اللَّهُ أَحَدٌ﴾"),
+        ("ل", 30, TXT("تجلي إلهي", "Divine Manifestation"), TXT("المُلك والعدل", "Kingship and Justice"), 13, "﴿الْمُلْكُ يَوْمَئِذٍ لِّلَّهِ﴾"),
+        ("م", 40, TXT("تجلي إلهي", "Divine Manifestation"), TXT("الجمع", "The Gathering"), 17, "﴿مَالِكِ يَوْمِ الدِّينِ﴾"),
+        ("ر", 200, TXT("تجلي إلهي", "Divine Manifestation"), TXT("الطاقة المشتركة", "Shared Energy"), 6, "﴿الرَّحْمَٰنُ عَلَّمَ الْقُرْآنَ﴾"),
+        ("ح", 8, TXT("تجلي إلهي", "Divine Manifestation"), TXT("الكمال والدوام", "Perfection and Permanence"), 7, "﴿حَم ۚ تَنزِيلُ الْكِتَابِ﴾"),
+        ("س", 60, TXT("تجلي إلهي", "Divine Manifestation"), TXT("السمع", "Hearing"), 5, "﴿سَمِيعٌ بَصِيرٌ﴾"),
+        ("ط", 9, TXT("تجلي إلهي", "Divine Manifestation"), TXT("الطهارة", "Purity"), 4, "﴿طه ۚ مَا أَنزَلْنَا عَلَيْكَ الْقُرْآنَ لِتَشْقَىٰ﴾"),
+        ("ع", 70, TXT("صفة مشتركة", "Shared Attribute"), TXT("العلم والإدراك", "Knowledge and Perception"), 2, "﴿عَلَّمَ الْإِنسَانَ مَا لَمْ يَعْلَمْ﴾"),
+        ("ي", 10, TXT("صفة مشتركة", "Shared Attribute"), TXT("الاستجابة والدعاء", "Response and Supplication"), 2, "﴿وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ﴾"),
+        ("هـ", 5, TXT("صفة مشتركة", "Shared Attribute"), TXT("الهوية والهدى", "Identity and Guidance"), 2, "﴿هُوَ اللَّهُ الْخَالِقُ الْبَارِئُ﴾"),
+        ("ف", 80, TXT("مشغّل", "Operator"), TXT("السببية (=)", "Causality (=)"), "-", "﴿فَمَن يَكْفُرْ بِالطَّاغُوتِ وَيُؤْمِن بِاللَّهِ فَقَدِ اسْتَمْسَكَ﴾"),
+        ("و", 6, TXT("مشغّل", "Operator"), TXT("العطف (× أو +)", "Conjunction (× or +)"), "-", "﴿وَالَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ﴾"),
+        ("ب", 2, TXT("مشغّل", "Operator"), TXT("الاستعانة (بـ)", "Assistance (by)"), "-", "﴿بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ﴾"),
+        ("ل (المشغّل)", 30, TXT("مشغّل", "Operator"), TXT("التعليل (→)", "Purpose (→)"), "-", "﴿وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ﴾"),
+        ("ج", 3, TXT("خلق", "Creation"), TXT("الجهاد / الجهل", "Striving / Ignorance"), "-", "﴿وَجَاهِدُوا فِي اللَّهِ حَقَّ جِهَادِهِ﴾"),
+        ("خ", 600, TXT("خلق", "Creation"), TXT("الخير / الخيانة", "Good / Betrayal"), "-", "﴿وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ﴾"),
+        ("ش", 300, TXT("خلق", "Creation"), TXT("الشكر / الشهوة", "Gratitude / Lust"), "-", "﴿لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ﴾"),
+        ("ض", 800, TXT("خلق", "Creation"), TXT("الضبط / الضلال", "Precision / Misguidance"), "-", "﴿وَمَا يَضِلُّ بِهِ إِلَّا الْفَاسِقِينَ﴾"),
+        ("ظ", 900, TXT("خلق", "Creation"), TXT("الظفر / الظلم", "Victory / Injustice"), "-", "﴿وَلَا تَحْسَبَنَّ اللَّهَ غَافِلًا عَمَّا يَعْمَلُ الظَّالِمُونَ﴾"),
+        ("غ", 1000, TXT("خلق", "Creation"), TXT("الغفران / الغل", "Forgiveness / Malice"), "-", "﴿وَاللَّهُ يَعِدُكُم مَّغْفِرَةً مِّنْهُ﴾"),
+        ("ت", 400, TXT("خلق / مشغّل", "Creation / Operator"), TXT("الاتخاذ والتبعية", "Adoption and Following"), "-", TXT("انظر الشرح أدناه", "See explanation below")),
     ]
     
     st.dataframe(
@@ -203,11 +238,18 @@ def calc_S_final(W, B, E, source_constants, dual_constants, manifestation_vars,
         **S = W × B** — هذا هو قانون الوجود كله، من الذرة إلى المجرة.
         """,
         """
-        There is a complete, precise correspondence between the system of creation and the system of command.
+        There is a complete, precise correspondence between the system of creation (the universe) 
+        and the system of command (the Quran) in the dynamic law of loyalty and disavowal.
         
-        The only difference is the mechanism of application.
+        The only difference is the mechanism of application:
+        - **Universe:** Coercive application.
+        - **Lower beings:** Natural instinctive application.
+        - **Animals:** Mixed (instinctive + learned).
+        - **Human:** Innate + voluntary + commissioned.
         
         And the letter Taa (ت = 400) is the letter of decision: either you take Allah and His allies, or you take Taghut. Either you follow the path of Abraham, or you follow desires. This is the essence of S = W × B.
+        
+        ﴿It is Allah who has created seven heavens and of the earth, the like of them. The command descends among them so you may know that Allah is over all things competent and that Allah has encompassed all things in knowledge.﴾ [At-Talaq: 12]
         
         He who created the seven heavens and the seven earths is the One who sent down the command between them. The universe is an observed book, and the Quran is a written book. Both testify to the oneness of the Creator, the perfection of His wisdom, and the comprehensiveness of His system.
         
