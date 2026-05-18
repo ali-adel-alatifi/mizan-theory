@@ -171,6 +171,19 @@ def apply_global_css():
         border-radius: 10px;
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     }
+
+    /* إصلاح تموضع الشريط الجانبي */
+    [data-testid="stSidebar"] {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+        z-index: 999 !important;
+        overflow-y: auto !important;
+    }
+    [data-testid="stAppViewContainer"] {
+        margin-left: 300px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -196,14 +209,19 @@ def render_enhanced_sidebar():
         st.markdown(f"### 🧭 {TXT('روابط سريعة', 'Quick Links')}")
         
         tabs_info = [
-            ("🧍", TXT("البوصلة", "Compass"), "تحديد موقعك"),
-            ("🏛️", TXT("مختبر الأمة", "Nation Lab"), "تحليل الدول"),
-            ("🌌", TXT("المشهد الكوني", "Cosmic Scene"), "محاكاة حية"),
-            ("🌍", TXT("المرصد العالمي", "Observatory"), "خريطة العالم"),
-            ("🩺", TXT("طبيب القلوب", "Healer"), "روشتة علاجية"),
-            ("🤝", TXT("شبكة الناجين", "Network"), "تواصل"),
-            ("🎓", TXT("جامعة الميزان", "Academy"), "دورات"),
-            ("🏴", TXT("مدرسة آل البيت", "Ahlul Bayt"), "نماذج"),
+            ("🧍", TXT("البوصلة", "Compass"), TXT("تحديد موقعك", "Find your position")),
+            ("🏛️", TXT("مختبر الأمة", "Nation Lab"), TXT("تحليل الدول", "Analyze nations")),
+            ("🌌", TXT("المشهد الكوني", "Cosmic Scene"), TXT("محاكاة حية", "Live simulation")),
+            ("📖", TXT("المعجم", "Lexicon"), TXT("أسرار الحروف", "Letter secrets")),
+            ("📜", TXT("الشواهد", "Evidence"), TXT("مقارنة التاريخ", "Compare history")),
+            ("📐", TXT("الصراط", "Path"), TXT("مسارك", "Your path")),
+            ("🌍", TXT("المرصد", "Observatory"), TXT("خريطة العالم", "World map")),
+            ("🩺", TXT("طبيب القلوب", "Healer"), TXT("روشتة علاجية", "Prescription")),
+            ("🤝", TXT("شبكة الناجين", "Network"), TXT("تواصل", "Connect")),
+            ("🎓", TXT("الجامعة", "Academy"), TXT("دورات", "Courses")),
+            ("🏴", TXT("آل البيت", "Ahlul Bayt"), TXT("نماذج", "Models")),
+            ("📚", TXT("الملاحق", "Appendices"), TXT("مراجع", "References")),
+            ("⚛️", TXT("القانون الواحد", "The One Law"), TXT("تجليات", "Manifestations")),
         ]
         
         for icon, name, desc in tabs_info:
@@ -258,17 +276,19 @@ def render_enhanced_footer():
     st.markdown("---")
     st.markdown(f"""
     <div style="text-align:center;color:#888;font-size:0.9em;line-height:1.8;padding:20px;">
-        <p style="color:#FFD700;font-size:1.5em;">⚖️ مختبر الميزان</p>
+        <p style="color:#FFD700;font-size:1.5em;">⚖️ {TXT('مختبر الميزان', 'The Mizan Lab')}</p>
         <p style="font-size:1.1em;">{TXT('محطة الأرصاد الحضارية العالمية', 'Global Civilization Observatory')}</p>
         <p style="color:#FFD700;font-size:1.3em;">S = W x B</p>
-        <p>ق = ١٠٠ = الحق = الميزان</p>
+        <p>{TXT('ق = ١٠٠ = الحق = الميزان', 'Q = 100 = The Truth = The Balance')}</p>
         <p>© 2026 علي عادل العاطفي | Ali Adel Alatifi</p>
         <p style="font-size:0.8em;margin-top:15px;color:#AAA;">
             {TXT(
                 'هذا المختبر ليس إلا محاولة متواضعة لفهم سنة من سنن الله في خلقه. '
                 'إن أصبنا فمن الله، وإن أخطأنا فمن أنفسنا. '
                 'والحمد لله الذي هدانا لهذا وما كنا لنهتدي لولا أن هدانا الله.',
-                'This lab is but a humble attempt to understand one of Allah\'s laws in His creation.'
+                'This lab is but a humble attempt to understand one of Allah\'s laws in His creation. '
+                'If we are right, it is from Allah; if we are wrong, it is from ourselves. '
+                'And praise be to Allah who guided us to this, for we would not have been guided had Allah not guided us.'
             )}
         </p>
         <p style="color:#FFD700;font-size:1.2em;margin-top:15px;">﴿وَقُلِ الْحَمْدُ لِلَّهِ سَيُرِيكُمْ آيَاتِهِ فَتَعْرِفُونَهَا﴾</p>
