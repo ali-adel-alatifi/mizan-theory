@@ -23,8 +23,8 @@ from network import render_network
 from academy import render_academy
 from ahlulbayt import render_ahlulbayt
 from appendices import render_appendices
-from lexicon import render_lexicon          # ← المعجم الجديد (دمج المعجم + أسرار الحروف)
-from the_one_law import render_the_one_law  # ← القانون الواحد (دمج الكوني + الشامل)
+from lexicon import render_lexicon
+from the_one_law import render_the_one_law
 
 # =============================================
 # رسالة الترحيب ودليل المستخدم
@@ -34,62 +34,48 @@ def render_welcome():
         st.markdown(f"""
         <div class="message-box">
         <h2 style="text-align:center;color:#FFD700;">⚖️ {TXT('مختبر الميزان', 'The Mizan Lab')}</h2>
-        <p style="text-align:center;font-style:italic;color:#CCC;font-size:1.1em;">
-        "{TXT('هَلْ يُوجَدُ قَانُونٌ وَاحِدٌ يَحْكُمُ الذَّرَّةَ وَالْحَضَارَةَ؟', 'Is there a single law governing the atom and civilization?')}"
+
+        <p style="text-align:center;font-style:italic;color:#CCC;font-size:1.1em;margin-bottom:20px;">
+        "{TXT('وَالسَّمَاءَ رَفَعَهَا وَوَضَعَ الْمِيزَانَ * أَلَّا تَطْغَوْا فِي الْمِيزَانِ', 'And the heaven He raised and imposed the balance. That you not transgress within the balance.')}"
         </p>
+
         <p>{TXT(
-        'هذا ليس كتابًا، وليس تطبيقًا. هذا مختبر. مختبرٌ صغير، لعله يفتح لك بابًا كبيرًا. '
-        'لا ندّعي الحقيقة المطلقة، بل ندعوك لرؤية شيءٍ قد يكون مرّ على قلبك ولم تلاحظه.',
-        'This is not a book, nor an app. This is a lab. A small lab, perhaps it opens a big door for you.'
+        'أنت تقف الآن على عتبة مختبر فريد. ليس كمختبرات الكيمياء والفيزياء، بل مختبرٌ ينظر إلى الذرة والمجرة، وإلى القلب والضمير، عبر عدسةٍ واحدة. عدسةٌ تزعم أن للوجود قانوناً واحداً، يسري في نسيج الخلق كما يسري في نسيج الوحي. هذا القانون هو <b>"الميزان"</b>.',
+        'You are standing at the threshold of a unique lab. Not one of chemistry or physics, but a lab that looks at the atom and the galaxy, at the heart and the conscience, through a single lens. A lens that claims existence has one law, flowing through the fabric of creation as it flows through the fabric of revelation. This law is <b>"Al-Mizan"</b>.'
         )}</p>
+
         <p>{TXT(
-        'تأمل معي: الذرةُ في داخلها قوتان: جاذبيةٌ تجمع، وتنافرٌ يمنع التصادم. لو اختلت إحداهما، لانهارت الذرة. '
-        'والخليةُ في جسدك: جهاز مناعةٍ يحمي، وغذاءٌ يبني. لو نامت المناعة، لالتهم المرضُ الجسد.',
-        'Reflect with me: the atom has two forces: attraction that gathers, and repulsion that prevents collision. '
-        'If one fails, the atom collapses. And the cell in your body: an immune system that protects, and nutrition that builds. '
-        'If immunity sleeps, disease devours the body.'
+        'من الذرة التي تتآلف بقوة الجذب وتستقر بقوة التنافر، إلى الخلية التي تحمي ذاتها وتهاجم غريبها، إلى الكيمياء التي تتحد فيها الذرات وتحتاج إلى "طاقة تنشيط" لتكسر روابطها القديمة (توبتها!)، إلى المجتمعات التي تجمعها القيم وتحميها من الفساد... كل شيء يصرخ بقانونٍ واحد: <b>S = W × B</b>.',
+        'From the atom that unites by attraction and stabilizes by repulsion, to the cell that protects itself and attacks intruders, to chemistry where atoms unite and need "activation energy" to break old bonds (its repentance!), to societies gathered by values and protected from corruption... everything screams one law: <b>S = W x B</b>.'
         )}</p>
+
         <p>{TXT(
-        'وحتى في عالم الكيمياء، يتجلى القانون نفسه: الذرّات المتآلفة تتحد برابطةٍ قوية (هذا ولاؤها)، '
-        'لكنها تحتاج إلى "طاقة تنشيط" لتنفصل عن ذراتٍ أخرى كانت مرتبطة بها (هذه براءتها). '
-        'إن لم تملك هذه الطاقة، بقيت أسيرة تفاعلاتها القديمة، لا تتحد بالجديد. '
-        'هذه "التوبة" الكيميائية: قوةٌ تدفعها لتكسر حاجزًا، فتنطلق إلى استقرارٍ أعظم. '
-        'أليس هذا ما يحدث للمؤمن حين يتوب؟',
-        'Even in chemistry, the same law manifests: compatible atoms unite with a strong bond (their loyalty), '
-        'but they need "activation energy" to separate from other atoms they were bound to (their disavowal). '
-        'Without this energy, they remain captive to old reactions, unable to unite with the new. '
-        'This is chemical "repentance": a force that pushes them to break a barrier, launching them to greater stability. '
-        'Is this not what happens to the believer when they repent?'
+        '<b>W (الولاء لله وأوليائه):</b> قوة الجذب نحو الحق. <b>B (البراءة من الطاغوت وأوليائه):</b> قوة التنافر عن الباطل. <b>S (الثبات الوجودي):</b> حاصل ضربهما. إنها معادلة ضرب لا جمع، لأن القلب لا يجتمع فيه ولاءان، ولأن الثبات لا يقوم إلا على ركنين. هذا هو "الدين القيم" الذي فطر الله الناس عليه، وهذا هو "الإسلام الحنيف" الذي هو الاستجابة الديناميكية لهذا القانون.',
+        '<b>W (Loyalty to Allah & His allies):</b> The force of attraction to truth. <b>B (Disavowal of Taghut & its allies):</b> The force of repulsion from falsehood. <b>S (Existential Stability):</b> Their product. It is multiplication, not addition, because a heart cannot hold two loyalties, and stability only rests on two pillars. This is "Al-Deen Al-Qayyim" upon which Allah created people, and this is "Al-Islam Al-Hanif", the dynamic response to this law.'
         )}</p>
+
         <p>{TXT(
-        'والمجتمع: ولاءٌ يجمع أفراده، وبراءةٌ من الفساد تحمي تماسكه. لو غاب أحدهما، تفكك المجتمع.',
-        'And society: loyalty that gathers its members, and disavowal of corruption that protects its cohesion. '
-        'If either is absent, society disintegrates.'
+        'لم تكن هذه المعادلة مجرد نظرية بشرية. لقد جسّدها بشرٌ صدقوا ما عاهدوا الله عليه، رجالاً ونساءً، في كل الظروف والأحوال. <b>محمد</b> صلى الله عليه وعلى آله وسلم، خاتم النبيين وسيد المرسلين، الأسوة العظمى والقدوة المثلى، الذي قال: "أوثق عرى الإيمان: الحب في الله، والبغض في الله". ثم <b>إبراهيم</b> خليل الله، الذي أعلنها في وجه أبيه وقومه: "إنني براء مما تعبدون". و<b>موسى</b> كليم الله، الذي وقف في وجه الطاغوت السياسي. و<b>يوسف</b> الصديق، الذي اختار السجن على المعصية. و<b>أصحاب الكهف</b> الفتية، الذين اعتزلوا مجتمعهم الفاسد. و<b>علي والحسن والحسين</b>، الذين جسّدوا قمم الثبات في أقسى الفتن. و<b>أم موسى</b> التي ألقت بولدها في اليم ثقةً بوعد الله: "إنا رادوه إليك". و<b>آسيا امرأة فرعون</b> التي قالت تحت التعذيب: "رب ابن لي عندك بيتاً في الجنة"، متبرئةً من مُلك الطاغوت. هؤلاء ليسوا من عالم الملائكة. هم بشرٌ مثلنا، أكلوا الطعام ومشوا في الأسواق. ولكنهم عرفوا ما فضلهم الله به، وما أكرمهم به كبشر، فعملوا بهذا القانون، فارتقوا إلى أعلى عليين. وهذه المنصة تدعوك أن تسير على آثارهم.',
+        'This equation was not merely a human theory. It was embodied by humans who were true to their covenant with Allah, men and women, in all circumstances. <b>Muhammad</b> ﷺ, the Seal of the Prophets and Master of the Messengers, the supreme example, who said: "The firmest handhold of faith is: love for the sake of Allah, and hatred for the sake of Allah." Then <b>Abraham</b>, the Friend of Allah, who declared to his father and people: "I am disassociated from what you worship". <b>Moses</b>, the one who spoke with Allah, who stood against the political tyrant. <b>Joseph</b>, the truthful, who chose prison over sin. <b>The People of the Cave</b>, the youths, who isolated themselves from their corrupt society. <b>Ali, Hassan, and Hussein</b>, who embodied the peaks of stability in the harshest trials. And <b>the mother of Moses</b>, who cast her child into the river, trusting Allah\'s promise: "We will return him to you". And <b>Asiya, the wife of Pharaoh</b>, who said under torture: "My Lord, build for me a house in Paradise", disavowing the tyrant\'s kingdom. These were not angels. They were humans like us, who ate food and walked in the markets. But they recognized what Allah had favored them with, and what He honored them with as humans, so they acted upon this law, and thereby ascended to the highest of heights. This platform invites you to walk in their footsteps.'
         )}</p>
+
         <p style="color:#FFD700;font-weight:bold;">{TXT(
-        'هل هذه مصادفة؟ أم أن هناك "قانونًا واحدًا" ينساب في نسيج الوجود كله، من الذرة إلى الحضارة؟',
-        'Is this coincidence? Or is there a "single law" flowing through the fabric of existence, from atom to civilization?'
+        'هذه المنصة ليست كتاباً ولا تطبيقاً. إنها مختبر. مختبرٌ لتكتشف فيه موقعك، وتشخص فيه داءك، وتجد فيه دواءك. هنا، لديك:',
+        'This platform is not a book nor an app. It is a lab. A lab for you to discover your position, diagnose your ailment, and find your remedy. Here you have:'
         )}</p>
-        <p>{TXT(
-        'نحن هنا لا نعظ. نحن نعرض. لا نفرض عليك جوابًا، بل نتركك تجرب بيدك. '
-        'حرّك المنزلقات. أجب عن الأسئلة. شاهد كيف يتغير الثبات. واسأل نفسك: '
-        'لماذا ينهار كل شيء عندما يختل أحد القطبين؟ '
-        'لماذا تتكرر هذه الثنائية في كل ما حولنا؟ '
-        'هل هناك "حق" و"باطل" موجودان في صلب الوجود، لا في كتب الأخلاق فقط؟',
-        'We are not preaching. We are presenting. We do not impose an answer, but let you experiment with your own hands. '
-        'Move the sliders. Answer the questions. Watch how stability changes. And ask yourself: '
-        'Why does everything collapse when one pole fails? '
-        'Why does this duality repeat everywhere around us? '
-        'Is there "truth" and "falsehood" embedded in the core of existence, not just in books of ethics?'
-        )}</p>
-        <p style="text-align:center;color:#FFD700;font-size:1.2em;font-weight:bold;">S = W x B</p>
-        <p>{TXT(
-        'W: الولاء لله وأوليائه. B: البراءة من الطاغوت وأوليائه. S: الثبات الوجودي.',
-        'W: Loyalty to Allah & His allies. B: Disavowal of Taghut & its allies. S: Existential Stability.'
-        )}</p>
+        <ul style="color:#CCC;line-height:2.2;">
+            <li>{TXT('🧭 <b>بوصلة</b> تحدد موقعك من إبراهيم عليه السلام.', '🧭 A <b>Compass</b> to locate your position relative to Abraham.')}</li>
+            <li>{TXT('🩺 <b>طبيب قلوب</b> يشخص أمراض الروح ويصف روشتة من الكتاب والسنة.', '🩺 A <b>Heart Healer</b> diagnosing spiritual ailments and prescribing from the Quran and Sunnah.')}</li>
+            <li>{TXT('🌍 <b>مرصد عالمي</b> يطبق المعادلة على دول العالم في الزمن الحقيقي.', '🌍 A <b>Global Observatory</b> applying the equation to world nations in real-time.')}</li>
+            <li>{TXT('🤝 <b>شبكة الناجين</b> لتصاحب من يعينك على الثبات.', '🤝 A <b>Survivors Network</b> to befriend those who help you remain steadfast.')}</li>
+            <li>{TXT('🎓 <b>جامعة</b> لتعلم أصول هذا القانون.', '🎓 A <b>University</b> to learn the foundations of this law.')}</li>
+            <li>{TXT('📜 <b>شواهد تاريخية</b> تثبت أن سنة الله لا تتبدل.', '📜 <b>Historical Evidence</b> proving that Allah\'s law does not change.')}</li>
+        </ul>
+
+        <p style="text-align:center;color:#FFD700;font-size:1.2em;font-weight:bold;">S = W × B</p>
         <p style="text-align:center;font-style:italic;color:#AAA;">{TXT(
-        'جرب. تأمل. واسأل. الباب مفتوح.',
-        'Try. Reflect. Ask. The door is open.'
+        'لا ندعي الحقيقة المطلقة. بل ندعوك لرؤية شيء قد يكون مر على قلبك ولم تلاحظه. جرب. تأمل. واسأل. الباب مفتوح.',
+        'We do not claim absolute truth. We invite you to see something that may have passed your heart unnoticed. Try. Reflect. Ask. The door is open.'
         )}</p>
         </div>
         """, unsafe_allow_html=True)
@@ -97,7 +83,7 @@ def render_welcome():
     with st.expander(TXT("📖 دليل المستخدم", "📖 User Guide"), expanded=False):
         st.markdown(TXT("""
         ### 🎯 كيف تستخدم هذا المختبر؟
-        
+
         **١. بوصلة الإسلام الحنيف:** أجب عن ١٩ سؤالاً لتعرف موقعك الدقيق.
         **٢. مختبر الأمة المتكاملة:** استخدم المنزلقات أو الذكاء الاصطناعي.
         **٣. المشهد الكوني الحي:** شاهد تفاعل النجوم مع قطبي الميزان.
@@ -111,12 +97,12 @@ def render_welcome():
         **١١. مدرسة آل البيت:** نماذج الثبات في الفتنة.
         **١٢. الملاحق الموسوعية:** مراجع متخصصة.
         **١٣. القانون الواحد:** تجليات القانون من الذرة إلى المجرة.
-        
+
         **المعادلة المركزية:** **S = W × B** (العلاقة **ضرب لا جمع**).
         """,
         """
         ### 🎯 How to Use This Lab
-        
+
         **1. Compass:** Answer 19 questions.
         **2. Nation Lab:** Use sliders or AI.
         **3. Cosmic Scene:** Watch stars interact.
@@ -130,16 +116,17 @@ def render_welcome():
         **11. Ahlul Bayt:** Models of stability in strife.
         **12. Appendices:** Specialized references.
         **13. The One Law:** Manifestations from atom to galaxy.
-        
+
         **Central Equation:** **S = W x B** (multiplication, not addition).
         """))
+
 
 # =============================================
 # تبويب ١: بوصلة الإسلام الحنيف
 # =============================================
 def render_compass():
     st.header(TXT("🧍 بوصلة الإسلام الحنيف – اكتشف موقعك بدقة", "🧍 Compass – Discover Your Precise Position"))
-    
+
     col_set1, col_set2 = st.columns([3, 1])
     with col_set1:
         st.markdown(TXT(
@@ -184,7 +171,7 @@ def render_compass():
 
     if len(st.session_state.compass_answers) == 19:
         W_raw, B_raw, S_score = compute_compass(st.session_state.compass_answers, COMPASS_DATA)
-        
+
         if W_raw >= 0.5 and B_raw >= 0.5:
             q_name, q_color = TXT("مؤمن", "Believer"), '#FFD700'
         elif W_raw < 0.5 and B_raw >= 0.5:
@@ -193,7 +180,7 @@ def render_compass():
             q_name, q_color = TXT("منافق", "Hypocrite"), '#FFB6C1'
         else:
             q_name, q_color = TXT("مشرك", "Polytheist"), '#FFA500'
-        
+
         st.divider()
         st.subheader(TXT("📊 موقعك", "📊 Your Position"))
         c1, c2, c3 = st.columns(3)
@@ -201,7 +188,7 @@ def render_compass():
         c2.metric("B (البراءة)", f"{B_raw:+.2f}")
         c3.metric("S (الثبات)", f"{S_score:.2f}")
         st.markdown(f"<h2 style='color:{q_color};text-align:center;'>{q_name}</h2>", unsafe_allow_html=True)
-        
+
         fig, ax = plt.subplots(figsize=(5, 5), facecolor='#0a0f1e')
         ax.set_facecolor('#0a0f1e')
         ax.set_xlim(-1.2, 1.2); ax.set_ylim(-1.2, 1.2)
@@ -215,7 +202,7 @@ def render_compass():
         ax.text(1, 1.1, TXT('إبراهيم', 'Abraham'), color='#FFD700', fontsize=7, ha='center')
         ax.tick_params(colors='white')
         st.pyplot(fig)
-        
+
         st.markdown("---")
         col_save, col_load = st.columns(2)
         with col_save:
@@ -230,18 +217,19 @@ def render_compass():
             st.session_state.compass_answers = {}
             st.rerun()
 
+
 # =============================================
 # تبويب ٢: مختبر الأمة المتكامل
 # =============================================
 def render_nation_lab():
     st.header(TXT("🏛️ مختبر الأمة – المنزلقات والذكاء الاصطناعي", "🏛️ Nation Lab – Sliders & AI"))
-    
+
     with st.expander(TXT("🎛️ مؤشرات الطاقة الروحية", "🎛️ Spiritual Energy Indicators"), expanded=True):
         st.caption(TXT(
             "كل حركة وسكنة مولد طاقة نحو الولاية والبراءة. [الحرف=القيمة]",
             "Every movement generates energy. [Letter=Value]"
         ))
-        
+
         slider_vals = []
         for i in range(0, N_IND, 2):
             col_a, col_b = st.columns(2)
@@ -259,7 +247,7 @@ def render_nation_lab():
                                    key=f"lab_V{i+1}")
                     slider_vals.append(val)
                     st.session_state.slider_values[f"V{i+1}"] = val
-        
+
         st.markdown("---")
         col_pure, col_E = st.columns(2)
         with col_pure:
@@ -407,19 +395,20 @@ def render_nation_lab():
             hide_index=True, use_container_width=True
         )
 
+
 # =============================================
 # تبويب ٣: المشهد الكوني الحي
 # =============================================
 def render_cosmic_scene():
     st.header(TXT("🌌 المشهد الكوني الحي", "🌌 Live Cosmic Scene"))
-    
+
     with st.expander(TXT("⚙️ إعدادات المشهد", "⚙️ Scene Settings"), expanded=False):
         col_s1, col_s2 = st.columns(2)
         with col_s1:
             live_speed = st.slider(TXT("السرعة", "Speed"), 0.05, 0.3, 0.1, 0.05, key="live_speed")
         with col_s2:
             live_stars = st.slider(TXT("عدد النجوم", "Stars"), 50, 200, 100, 25, key="live_stars")
-    
+
     col_btn1, col_btn2, col_btn3 = st.columns(3)
     with col_btn1:
         if st.button(TXT("▶️ تشغيل", "▶️ Run"), use_container_width=True, type="primary", key="btn_live_run"):
@@ -433,9 +422,9 @@ def render_cosmic_scene():
                 if k.startswith("live_"):
                     del st.session_state[k]
             st.rerun()
-    
+
     placeholder = st.empty()
-    
+
     if st.session_state.get("live_run", False):
         if not st.session_state.get("live_init", False):
             N = live_stars
@@ -513,6 +502,7 @@ def render_cosmic_scene():
             st.session_state.live_run = False
     else:
         st.info(TXT("اضغط ▶️ تشغيل", "Press ▶️ Run"))
+
 
 # =============================================
 # تبويب ٥: الشواهد التاريخية
@@ -593,6 +583,7 @@ def render_evidence():
         ax_comp.legend(facecolor='#0a0f1e', edgecolor='white', labelcolor='white', fontsize=10)
         ax_comp.tick_params(colors='white'); ax_comp.grid(True, alpha=0.2, axis='y')
         plt.tight_layout(); st.pyplot(fig_comp)
+
 
 # =============================================
 # تبويب ٦: هندسة الصراط
@@ -731,6 +722,7 @@ def render_path_geometry():
         </p>
     </div>
     """, unsafe_allow_html=True)
+
 
 # =============================================
 # دوال استدعاء التبويبات الجديدة
