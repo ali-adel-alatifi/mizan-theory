@@ -15,7 +15,9 @@ from components import (render_welcome, render_compass, render_nation_lab,
                         render_cosmic_scene, render_lexicon, render_evidence,
                         render_path_geometry, render_new_observatory,
                         render_new_healer, render_new_network,
-                        render_new_academy, render_new_ahlulbayt)
+                        render_new_academy, render_new_ahlulbayt,
+                        render_new_appendices, render_new_cosmic_law,
+                        render_new_universal_law, render_new_letter_deep_dive)
 from ui_enhancements import apply_global_css, render_enhanced_sidebar, render_enhanced_header, render_enhanced_footer
 
 # =============================================
@@ -68,9 +70,9 @@ st.markdown("---")
 render_welcome()
 
 # =============================================
-# التبويبات الإحدى عشر
+# التبويبات الـ 15
 # =============================================
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15 = st.tabs([
     TXT("🧍 البوصلة", "🧍 Compass"),
     TXT("🏛️ مختبر الأمة", "🏛️ Nation Lab"),
     TXT("🌌 المشهد الكوني", "🌌 Cosmic Scene"),
@@ -81,7 +83,11 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
     TXT("🩺 طبيب القلوب", "🩺 Healer"),
     TXT("🤝 شبكة الناجين", "🤝 Network"),
     TXT("🎓 الجامعة", "🎓 Academy"),
-    TXT("🏴 آل البيت", "🏴 Ahlul Bayt")
+    TXT("🏴 آل البيت", "🏴 Ahlul Bayt"),
+    TXT("📚 الملاحق", "📚 Appendices"),
+    TXT("⚛️ القانون الكوني", "⚛️ Cosmic Law"),
+    TXT("🌌 القانون الشامل", "🌌 Universal Law"),
+    TXT("🔤 أسرار الحروف", "🔤 Letter Secrets")
 ])
 
 with tab1:
@@ -116,6 +122,18 @@ with tab10:
 
 with tab11:
     render_new_ahlulbayt()
+
+with tab12:
+    render_new_appendices()
+
+with tab13:
+    render_new_cosmic_law()
+
+with tab14:
+    render_new_universal_law()
+
+with tab15:
+    render_new_letter_deep_dive()
 
 # =============================================
 # التذييل
