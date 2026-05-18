@@ -26,6 +26,14 @@ def set_rtl():
     <style>
     html, body, .stApp { direction: rtl; text-align: right; }
     .stMarkdown, .stText, .stInfo, .stSuccess, .stWarning, .stError { text-align: right; }
+    [data-testid="stSidebar"] {
+        left: auto !important;
+        right: 0 !important;
+    }
+    [data-testid="stAppViewContainer"] {
+        margin-left: 0 !important;
+        margin-right: 300px !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -34,6 +42,14 @@ def set_ltr():
     <style>
     html, body, .stApp { direction: ltr; text-align: left; }
     .stMarkdown, .stText, .stInfo, .stSuccess, .stWarning, .stError { text-align: left; }
+    [data-testid="stSidebar"] {
+        left: 0 !important;
+        right: auto !important;
+    }
+    [data-testid="stAppViewContainer"] {
+        margin-left: 300px !important;
+        margin-right: 0 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -41,7 +57,7 @@ def set_ltr():
 # إعدادات الصفحة
 # =============================================
 st.set_page_config(
-    page_title="⚖️ مختبر الميزان",
+    page_title=TXT("⚖️ مختبر الميزان", "⚖️ The Mizan Lab"),
     page_icon="⚖️",
     layout="wide",
     initial_sidebar_state="expanded"
