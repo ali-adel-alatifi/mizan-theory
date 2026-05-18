@@ -266,12 +266,12 @@ def render_cosmic_law():
     st.markdown(TXT("## 📊 جدول التناظر الكامل", "## 📊 Complete Correspondence Table"))
     
     correspondence_data = [
-        ["الفيزياء", "الجاذبية", "الكهرومغناطيسية", "الذرة", "الجذب", "التنافر"],
-        ["الكيمياء", "التخليق (Synthesis)", "التفكك (Decomposition)", "الجزيء", "الرابطة", "طاقة التنشيط"],
-        ["البيولوجيا", "المناعة", "الالتهام الذاتي", "الخلية", "حماية الذات", "تدمير الغريب"],
-        ["الفطرة", "حب الحق", "بغض الظلم", "الإنسان", "الميل", "النفور"],
-        ["التاريخ", "صعود الأمم", "سقوط الأمم", "الحضارة", "التمكين", "الهلاك"],
-        ["الشرع", "الولاية لله", "البراءة من الطاغوت", "الأمة", "S = W × B", "S = W × B"],
+        [TXT("الفيزياء", "Physics"), TXT("الجاذبية", "Gravity"), TXT("الكهرومغناطيسية", "Electromagnetism"), TXT("الذرة", "Atom"), TXT("الجذب", "Attraction"), TXT("التنافر", "Repulsion")],
+        [TXT("الكيمياء", "Chemistry"), TXT("التخليق (Synthesis)", "Synthesis"), TXT("التفكك (Decomposition)", "Decomposition"), TXT("الجزيء", "Molecule"), TXT("الرابطة", "Bond"), TXT("طاقة التنشيط", "Activation Energy")],
+        [TXT("البيولوجيا", "Biology"), TXT("المناعة", "Immunity"), TXT("الالتهام الذاتي", "Autophagy"), TXT("الخلية", "Cell"), TXT("حماية الذات", "Self-protection"), TXT("تدمير الغريب", "Destroying foreign")],
+        [TXT("الفطرة", "Innate Nature"), TXT("حب الحق", "Love of truth"), TXT("بغض الظلم", "Hatred of injustice"), TXT("الإنسان", "Human"), TXT("الميل", "Inclination"), TXT("النفور", "Aversion")],
+        [TXT("التاريخ", "History"), TXT("صعود الأمم", "Rise of nations"), TXT("سقوط الأمم", "Fall of nations"), TXT("الحضارة", "Civilization"), TXT("التمكين", "Empowerment"), TXT("الهلاك", "Destruction")],
+        [TXT("الشرع", "Law"), TXT("الولاية لله", "Loyalty to Allah"), TXT("البراءة من الطاغوت", "Disavowal of Taghut"), TXT("الأمة", "Ummah"), TXT("S = W × B", "S = W × B"), TXT("S = W × B", "S = W × B")],
     ]
     
     cols = st.columns([1, 1.2, 1.2, 1, 1, 1])
