@@ -75,7 +75,7 @@ def render_cosmic_law():
     ))
     
     # ─────────────────────────────────────────
-    # المستوى 2: الكيمياء (الفقرة الجديدة)
+    # المستوى 2: الكيمياء
     # ─────────────────────────────────────────
     st.markdown(TXT(
         """
@@ -231,8 +231,38 @@ def render_cosmic_law():
     st.markdown("---")
     
     # ─────────────────────────────────────────
+    # فقرة سر حرف القاف (ق = 100): سر الميزان
+    # ─────────────────────────────────────────
+    st.markdown(TXT(
+        """
+        ### ⚖️ حرف القاف (ق = 100): سر الميزان
+        
+        حرف **القاف** هو حرف "الحق" و"القيوم" و"القسط" و"الدِّينُ القَيِّم". قيمته 100 هي كمال العدد وأساس النسب.
+        
+        للقاف وجهان:
+        - **وجه ثابت في الذات الإلهية:** ﴿الْحَقُّ﴾، ﴿الْقَيُّومُ﴾. وهذا ثابت لا يتغير.
+        - **وجه متجلي في الخلق:** ﴿الْقِسْطُ﴾ (العدل)، ﴿الدِّينُ الْقَيِّمُ﴾. وهذا ما أُمر الناس بإقامته.
+        
+        و"الدِّينُ الْقَيِّمُ" هو القانون الإلهي الحق الثابت، ميزان الله الذي فطر الناس عليه، والذي لا تبديل فيه.
+        وهذا هو سر كون "ق" هو حرف الميزان، وسر كون قيمته 100 تمثل تمام العدل وكمال الوزن.
+        """,
+        """
+        ### ⚖️ The Letter Qaf (ق = 100): The Secret of the Balance
+        
+        The letter **Qaf** is the letter of "Al-Haqq" (The Truth), "Al-Qayyum" (The Self-Subsisting), "Al-Qist" (Justice), and "Ad-Deen Al-Qayyim" (The Upright Religion). Its value 100 is numerical perfection and the basis of proportion.
+        
+        Qaf has two faces:
+        - **A fixed face in the Divine Essence:** "Al-Haqq", "Al-Qayyum". This is unchanging.
+        - **A manifested face in creation:** "Al-Qist" (justice), "Ad-Deen Al-Qayyim". This is what people are commanded to establish.
+        
+        And "Ad-Deen Al-Qayyim" is the divine law, the truth, the balance of Allah upon which people were created, in which there is no alteration. This is the secret of why Qaf is the letter of the Balance, and why its value 100 represents perfect justice and complete weight.
+        """
+    ))
+
+    # ─────────────────────────────────────────
     # جدول التناظر الكامل
     # ─────────────────────────────────────────
+    st.markdown("---")
     st.markdown(TXT("## 📊 جدول التناظر الكامل", "## 📊 Complete Correspondence Table"))
     
     correspondence_data = [
