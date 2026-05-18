@@ -44,13 +44,11 @@ def fetch_live_indicators():
 # =============================================
 def build_world_data(live_data):
     """دمج البيانات الحية (إن وجدت) مع المحاكاة الاحتياطية."""
-    # استيراد البيانات المحاكية من observatory
     from observatory import WORLD_DATA_SIMULATED
     simulated = WORLD_DATA_SIMULATED
 
     if live_data["status"] != "live":
         return simulated
 
-    # نحاول دمج البيانات الحية مع المحاكاة (للتبسيط، نعيد المحاكاة مع إشارة)
-    # في النسخة النهائية، سنطابق أسماء الدول ونحدث المؤشرات
-    return simulated  # مؤقتاً، حتى نكمل منطق الدمج
+    # مؤقتاً، حتى نكمل منطق الدمج مع المصادر الحية
+    return simulated
