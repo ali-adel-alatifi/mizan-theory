@@ -1,10 +1,7 @@
 # mizan/components.py
 """
 وحدة مكونات الواجهة
-تحتوي: دوال عرض جميع التبويبات: الترحيب، البوصلة، مختبر الأمة، المشهد الكوني،
-المعجم الهندسي، الشواهد التاريخية، هندسة الصراط، المرصد العالمي،
-طبيب القلوب، شبكة الناجين، جامعة الميزان، مدرسة آل البيت، الملاحق،
-القانون الكوني، القانون الشامل، أسرار الحروف.
+تحتوي: دوال عرض جميع التبويبات
 """
 
 import streamlit as st
@@ -26,9 +23,8 @@ from network import render_network
 from academy import render_academy
 from ahlulbayt import render_ahlulbayt
 from appendices import render_appendices
-from cosmic_law import render_cosmic_law
-from universal_law import render_universal_law
-from letter_deep_dive import render_letter_deep_dive
+from lexicon import render_lexicon          # ← المعجم الجديد (دمج المعجم + أسرار الحروف)
+from the_one_law import render_the_one_law  # ← القانون الواحد (دمج الكوني + الشامل)
 
 # =============================================
 # رسالة الترحيب ودليل المستخدم
@@ -102,35 +98,19 @@ def render_welcome():
         st.markdown(TXT("""
         ### 🎯 كيف تستخدم هذا المختبر؟
         
-        **١. بوصلة الإسلام الحنيف:** أجب عن ١٩ سؤالاً لتعرف موقعك الدقيق في فضاء القيم.
-        
-        **٢. مختبر الأمة المتكاملة:** استخدم المنزلقات أو الذكاء الاصطناعي لملء القيم.
-        
-        **٣. المشهد الكوني الحي:** شاهد تفاعل النجوم (الأفراد) مع قطبي الميزان.
-        
-        **٤. المعجم الهندسي:** تعرف على الحروف العربية وقيمها العددية.
-        
-        **٥. الشواهد التاريخية:** قارن بين الدول التاريخية لترى كيف تنطبق المعادلة.
-        
-        **٦. هندسة الصراط:** تتبع مسارك نحو مقام إبراهيم عليه السلام.
-        
-        **٧. المرصد العالمي:** شاهد تطبيق المعادلة على دول العالم الحية.
-        
+        **١. بوصلة الإسلام الحنيف:** أجب عن ١٩ سؤالاً لتعرف موقعك الدقيق.
+        **٢. مختبر الأمة المتكاملة:** استخدم المنزلقات أو الذكاء الاصطناعي.
+        **٣. المشهد الكوني الحي:** شاهد تفاعل النجوم مع قطبي الميزان.
+        **٤. المعجم الهندسي:** تعرف على الحروف وقيمها وأسرارها.
+        **٥. الشواهد التاريخية:** قارن بين الدول التاريخية.
+        **٦. هندسة الصراط:** تتبع مسارك نحو مقام إبراهيم.
+        **٧. المرصد العالمي:** شاهد تطبيق المعادلة على دول العالم.
         **٨. طبيب القلوب:** احصل على تشخيص وروشتة علاجية.
-        
         **٩. شبكة الناجين:** تواصل مع المؤمنين الثابتين.
-        
         **١٠. جامعة الميزان:** تعلم النظرية عبر دورات تفاعلية.
-        
         **١١. مدرسة آل البيت:** نماذج الثبات في الفتنة.
-        
         **١٢. الملاحق الموسوعية:** مراجع متخصصة.
-        
-        **١٣. القانون الكوني:** الولاء والبراء في مستويات الوجود.
-        
-        **١٤. القانون الشامل:** التناظر بين أركان الإسلام والقوى الأربع.
-        
-        **١٥. أسرار الحروف:** المعجم الهندسي العميق.
+        **١٣. القانون الواحد:** تجليات القانون من الذرة إلى المجرة.
         
         **المعادلة المركزية:** **S = W × B** (العلاقة **ضرب لا جمع**).
         """,
@@ -140,7 +120,7 @@ def render_welcome():
         **1. Compass:** Answer 19 questions.
         **2. Nation Lab:** Use sliders or AI.
         **3. Cosmic Scene:** Watch stars interact.
-        **4. Lexicon:** Explore Arabic letters.
+        **4. Lexicon:** Explore letters, values, and secrets.
         **5. Evidence:** Compare historical nations.
         **6. Path Geometry:** Track your path.
         **7. Observatory:** Apply the equation to world nations.
@@ -149,9 +129,7 @@ def render_welcome():
         **10. Academy:** Learn the theory via courses.
         **11. Ahlul Bayt:** Models of stability in strife.
         **12. Appendices:** Specialized references.
-        **13. Cosmic Law:** Loyalty and disavowal in existence.
-        **14. Universal Law:** Correspondence with the four forces.
-        **15. Letter Secrets:** Deep geometric lexicon.
+        **13. The One Law:** Manifestations from atom to galaxy.
         
         **Central Equation:** **S = W x B** (multiplication, not addition).
         """))
@@ -541,42 +519,9 @@ def render_cosmic_scene():
 
 
 # =============================================
-# تبويب ٤: المعجم الهندسي
+# تبويب ٤: المعجم الهندسي (الجديد – دمج المعجم + أسرار الحروف)
 # =============================================
-def render_lexicon():
-    st.header(TXT("📖 المعجم الهندسي – الحروف وقيمها", "📖 Geometric Lexicon – Letters & Values"))
-    st.markdown(TXT(
-        "هذا المعجم يربط كل حرف بقيمته العددية (حساب الجمل) ودوره الوجودي في معادلة الميزان.",
-        "This lexicon links each letter to its numerical value (Abjad) and existential role in the Mizan equation."
-    ))
-
-    letters_data = {
-        TXT('الفئة الأولى: الذات الإلهية (المصدر)', 'Cat 1: Divine Essence (Source)'):
-            {'ك': 20, 'ن': 50},
-        TXT('الفئة الثانية: الازدواج', 'Cat 2: Duality'):
-            {'ق': 100, 'ص': 90},
-        TXT('الفئة الثالثة: التجلي الإلهي', 'Cat 3: Divine Manifestation'):
-            {'أ': 1, 'ل': 30, 'م': 40, 'ر': 200, 'س': 60, 'ح': 8, 'ط': 9},
-        TXT('الفئة الرابعة: الاشتراك (الجسور)', 'Cat 4: Connection'):
-            {'ع': 70, 'ي': 10, 'هـ': 5},
-        TXT('الفئة الخامسة: المشغلات', 'Cat 5: Operators'):
-            {'ف': 80, 'و': 6, 'ب': 2},
-        TXT('الفئة السادسة: أعمال الخلق', 'Cat 6: Actions of Creation'):
-            {'ج': 3, 'خ': 600, 'ذ': 700, 'ش': 300, 'ز': 7,
-             'ت': 400, 'ث': 500, 'ض': 800, 'ظ': 900, 'غ': 1000},
-    }
-
-    for cat, lets in letters_data.items():
-        st.markdown(f"**{cat}**")
-        import pandas as pd
-        df = pd.DataFrame(list(lets.items()), columns=[TXT('الحرف', 'Letter'), TXT('القيمة', 'Value')])
-        st.dataframe(df, hide_index=True, use_container_width=True)
-    
-    # إضافة شرح ك+ن=ع
-    st.info(TXT(
-        "🔮 **المعادلة الأولى للوجود:** ك + ن = ع (20 + 50 = 70). الأمر (كُن) + النور = الإدراك (العلم).",
-        "🔮 **The First Equation of Existence:** K + N = A (20 + 50 = 70). Command (Be) + Light = Perception (Knowledge)."
-    ))
+# (تم نقله إلى ملف lexicon.py)
 
 
 # =============================================
@@ -820,11 +765,8 @@ def render_new_ahlulbayt():
 def render_new_appendices():
     render_appendices()
 
-def render_new_cosmic_law():
-    render_cosmic_law()
+def render_new_lexicon():
+    render_lexicon()
 
-def render_new_universal_law():
-    render_universal_law()
-
-def render_new_letter_deep_dive():
-    render_letter_deep_dive()
+def render_new_the_one_law():
+    render_the_one_law()
