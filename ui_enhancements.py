@@ -12,7 +12,6 @@ def apply_global_css():
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Amiri+Quran&display=swap');
     
-    /* المتغيرات العامة */
     :root {
         --bg-primary: #0a0f1e;
         --bg-secondary: #0d1528;
@@ -27,13 +26,11 @@ def apply_global_css():
         --green: #00FF88;
     }
     
-    /* الخلفية العامة */
     .stApp {
         background: linear-gradient(180deg, #0a0f1e 0%, #0d1528 30%, #0f1a2e 100%);
         font-family: 'Cairo', sans-serif;
     }
     
-    /* العناوين */
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Cairo', sans-serif;
         color: #FFD700;
@@ -41,31 +38,16 @@ def apply_global_css():
         letter-spacing: -0.5px;
     }
     
-    h1 {
-        font-size: 2.5em;
-        margin-bottom: 10px;
-    }
+    h1 { font-size: 2.5em; margin-bottom: 10px; }
+    h2 { font-size: 1.8em; border-bottom: 2px solid rgba(255, 215, 0, 0.3); padding-bottom: 8px; margin-bottom: 20px; }
+    h3 { font-size: 1.4em; margin-bottom: 12px; }
     
-    h2 {
-        font-size: 1.8em;
-        border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-        padding-bottom: 8px;
-        margin-bottom: 20px;
-    }
-    
-    h3 {
-        font-size: 1.4em;
-        margin-bottom: 12px;
-    }
-    
-    /* النصوص */
     p, label, div, span, li {
         font-family: 'Cairo', sans-serif;
         color: #E0E0E0;
         line-height: 1.8;
     }
     
-    /* العنوان الذهبي */
     .golden-title {
         font-size: 3.2em;
         font-weight: 900;
@@ -77,7 +59,6 @@ def apply_global_css():
         text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
     }
     
-    /* النص القرآني */
     .verse-text {
         text-align: center;
         color: #FFD700;
@@ -87,7 +68,6 @@ def apply_global_css():
         font-family: 'Amiri Quran', serif;
     }
     
-    /* الأزرار */
     .stButton > button {
         background: linear-gradient(135deg, rgba(20, 30, 60, 0.9), rgba(30, 40, 70, 0.9));
         border: 2px solid #FFD700;
@@ -108,11 +88,8 @@ def apply_global_css():
         transform: translateY(-2px);
     }
     
-    .stButton > button:active {
-        transform: translateY(1px);
-    }
+    .stButton > button:active { transform: translateY(1px); }
     
-    /* التبويبات */
     .stTabs [data-baseweb="tab-list"] {
         gap: 5px;
         background: rgba(13, 21, 40, 0.8);
@@ -138,7 +115,6 @@ def apply_global_css():
         font-weight: bold;
     }
     
-    /* صندوق الرسائل */
     .message-box {
         background: rgba(20, 30, 60, 0.7);
         border-radius: 15px;
@@ -149,7 +125,6 @@ def apply_global_css():
         backdrop-filter: blur(10px);
     }
     
-    /* البطاقات */
     .card {
         background: rgba(20, 30, 60, 0.8);
         border-radius: 15px;
@@ -164,40 +139,16 @@ def apply_global_css():
         box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
     }
     
-    /* التأثيرات الحركية */
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
-    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    @keyframes glow { 0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); } 50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); } }
     
-    @keyframes glow {
-        0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
-        50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); }
-    }
+    .pulse { animation: pulse 2s ease-in-out infinite; }
+    .glow { animation: glow 3s ease-in-out infinite; }
     
-    .pulse {
-        animation: pulse 2s ease-in-out infinite;
-    }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0a0f1e; }
+    ::-webkit-scrollbar-thumb { background: #FFD700; border-radius: 4px; }
     
-    .glow {
-        animation: glow 3s ease-in-out infinite;
-    }
-    
-    /* شريط التمرير */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-        background: #0a0f1e;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: #FFD700;
-        border-radius: 4px;
-    }
-    
-    /* المدخلات */
     .stTextInput > div > div > input,
     .stTextArea > div > div > textarea {
         background: rgba(20, 30, 60, 0.8);
@@ -207,12 +158,8 @@ def apply_global_css():
         font-family: 'Cairo', sans-serif;
     }
     
-    /* المنزلقات */
-    .stSlider > div > div > div > div {
-        background: #FFD700;
-    }
+    .stSlider > div > div > div > div { background: #FFD700; }
     
-    /* المحددات */
     .stSelectbox > div > div {
         background: rgba(20, 30, 60, 0.8);
         border: 1px solid rgba(255, 215, 0, 0.3);
@@ -220,7 +167,6 @@ def apply_global_css():
         border-radius: 8px;
     }
     
-    /* الرسوم البيانية */
     .js-plotly-plot, .plot-container {
         border-radius: 10px;
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -232,7 +178,6 @@ def apply_global_css():
 def render_enhanced_sidebar():
     """شريط جانبي محسن مع روابط سريعة."""
     with st.sidebar:
-        # الهوية
         st.markdown(f"""
         <div style='text-align:center;padding:15px;background:linear-gradient(135deg,#1a1a2e,#16213e);
         border-radius:15px;margin-bottom:20px;border:2px solid #FFD700;' class='glow'>
@@ -243,14 +188,11 @@ def render_enhanced_sidebar():
         </div>
         """, unsafe_allow_html=True)
         
-        # زر تغيير اللغة
         if st.button(TXT("🇬🇧 English", "🇸🇦 العربية"), use_container_width=True, key="btn_lang_sidebar"):
             st.session_state.lang = "en" if st.session_state.lang == "ar" else "ar"
             st.rerun()
         
         st.markdown("---")
-        
-        # روابط سريعة
         st.markdown(f"### 🧭 {TXT('روابط سريعة', 'Quick Links')}")
         
         tabs_info = [
@@ -268,11 +210,7 @@ def render_enhanced_sidebar():
             st.markdown(f"{icon} **{name}** — *{desc}*")
         
         st.markdown("---")
-        
-        # إعدادات
         st.markdown(f"### ⚙️ {TXT('إعدادات', 'Settings')}")
-        
-        # فجوة الاستدراج
         lag = st.select_slider(
             TXT("فجوة الاستدراج", "Istidraj Gap"),
             options=[5, 10, 15, 22, 30, 40, 50],
@@ -280,8 +218,6 @@ def render_enhanced_sidebar():
         )
         
         st.markdown("---")
-        
-        # إعادة ضبط
         if st.button(TXT("🔄 إعادة ضبط كل شيء", "🔄 Full Reset"), key="btn_reset_all", use_container_width=True):
             for k in list(st.session_state.keys()):
                 if k not in ("lang",):
@@ -289,12 +225,7 @@ def render_enhanced_sidebar():
             st.rerun()
         
         st.markdown("---")
-        
-        # تذييل الشريط الجانبي
-        st.caption(TXT(
-            "© 2026 علي عادل العاطفي\nمختبر الميزان v2.0",
-            "© 2026 Ali Adel Alatifi\nMizan Lab v2.0"
-        ))
+        st.caption(TXT("© 2026 علي عادل العاطفي\nمختبر الميزان v2.0", "© 2026 Ali Adel Alatifi\nMizan Lab v2.0"))
 
 
 def render_enhanced_header():
