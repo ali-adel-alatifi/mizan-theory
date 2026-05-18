@@ -45,7 +45,11 @@ def render_letter_deep_dive():
         - Alif is the only letter that has no sound of its own, yet it is the basis of every word.
         - It is like "Allah": vision does not perceive Him, yet everything points to Him.
         
-        **Summary:**
+        **Relation to the Most Beautiful Names:**
+        Alif is the letter of "Al-Ahad" (The One), "Al-Awwal" (The First), "Al-Akhir" (The Last), "Al-Zahir" (The Manifest), "Al-Batin" (The Hidden).
+        Its value is 1, because He is One in all these names, without partner.
+        
+        **Mathematical Summary:**
         Value (1) = The Divine Essence (unchanging).
         Frequency (13) = Manifestations of this Essence in creation (variable by context).
         """
@@ -77,6 +81,14 @@ def render_letter_deep_dive():
         """
         The three letters (A, L, M) are the "sound signature" of the greatest name: **Allah**.
         The Quran opens with them in 6 suras (the days of creation), because they are "the mother of the book" and "the mother of names".
+        
+        See how these letters manifest in Allah's names and attributes:
+        
+        | Letter | Symbol | Examples of Allah's Names Starting with It | Meanings |
+        |:---|:---|:---|:---|
+        | **A** | Oneness, Beginning | Al-Ahad, Al-Awwal, Al-Akhir | They are the origin of everything. None shares in them. |
+        | **L** | Kingship, Kindness, Justice | Al-Malik, Al-Latif, Al-'Adl, Al-Halim | Allah is the King, and you are "Abdullah" (the L of ownership). |
+        | **M** | Gathering, Giving, Withholding | Al-Mu'ti, Al-Mani', Al-Muhyi, Al-Mumit, Al-Mu'izz, Al-Mudhill, Al-Majid, Al-Mutakabbir, Al-Muta'al | These are names of "actions". Allah gives and withholds, gives life and causes death, honors and humiliates. |
         
         When you recite "ALM", you evoke all these names. Hence the Prophet ﷺ said:
         "Whoever recites a letter from the Book of Allah has a good deed... I do not say ALM is one letter, but Alif is a letter, Lam is a letter, and Meem is a letter."
@@ -112,6 +124,9 @@ def render_letter_deep_dive():
         - **A manifested face in creation:** "Al-Qist" (justice), "Ad-Deen Al-Qayyim". This is what people are commanded to establish.
         
         And "Ad-Deen Al-Qayyim" is the divine law, the truth, the balance of Allah upon which people were created, in which there is no alteration. This is the secret of why Qaf is the letter of the Balance, and why its value 100 represents perfect justice and complete weight.
+        
+        In Quranic openings, Qaf appears in only two suras (Qaf, and Ash-Shura which contains 'Ayn Sin Qaf'). This limited appearance indicates that it is the letter of distinction and separation,
+        the letter of the Balance that distinguishes between truth and falsehood, between loyalty and disavowal, between stability and collapse.
         """
     ))
 
@@ -152,7 +167,13 @@ def render_letter_deep_dive():
         5. Operators (Tools of Logic and Causality).
         6. Actions of Creation (Free Will – Positive and Negative).
         
-        **The new classification** is based on the same foundation but with more precision.
+        **The new classification** is based on the same foundation but with more precision:
+        - Letters indicating attributes of Allah alone (Source Constants: K, N).
+        - Letters indicating attributes fixed for Allah and variable in His creation (Dual Constants: Q, S).
+        - Letters indicating manifestations of Allah's attributes in His creation (Manifestation Variables).
+        - Letters indicating shared attributes between Allah and His creation (Balance and Connection Factors: 'A, Y, H).
+        - Letters determining how causes interact with results (Mathematical Operators: F, W, B, L).
+        - Letters indicating actions and qualities specific to creation (Dependent Variables).
         
         **Conclusion:**
         The two classifications do not contradict; they are two sides of the same coin. The old one relied on "existential function", and the new one relies on "attribute significance".
@@ -167,35 +188,35 @@ def render_letter_deep_dive():
     st.subheader(TXT("٥. جدول الحروف الكامل – دمج التصنيفين", "5. Complete Letter Table – Merging Both Classifications"))
     
     merged_letters = [
-        ("ك", 20, "ثابت المصدر", "الأمر (كن)", "الفئة الأولى: الذات الإلهية"),
-        ("ن", 50, "ثابت المصدر", "النور", "الفئة الأولى: الذات الإلهية"),
-        ("ق", 100, "ثابت مزدوج (وجهان)", "الثابت: الحق/القيوم — المتجلي: القسط/الدِّينُ القَيِّم", "الفئة الثانية: الازدواج"),
-        ("ص", 90, "ثابت مزدوج", "الصمد / الصبر والصدق", "الفئة الثانية: الازدواج"),
-        ("أ", 1, "تجلي إلهي", "الوحدانية", "الفئة الثالثة: التجلي الإلهي"),
-        ("ل", 30, "تجلي إلهي", "المُلك والعدل", "الفئة الثالثة: التجلي الإلهي"),
-        ("م", 40, "تجلي إلهي", "الجمع", "الفئة الثالثة: التجلي الإلهي"),
-        ("ر", 200, "تجلي إلهي", "الطاقة المشتركة", "الفئة الثالثة: التجلي الإلهي"),
-        ("ح", 8, "تجلي إلهي", "الكمال والدوام", "الفئة الثالثة: التجلي الإلهي"),
-        ("س", 60, "تجلي إلهي", "السمع", "الفئة الثالثة: التجلي الإلهي"),
-        ("ط", 9, "تجلي إلهي", "الطهارة", "الفئة الثالثة: التجلي الإلهي"),
-        ("ع", 70, "صفة مشتركة", "العلم والإدراك", "الفئة الرابعة: الاشتراك"),
-        ("ي", 10, "صفة مشتركة", "الاستجابة والدعاء", "الفئة الرابعة: الاشتراك"),
-        ("هـ", 5, "صفة مشتركة", "الهوية والهدى", "الفئة الرابعة: الاشتراك"),
-        ("ف", 80, "مشغّل", "السببية (=)", "الفئة الخامسة: المشغلات"),
-        ("و", 6, "مشغّل", "العطف (× أو +)", "الفئة الخامسة: المشغلات"),
-        ("ب", 2, "مشغّل", "الاستعانة (بـ)", "الفئة الخامسة: المشغلات"),
-        ("ل (كمشغّل)", 30, "مشغّل", "التعليل (→)", "الفئة الخامسة: المشغلات"),
-        ("ت", 400, "مشغّل / خلق", "الاتخاذ والتبعية", "الفئة الخامسة/السادسة"),
-        ("ث", 500, "مشغّل / خلق", "الثبات", "الفئة الخامسة/السادسة"),
-        ("ج", 3, "خلق", "الجهاد / الجهل", "الفئة السادسة: أعمال الخلق"),
-        ("خ", 600, "خلق", "الخير / الخيانة", "الفئة السادسة: أعمال الخلق"),
-        ("د", 4, "خلق", "الدين / الدمار", "الفئة السادسة: أعمال الخلق"),
-        ("ذ", 700, "خلق", "الذكر / الذل", "الفئة السادسة: أعمال الخلق"),
-        ("ز", 7, "خلق", "الزكاة / الزور", "الفئة السادسة: أعمال الخلق"),
-        ("ش", 300, "خلق", "الشكر / الشهوة", "الفئة السادسة: أعمال الخلق"),
-        ("ض", 800, "خلق", "الضبط / الضلال", "الفئة السادسة: أعمال الخلق"),
-        ("ظ", 900, "خلق", "الظفر / الظلم", "الفئة السادسة: أعمال الخلق"),
-        ("غ", 1000, "خلق", "الغفران / الغل", "الفئة السادسة: أعمال الخلق"),
+        ("ك", 20, TXT("ثابت المصدر", "Source Constant"), TXT("الأمر (كن)", "The Command (Be)"), TXT("الفئة الأولى: الذات الإلهية", "Cat 1: Divine Essence")),
+        ("ن", 50, TXT("ثابت المصدر", "Source Constant"), TXT("النور", "The Light"), TXT("الفئة الأولى: الذات الإلهية", "Cat 1: Divine Essence")),
+        ("ق", 100, TXT("ثابت مزدوج (وجهان)", "Dual Constant (Two Faces)"), TXT("الثابت: الحق/القيوم — المتجلي: القسط/الدِّينُ القَيِّم", "Fixed: Al-Haqq/Al-Qayyum — Manifest: Al-Qist/Ad-Deen Al-Qayyim"), TXT("الفئة الثانية: الازدواج", "Cat 2: Duality")),
+        ("ص", 90, TXT("ثابت مزدوج", "Dual Constant"), TXT("الصمد / الصبر والصدق", "Al-Samad / Patience and Truthfulness"), TXT("الفئة الثانية: الازدواج", "Cat 2: Duality")),
+        ("أ", 1, TXT("تجلي إلهي", "Divine Manifestation"), TXT("الوحدانية", "Oneness"), TXT("الفئة الثالثة: التجلي الإلهي", "Cat 3: Divine Manifestation")),
+        ("ل", 30, TXT("تجلي إلهي", "Divine Manifestation"), TXT("المُلك والعدل", "Kingship and Justice"), TXT("الفئة الثالثة: التجلي الإلهي", "Cat 3: Divine Manifestation")),
+        ("م", 40, TXT("تجلي إلهي", "Divine Manifestation"), TXT("الجمع", "The Gathering"), TXT("الفئة الثالثة: التجلي الإلهي", "Cat 3: Divine Manifestation")),
+        ("ر", 200, TXT("تجلي إلهي", "Divine Manifestation"), TXT("الطاقة المشتركة", "Shared Energy"), TXT("الفئة الثالثة: التجلي الإلهي", "Cat 3: Divine Manifestation")),
+        ("ح", 8, TXT("تجلي إلهي", "Divine Manifestation"), TXT("الكمال والدوام", "Perfection and Permanence"), TXT("الفئة الثالثة: التجلي الإلهي", "Cat 3: Divine Manifestation")),
+        ("س", 60, TXT("تجلي إلهي", "Divine Manifestation"), TXT("السمع", "Hearing"), TXT("الفئة الثالثة: التجلي الإلهي", "Cat 3: Divine Manifestation")),
+        ("ط", 9, TXT("تجلي إلهي", "Divine Manifestation"), TXT("الطهارة", "Purity"), TXT("الفئة الثالثة: التجلي الإلهي", "Cat 3: Divine Manifestation")),
+        ("ع", 70, TXT("صفة مشتركة", "Shared Attribute"), TXT("العلم والإدراك", "Knowledge and Perception"), TXT("الفئة الرابعة: الاشتراك", "Cat 4: Connection")),
+        ("ي", 10, TXT("صفة مشتركة", "Shared Attribute"), TXT("الاستجابة والدعاء", "Response and Supplication"), TXT("الفئة الرابعة: الاشتراك", "Cat 4: Connection")),
+        ("هـ", 5, TXT("صفة مشتركة", "Shared Attribute"), TXT("الهوية والهدى", "Identity and Guidance"), TXT("الفئة الرابعة: الاشتراك", "Cat 4: Connection")),
+        ("ف", 80, TXT("مشغّل", "Operator"), TXT("السببية (=)", "Causality (=)"), TXT("الفئة الخامسة: المشغلات", "Cat 5: Operators")),
+        ("و", 6, TXT("مشغّل", "Operator"), TXT("العطف (× أو +)", "Conjunction (× or +)"), TXT("الفئة الخامسة: المشغلات", "Cat 5: Operators")),
+        ("ب", 2, TXT("مشغّل", "Operator"), TXT("الاستعانة (بـ)", "Assistance (by)"), TXT("الفئة الخامسة: المشغلات", "Cat 5: Operators")),
+        ("ل (كمشغّل)", 30, TXT("مشغّل", "Operator"), TXT("التعليل (→)", "Purpose (→)"), TXT("الفئة الخامسة: المشغلات", "Cat 5: Operators")),
+        ("ت", 400, TXT("مشغّل / خلق", "Operator / Creation"), TXT("الاتخاذ والتبعية", "Adoption and Following"), TXT("الفئة الخامسة/السادسة", "Cat 5/6")),
+        ("ث", 500, TXT("مشغّل / خلق", "Operator / Creation"), TXT("الثبات", "Steadfastness"), TXT("الفئة الخامسة/السادسة", "Cat 5/6")),
+        ("ج", 3, TXT("خلق", "Creation"), TXT("الجهاد / الجهل", "Striving / Ignorance"), TXT("الفئة السادسة: أعمال الخلق", "Cat 6: Actions of Creation")),
+        ("خ", 600, TXT("خلق", "Creation"), TXT("الخير / الخيانة", "Good / Betrayal"), TXT("الفئة السادسة: أعمال الخلق", "Cat 6: Actions of Creation")),
+        ("د", 4, TXT("خلق", "Creation"), TXT("الدين / الدمار", "Religion / Destruction"), TXT("الفئة السادسة: أعمال الخلق", "Cat 6: Actions of Creation")),
+        ("ذ", 700, TXT("خلق", "Creation"), TXT("الذكر / الذل", "Remembrance / Humiliation"), TXT("الفئة السادسة: أعمال الخلق", "Cat 6: Actions of Creation")),
+        ("ز", 7, TXT("خلق", "Creation"), TXT("الزكاة / الزور", "Purification / Falsehood"), TXT("الفئة السادسة: أعمال الخلق", "Cat 6: Actions of Creation")),
+        ("ش", 300, TXT("خلق", "Creation"), TXT("الشكر / الشهوة", "Gratitude / Lust"), TXT("الفئة السادسة: أعمال الخلق", "Cat 6: Actions of Creation")),
+        ("ض", 800, TXT("خلق", "Creation"), TXT("الضبط / الضلال", "Precision / Misguidance"), TXT("الفئة السادسة: أعمال الخلق", "Cat 6: Actions of Creation")),
+        ("ظ", 900, TXT("خلق", "Creation"), TXT("الظفر / الظلم", "Victory / Injustice"), TXT("الفئة السادسة: أعمال الخلق", "Cat 6: Actions of Creation")),
+        ("غ", 1000, TXT("خلق", "Creation"), TXT("الغفران / الغل", "Forgiveness / Malice"), TXT("الفئة السادسة: أعمال الخلق", "Cat 6: Actions of Creation")),
     ]
     
     df_merged = st.dataframe(
