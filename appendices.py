@@ -8,10 +8,10 @@ import streamlit as st
 from config import TXT
 
 def render_appendices():
-    st.header("📚 الملاحق الموسوعية")
+    st.header(TXT("📚 الملاحق الموسوعية", "📚 Encyclopedic Appendices"))
     st.caption(TXT(
-        "المراجع المتخصصة لنظرية الدين القيم والإسلام الحنيف. هذه هي الأصول التي يرجع إليها كل ما في المنصة.",
-        "Specialized references for the theory of Al-Deen Al-Qayyim and Al-Islam Al-Hanif."
+        "المراجع المتخصصة لنظرية الدين القيم والإسلام الحنيف",
+        "Specialized references for the theory of Al-Deen Al-Qayyim and Al-Islam Al-Hanif"
     ))
 
     app_tab1, app_tab2, app_tab3, app_tab4 = st.tabs([
@@ -26,10 +26,6 @@ def render_appendices():
     # =============================================
     with app_tab1:
         st.subheader(TXT("الآيات الجامعات للنظرية – الإطار المرجعي النهائي", "Key Verses – Final Reference Frame"))
-        st.markdown(TXT(
-            "هذه ست عشرة آية تمثل دستور النظرية وبرهانها، وتجمع أصول الدين القيم والإسلام الحنيف.",
-            "These sixteen verses represent the constitution of the theory."
-        ))
         verses = [
             ("١. آية الفطرة والدين القيم والحنيفية", "﴿فَأَقِمْ وَجْهَكَ لِلدِّينِ حَنِيفًا ۚ فِطْرَتَ اللَّهِ الَّتِي فَطَرَ النَّاسَ عَلَيْهَا ۚ لَا تَبْدِيلَ لِخَلْقِ اللَّهِ ۚ ذَٰلِكَ الدِّينُ الْقَيِّمُ﴾ [الروم: ٣٠]"),
             ("٢. آية الغاية من الخلق (العبادة)", "﴿وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ﴾ [الذاريات: ٥٦]"),
@@ -57,14 +53,9 @@ def render_appendices():
     # =============================================
     with app_tab2:
         st.subheader(TXT("المفاتيح اللغوية – أدوات الهندسة القرآنية", "Linguistic Keys – Tools of Quranic Engineering"))
-        st.markdown(TXT(
-            "أهم الأدوات اللغوية التي تحول قراءة القرآن إلى قراءة معادلات كونية.",
-            "The most important linguistic tools that transform Quran reading into cosmic equations."
-        ))
-        st.markdown("---")
         st.markdown(TXT("### ١. أدوات السببية والغائية", "### 1. Causality & Purpose Tools"))
         st.markdown(f"""
-        - **فاء السببية (فَـ):** علامة يساوي (=) في المعادلة الإلهية. مثال: ﴿فَمَن يَكْفُرْ بِالطَّاغُوتِ وَيُؤْمِن بِاللَّهِ **فَ** قَدِ اسْتَمْسَكَ بِالْعُرْوَةِ الْوُثْقَىٰ﴾
+        - **فاء السببية (فَـ):** علامة يساوي (=) في المعادلة الإلهية. مثال: ﴿فَمَن يَكْفُرْ بِالطَّاغُوتِ وَيُؤْمِن بِاللَّهِ **فَ** قَدِ اسْتَمْسَكَ﴾
         - **لام التعليل (لِـ):** سهم يوضح اتجاه الغاية. مثال: ﴿وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا **لِ** يَعْبُدُونِ﴾
         - **حتى (حَتَّىٰ):** استمرار السبب حتى تتحقق النتيجة. مثال: ﴿حَتَّىٰ يُغَيِّرُوا مَا بِأَنفُسِهِمْ﴾
         - **لام الأمر (لِـ):** أداة التكليف المباشر. مثال: ﴿**لِ** يُنفِقْ ذُو سَعَةٍ﴾
@@ -90,10 +81,6 @@ def render_appendices():
     # =============================================
     with app_tab3:
         st.subheader(TXT("الدورة الإلهية المحكمة – خريطة المسار الكامل", "The Divine Cycle – Complete Path Map"))
-        st.markdown(TXT(
-            "ثماني مراحل تنتظم حياة الفرد والأمة من الخلق إلى الخلود.",
-            "Eight stages organizing the life of individuals and nations from creation to eternity."
-        ))
         stages = [
             ("١. التأسيس الكوني", "الخلق على الفطرة، الميثاق الأزلي، منح الحرية والتكليف بالعبودية."),
             ("٢. البيان النظري", "إرسال الرسل وإنزال الكتب لبيان قانون الولاء والبراءة."),
