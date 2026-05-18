@@ -3,7 +3,8 @@
 وحدة مكونات الواجهة
 تحتوي: دوال عرض جميع التبويبات: الترحيب، البوصلة، مختبر الأمة، المشهد الكوني،
 المعجم الهندسي، الشواهد التاريخية، هندسة الصراط، المرصد العالمي،
-طبيب القلوب، شبكة الناجين، جامعة الميزان، مدرسة آل البيت.
+طبيب القلوب، شبكة الناجين، جامعة الميزان، مدرسة آل البيت، الملاحق،
+القانون الكوني، القانون الشامل، أسرار الحروف.
 """
 
 import streamlit as st
@@ -18,19 +19,21 @@ from logic import (calculate_S, simulate_future, compute_compass, curvature, sta
 from utils import (ai_analyze_compass, ai_fill_sliders, plot_quadrant_map, get_spiritual_nudge,
                    export_session_data, import_session_data)
 
-# استيراد الملفات المنفصلة الجديدة
+# استيراد الملفات المنفصلة
 from observatory import render_observatory
 from healer import render_healer
 from network import render_network
 from academy import render_academy
 from ahlulbayt import render_ahlulbayt
+from appendices import render_appendices
+from cosmic_law import render_cosmic_law
+from universal_law import render_universal_law
+from letter_deep_dive import render_letter_deep_dive
 
 # =============================================
-# دوال عرض التبويبات الأساسية
+# رسالة الترحيب ودليل المستخدم
 # =============================================
-
 def render_welcome():
-    """عرض رسالة الترحيب ودليل المستخدم."""
     with st.expander(TXT("📜 رسالة ترحيب", "📜 Welcome Message"), expanded=True):
         st.markdown(f"""
         <div class="message-box">
@@ -46,7 +49,42 @@ def render_welcome():
         <p>{TXT(
         'تأمل معي: الذرةُ في داخلها قوتان: جاذبيةٌ تجمع، وتنافرٌ يمنع التصادم. لو اختلت إحداهما، لانهارت الذرة. '
         'والخليةُ في جسدك: جهاز مناعةٍ يحمي، وغذاءٌ يبني. لو نامت المناعة، لالتهم المرضُ الجسد.',
-        'Reflect with me: the atom has two forces: attraction and repulsion...'
+        'Reflect with me: the atom has two forces: attraction that gathers, and repulsion that prevents collision. '
+        'If one fails, the atom collapses. And the cell in your body: an immune system that protects, and nutrition that builds. '
+        'If immunity sleeps, disease devours the body.'
+        )}</p>
+        <p>{TXT(
+        'وحتى في عالم الكيمياء، يتجلى القانون نفسه: الذرّات المتآلفة تتحد برابطةٍ قوية (هذا ولاؤها)، '
+        'لكنها تحتاج إلى "طاقة تنشيط" لتنفصل عن ذراتٍ أخرى كانت مرتبطة بها (هذه براءتها). '
+        'إن لم تملك هذه الطاقة، بقيت أسيرة تفاعلاتها القديمة، لا تتحد بالجديد. '
+        'هذه "التوبة" الكيميائية: قوةٌ تدفعها لتكسر حاجزًا، فتنطلق إلى استقرارٍ أعظم. '
+        'أليس هذا ما يحدث للمؤمن حين يتوب؟',
+        'Even in chemistry, the same law manifests: compatible atoms unite with a strong bond (their loyalty), '
+        'but they need "activation energy" to separate from other atoms they were bound to (their disavowal). '
+        'Without this energy, they remain captive to old reactions, unable to unite with the new. '
+        'This is chemical "repentance": a force that pushes them to break a barrier, launching them to greater stability. '
+        'Is this not what happens to the believer when they repent?'
+        )}</p>
+        <p>{TXT(
+        'والمجتمع: ولاءٌ يجمع أفراده، وبراءةٌ من الفساد تحمي تماسكه. لو غاب أحدهما، تفكك المجتمع.',
+        'And society: loyalty that gathers its members, and disavowal of corruption that protects its cohesion. '
+        'If either is absent, society disintegrates.'
+        )}</p>
+        <p style="color:#FFD700;font-weight:bold;">{TXT(
+        'هل هذه مصادفة؟ أم أن هناك "قانونًا واحدًا" ينساب في نسيج الوجود كله، من الذرة إلى الحضارة؟',
+        'Is this coincidence? Or is there a "single law" flowing through the fabric of existence, from atom to civilization?'
+        )}</p>
+        <p>{TXT(
+        'نحن هنا لا نعظ. نحن نعرض. لا نفرض عليك جوابًا، بل نتركك تجرب بيدك. '
+        'حرّك المنزلقات. أجب عن الأسئلة. شاهد كيف يتغير الثبات. واسأل نفسك: '
+        'لماذا ينهار كل شيء عندما يختل أحد القطبين؟ '
+        'لماذا تتكرر هذه الثنائية في كل ما حولنا؟ '
+        'هل هناك "حق" و"باطل" موجودان في صلب الوجود، لا في كتب الأخلاق فقط؟',
+        'We are not preaching. We are presenting. We do not impose an answer, but let you experiment with your own hands. '
+        'Move the sliders. Answer the questions. Watch how stability changes. And ask yourself: '
+        'Why does everything collapse when one pole fails? '
+        'Why does this duality repeat everywhere around us? '
+        'Is there "truth" and "falsehood" embedded in the core of existence, not just in books of ethics?'
         )}</p>
         <p style="text-align:center;color:#FFD700;font-size:1.2em;font-weight:bold;">S = W x B</p>
         <p>{TXT(
@@ -86,6 +124,14 @@ def render_welcome():
         
         **١١. مدرسة آل البيت:** نماذج الثبات في الفتنة.
         
+        **١٢. الملاحق الموسوعية:** مراجع متخصصة.
+        
+        **١٣. القانون الكوني:** الولاء والبراء في مستويات الوجود.
+        
+        **١٤. القانون الشامل:** التناظر بين أركان الإسلام والقوى الأربع.
+        
+        **١٥. أسرار الحروف:** المعجم الهندسي العميق.
+        
         **المعادلة المركزية:** **S = W × B** (العلاقة **ضرب لا جمع**).
         """,
         """
@@ -102,6 +148,10 @@ def render_welcome():
         **9. Network:** Connect with steadfast believers.
         **10. Academy:** Learn the theory via courses.
         **11. Ahlul Bayt:** Models of stability in strife.
+        **12. Appendices:** Specialized references.
+        **13. Cosmic Law:** Loyalty and disavowal in existence.
+        **14. Universal Law:** Correspondence with the four forces.
+        **15. Letter Secrets:** Deep geometric lexicon.
         
         **Central Equation:** **S = W x B** (multiplication, not addition).
         """))
@@ -111,7 +161,6 @@ def render_welcome():
 # تبويب ١: بوصلة الإسلام الحنيف
 # =============================================
 def render_compass():
-    """عرض تبويب البوصلة التفاعلية."""
     st.header(TXT("🧍 بوصلة الإسلام الحنيف – اكتشف موقعك بدقة", "🧍 Compass – Discover Your Precise Position"))
     
     col_set1, col_set2 = st.columns([3, 1])
@@ -124,10 +173,7 @@ def render_compass():
         use_ai = st.checkbox(TXT("🤖 استخدام الذكاء الاصطناعي", "🤖 Use AI"), key="compass_ai")
 
     if use_ai:
-        st.info(TXT(
-            "اكتب وصفًا لحالتك ليقوم الذكاء الاصطناعي بتقدير إجاباتك.",
-            "Describe your condition for AI to estimate."
-        ))
+        st.info(TXT("اكتب وصفًا لحالتك ليقوم الذكاء الاصطناعي بتقدير إجاباتك.", "Describe your condition for AI to estimate."))
         ai_text = st.text_area(TXT("الوصف:", "Description:"), height=100, key="ai_compass_text")
         if st.button(TXT("تحليل بالذكاء الاصطناعي", "Analyze with AI"), key="btn_ai_compass"):
             with st.spinner(TXT("جاري التحليل...", "Analyzing...")):
@@ -193,7 +239,6 @@ def render_compass():
         ax.tick_params(colors='white')
         st.pyplot(fig)
         
-        # أزرار الحفظ والتحميل
         st.markdown("---")
         col_save, col_load = st.columns(2)
         with col_save:
@@ -213,7 +258,6 @@ def render_compass():
 # تبويب ٢: مختبر الأمة المتكامل
 # =============================================
 def render_nation_lab():
-    """عرض تبويب مختبر الأمة مع المنزلقات والذكاء الاصطناعي."""
     st.header(TXT("🏛️ مختبر الأمة – المنزلقات والذكاء الاصطناعي", "🏛️ Nation Lab – Sliders & AI"))
     
     with st.expander(TXT("🎛️ مؤشرات الطاقة الروحية", "🎛️ Spiritual Energy Indicators"), expanded=True):
@@ -392,7 +436,6 @@ def render_nation_lab():
 # تبويب ٣: المشهد الكوني الحي
 # =============================================
 def render_cosmic_scene():
-    """عرض المشهد الكوني الحي."""
     st.header(TXT("🌌 المشهد الكوني الحي", "🌌 Live Cosmic Scene"))
     
     with st.expander(TXT("⚙️ إعدادات المشهد", "⚙️ Scene Settings"), expanded=False):
@@ -501,7 +544,6 @@ def render_cosmic_scene():
 # تبويب ٤: المعجم الهندسي
 # =============================================
 def render_lexicon():
-    """عرض المعجم الهندسي للحروف وقيمها."""
     st.header(TXT("📖 المعجم الهندسي – الحروف وقيمها", "📖 Geometric Lexicon – Letters & Values"))
     st.markdown(TXT(
         "هذا المعجم يربط كل حرف بقيمته العددية (حساب الجمل) ودوره الوجودي في معادلة الميزان.",
@@ -529,13 +571,18 @@ def render_lexicon():
         import pandas as pd
         df = pd.DataFrame(list(lets.items()), columns=[TXT('الحرف', 'Letter'), TXT('القيمة', 'Value')])
         st.dataframe(df, hide_index=True, use_container_width=True)
+    
+    # إضافة شرح ك+ن=ع
+    st.info(TXT(
+        "🔮 **المعادلة الأولى للوجود:** ك + ن = ع (20 + 50 = 70). الأمر (كُن) + النور = الإدراك (العلم).",
+        "🔮 **The First Equation of Existence:** K + N = A (20 + 50 = 70). Command (Be) + Light = Perception (Knowledge)."
+    ))
 
 
 # =============================================
 # تبويب ٥: الشواهد التاريخية
 # =============================================
 def render_evidence():
-    """عرض الشواهد التاريخية والمقارنة."""
     st.header(TXT("📜 الشواهد التاريخية – حين ينطق التاريخ مصدقًا للمعادلة",
                    "📜 Historical Evidence – When History Bears Witness"))
 
@@ -617,7 +664,6 @@ def render_evidence():
 # تبويب ٦: هندسة الصراط
 # =============================================
 def render_path_geometry():
-    """عرض تبويب هندسة الصراط."""
     st.header(TXT("📐 هندسة الصراط – البرهان النبوي والنموذج الإبراهيمي",
                    "📐 Path Geometry – Prophetic Proof & Abrahamic Model"))
 
@@ -770,3 +816,15 @@ def render_new_academy():
 
 def render_new_ahlulbayt():
     render_ahlulbayt()
+
+def render_new_appendices():
+    render_appendices()
+
+def render_new_cosmic_law():
+    render_cosmic_law()
+
+def render_new_universal_law():
+    render_universal_law()
+
+def render_new_letter_deep_dive():
+    render_letter_deep_dive()
