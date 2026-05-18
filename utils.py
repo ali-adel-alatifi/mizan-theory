@@ -1,7 +1,7 @@
 # mizan/utils.py
 """
 وحدة الأدوات المساعدة
-تحتوي: تحليل الذكاء الاصطناعي، رسم الخرائط، الرسائل التحفيزية، حفظ/تحميل البيانات
+تحتوي: تحليل الذكاء الاصطناعي، رسم الخرائط، الرسائل التحفيزية، حفظ/تحميل البيانات، تصدير التقارير
 """
 
 import streamlit as st
@@ -35,13 +35,6 @@ def get_openai_client():
 def ai_analyze_compass(description, compass_data):
     """
     تحليل وصف المستخدم عبر الذكاء الاصطناعي لملء إجابات البوصلة.
-    
-    المعاملات:
-        description: النص الوصفي من المستخدم
-        compass_data: قائمة أسئلة البوصلة من config
-    
-    الإرجاع:
-        قائمة بـ 19 قيمة (0-3) تمثل إجابات الأسئلة، أو None عند الفشل
     """
     client = get_openai_client()
     if not client:
@@ -80,13 +73,6 @@ Description: {description}"""
 def ai_fill_sliders(description, indicators_meta):
     """
     تحليل وصف دولة/مجتمع عبر الذكاء الاصطناعي لملء المنزلقات.
-    
-    المعاملات:
-        description: النص الوصفي
-        indicators_meta: قائمة المؤشرات من config
-    
-    الإرجاع:
-        قاموس يحتوي على values, W_pure, E_val, analysis، أو None عند الفشل
     """
     client = get_openai_client()
     if not client:
@@ -142,15 +128,12 @@ def plot_quadrant_map(B_raw, W_raw, istidraj_gap=0.0):
     ax.set_xlabel(TXT("B (البراءة)", "B (Disavowal)"), color='white')
     ax.set_ylabel(TXT("W (الولاء)", "W (Faith)"), color='white')
 
-    # الأرباع
     ax.fill_between([0, 1.2], 0, 1.2, color='#FFD700', alpha=0.3, label=TXT('المؤمنون', 'Believers'))
     ax.fill_between([-1.2, 0], 0, 1.2, color='#FF5252', alpha=0.2, label=TXT('المغضوب عليهم', 'Wrath'))
     ax.fill_between([-1.2, 0], -1.2, 0, color='#FFB6C1', alpha=0.2, label=TXT('المنافقون', 'Hypocrites'))
     ax.fill_between([0, 1.2], -1.2, 0, color='#FFA500', alpha=0.2, label=TXT('الضالون', 'Astray'))
 
-    # النقطة الحالية
     ax.scatter(B_raw, W_raw, s=300, c='cyan', edgecolors='white', linewidth=2, zorder=10)
-    # مقام إبراهيم
     ax.scatter(1, 1, s=100, c='#FFD700', edgecolors='white', linewidth=2, zorder=10, marker='*')
     ax.text(1, 1.15, TXT('مقام إبراهيم', 'Abraham'), color='#FFD700', fontsize=8, ha='center')
 
@@ -174,9 +157,7 @@ ABRAHAMIC_VERSE = TXT(
 )
 
 def get_spiritual_nudge(situation):
-    """
-    إرجاع رسالة تحفيزية حسب موقف المستخدم من مقام إبراهيم.
-    """
+    """إرجاع رسالة تحفيزية حسب موقف المستخدم من مقام إبراهيم."""
     if situation == "approaching":
         return TXT(
             f'🌟 لقد اقتربتَ من مقام إبراهيم عليه السلام!\n\n'
@@ -245,9 +226,7 @@ def get_spiritual_nudge(situation):
 
 def generate_report(W_raw, B_raw, S_final, E_val, istidraj_gap, gate_name, gate_msg,
                     compass_data=None, answers_dict=None, slider_vals=None):
-    """
-    توليد تقرير نصي منسق بنتائج التحليل.
-    """
+    """توليد تقرير نصي منسق بنتائج التحليل."""
     lines = []
     lines.append("=" * 60)
     lines.append(TXT("تقرير مختبر الميزان", "Mizan Lab Report"))
