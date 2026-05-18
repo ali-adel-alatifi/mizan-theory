@@ -53,7 +53,7 @@ HEALER_QUESTIONS = [
     {
         "id": "company",
         "text": TXT(
-            "من تصاحب؟ فالم رء على دين خليله. من هم رفقتك في الطريق؟",
+            "من تصاحب؟ فالمرء على دين خليله. من هم رفقتك في الطريق؟",
             "Who do you befriend? A person is on the religion of their friend. Who are your companions?"
         ),
         "options": [
@@ -82,7 +82,7 @@ HEALER_QUESTIONS = [
 # 2. روشتات – من الكتاب والسنة إلى خطة عملية
 # =============================================
 HEALING_PRESCRIPTIONS = {
-    "شهوة تحاصرني": {
+    TXT("شهوة تحاصرني", "A lust that besieges me"): {
         "diagnosis": TXT(
             "ضعف في البراءة (B). الطاغوت الداخلي (الهوى) يستعبدك. "
             "أنت في الربع الثاني أو الرابع... تريد الخير لكنك لا تقوى على الشر. "
@@ -106,7 +106,7 @@ HEALING_PRESCRIPTIONS = {
             "3. Say each morning: 'O Allah, I ask for Your love...' 4. Delete any app or account that stirs your desire."
         ),
     },
-    "غضب يغلبني": {
+    TXT("غضب يغلبني", "Anger that overcomes me"): {
         "diagnosis": TXT(
             "ضعف في الولاء (W). الغضب نار تحرق الإيمان. "
             "﴿وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ ۗ وَاللَّهُ يُحِبُّ الْمُحْسِنِينَ﴾",
@@ -126,7 +126,7 @@ HEALING_PRESCRIPTIONS = {
             "3. Make wudu immediately. 4. Before sleeping, forgive the one who angered you and pray for them."
         ),
     },
-    "كبر أو عُجب": {
+    TXT("كبر أو عُجب", "Arrogance or vanity"): {
         "diagnosis": TXT(
             "ضعف في البراءة (B). الكبر أول معصية عُصي الله بها. "
             "﴿إِلَّا إِبْلِيسَ أَبَىٰ وَاسْتَكْبَرَ وَكَانَ مِنَ الْكَافِرِينَ﴾",
@@ -148,7 +148,7 @@ HEALING_PRESCRIPTIONS = {
             "4. Remember you are from dust and to dust you shall return."
         ),
     },
-    "تعلّق قلبي بالدنيا": {
+    TXT("تعلّق قلبي بالدنيا", "My heart is attached to this world"): {
         "diagnosis": TXT(
             "ضعف في الولاء (W). حب الدنيا رأس كل خطيئة. "
             "﴿وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ﴾",
@@ -179,7 +179,7 @@ def render_healer():
     """عرض طبيب القلوب التفاعلي."""
     
     # --- الغلاف الافتتاحي ---
-    st.header("🩺 طبيب القلوب")
+    st.header(TXT("🩺 طبيب القلوب", "🩺 Heart Healer"))
     st.markdown(TXT(
         """
         ### ﴿أَلَمْ يَأْنِ لِلَّذِينَ آمَنُوا أَن تَخْشَعَ قُلُوبُهُمْ لِذِكْرِ اللَّهِ﴾
@@ -222,7 +222,7 @@ def render_healer():
     # بعد اكتمال التشخيص
     else:
         # تحديد المشكلة الرئيسية من إجابة السؤال الثالث (الذنب)
-        main_issue = st.session_state.healer_answers.get("sins", "شهوة تحاصرني")
+        main_issue = st.session_state.healer_answers.get("sins", TXT("شهوة تحاصرني", "A lust that besieges me"))
         # نبحث عن الكلمة المفتاحية في إجابته
         issue_key = None
         for key in HEALING_PRESCRIPTIONS:
@@ -230,7 +230,7 @@ def render_healer():
                 issue_key = key
                 break
         if not issue_key:
-            issue_key = "شهوة تحاصرني"  # افتراضي
+            issue_key = TXT("شهوة تحاصرني", "A lust that besieges me")
 
         pres = HEALING_PRESCRIPTIONS[issue_key]
 
@@ -241,20 +241,28 @@ def render_healer():
 
         # --- محاكاة حساب الموقع (W, B) ---
         mood_map = {
-            "مطمئن بذكر الله": 0.9, "متقلب بين اليقين والغفلة": 0.4,
-            "فيه قلق وضيق لا أعرف سببه": 0.1, "قاسی کالحجارة أو أشد قسوة": -0.6
+            TXT("مطمئن بذكر الله", "At peace with Allah's remembrance"): 0.9,
+            TXT("متقلب بين اليقين والغفلة", "Fluctuating between certainty and heedlessness"): 0.4,
+            TXT("فيه قلق وضيق لا أعرف سببه", "Anxiety and tightness I can't explain"): 0.1,
+            TXT("قاسی کالحجارة أو أشد قسوة", "Hard as stone, or even harder"): -0.6
         }
         prayer_map = {
-            "أقيمها وأجد فيها راحتي وسكينتي": 1.0, "أصليها في وقتها لكني مشغول القلب": 0.4,
-            "أصليها متأخرة وأحياناً تفوتني": -0.2, "ثقيلة عليّ... لا أجد لها طعماً": -0.7
+            TXT("أقيمها وأجد فيها راحتي وسكينتي", "I establish it and find my rest in it"): 1.0,
+            TXT("أصليها في وقتها لكني مشغول القلب", "I pray on time but my heart is distracted"): 0.4,
+            TXT("أصليها متأخرة وأحياناً تفوتني", "I delay it and sometimes miss it"): -0.2,
+            TXT("ثقيلة عليّ... لا أجد لها طعماً", "It's heavy on me... I find no taste in it"): -0.7
         }
         company_map = {
-            "أصحاب يعينونني على ذكر الله وطاعته": 0.8, "أهلي وعائلتي...": 0.3,
-            "زملاء عمل أو دراسة": 0.0, "وحيد... لا صاحب لي ولا رفيق": -0.4
+            TXT("أصحاب يعينونني على ذكر الله وطاعته", "Friends who help me remember Allah"): 0.8,
+            TXT("أهلي وعائلتي...", "My family..."): 0.3,
+            TXT("زملاء عمل أو دراسة", "Work or study colleagues, superficial"): 0.0,
+            TXT("وحيد... لا صاحب لي ولا رفيق", "Alone... I have no friend or companion"): -0.4
         }
         quran_map = {
-            "أتلو منه كل يوم ولو قليلاً بتدبر": 1.0, "أقرؤه في رمضان وأحياناً في غيره": 0.3,
-            "أسمعه فقط ولا أفتح المصحف": -0.1, "هجرته... يمر الشهر ولا أقرأ منه شيئاً": -0.6
+            TXT("أتلو منه كل يوم ولو قليلاً بتدبر", "I recite daily, even a little, with reflection"): 1.0,
+            TXT("أقرؤه في رمضان وأحياناً في غيره", "I read it in Ramadan and occasionally outside"): 0.3,
+            TXT("أسمعه فقط ولا أفتح المصحف", "I only listen, I don't open the Mushaf"): -0.1,
+            TXT("هجرته... يمر الشهر ولا أقرأ منه شيئاً", "I abandoned it... months pass without reading"): -0.6
         }
 
         w_raw = (
@@ -275,12 +283,12 @@ def render_healer():
 
         # --- الروشتة العلاجية ---
         st.markdown("---")
-        st.subheader("💊 الروشتة العلاجية")
-        st.markdown("#### 📖 آيات تتدبرها:")
+        st.subheader(TXT("💊 الروشتة العلاجية", "💊 The Prescription"))
+        st.markdown(TXT("#### 📖 آيات تتدبرها:", "#### 📖 Verses to reflect on:"))
         for v in pres["verses"]:
             st.info(v)
-        st.markdown(f"#### 🕋 حديث شريف:\n{pres['hadith']}")
-        st.markdown(f"#### 🏃 خطة عملية:\n{pres['action']}")
+        st.markdown(TXT(f"#### 🕋 حديث شريف:\n{pres['hadith']}", f"#### 🕋 Hadith:\n{pres['hadith']}"))
+        st.markdown(TXT(f"#### 🏃 خطة عملية:\n{pres['action']}", f"#### 🏃 Action Plan:\n{pres['action']}"))
 
         # --- رسالة أمل ---
         st.markdown("---")
