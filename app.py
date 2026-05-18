@@ -1,7 +1,7 @@
 # mizan/app.py
 """
 المدخل الرئيسي لتطبيق مختبر الميزان
-يربط جميع الوحدات ويعرض الواجهة
+يدعم الترجمة الكاملة واتجاه RTL/LTR
 """
 
 import streamlit as st
@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
 
-# استيراد الوحدات المحلية
 from config import TXT, INDICATORS_META, N_IND
 from components import (render_welcome, render_compass, render_nation_lab,
                         render_cosmic_scene, render_lexicon, render_evidence,
@@ -19,6 +18,25 @@ from components import (render_welcome, render_compass, render_nation_lab,
                         render_new_appendices, render_new_cosmic_law,
                         render_new_universal_law, render_new_letter_deep_dive)
 from ui_enhancements import apply_global_css, render_enhanced_sidebar, render_enhanced_header, render_enhanced_footer
+
+# =============================================
+# دوال مساعدة للترجمة والاتجاه
+# =============================================
+def set_rtl():
+    st.markdown("""
+    <style>
+    html, body, .stApp { direction: rtl; text-align: right; }
+    .stMarkdown, .stText, .stInfo, .stSuccess, .stWarning, .stError { text-align: right; }
+    </style>
+    """, unsafe_allow_html=True)
+
+def set_ltr():
+    st.markdown("""
+    <style>
+    html, body, .stApp { direction: ltr; text-align: left; }
+    .stMarkdown, .stText, .stInfo, .stSuccess, .stWarning, .stError { text-align: left; }
+    </style>
+    """, unsafe_allow_html=True)
 
 # =============================================
 # إعدادات الصفحة
@@ -51,6 +69,14 @@ if 'init' not in st.session_state:
     st.session_state.path_kappa = [0.0]
     st.session_state.spiritual_nudge = None
     st.session_state.init = True
+
+# =============================================
+# ضبط اتجاه الصفحة حسب اللغة
+# =============================================
+if st.session_state.lang == "ar":
+    set_rtl()
+else:
+    set_ltr()
 
 # =============================================
 # الشريط الجانبي
