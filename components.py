@@ -134,7 +134,6 @@ def render_welcome():
         **Central Equation:** **S = W x B** (multiplication, not addition).
         """))
 
-
 # =============================================
 # تبويب ١: بوصلة الإسلام الحنيف
 # =============================================
@@ -230,7 +229,6 @@ def render_compass():
         if st.button(TXT("🔄 إعادة", "🔄 Retake"), use_container_width=True, key="btn_compass_reset"):
             st.session_state.compass_answers = {}
             st.rerun()
-
 
 # =============================================
 # تبويب ٢: مختبر الأمة المتكامل
@@ -409,7 +407,6 @@ def render_nation_lab():
             hide_index=True, use_container_width=True
         )
 
-
 # =============================================
 # تبويب ٣: المشهد الكوني الحي
 # =============================================
@@ -517,13 +514,6 @@ def render_cosmic_scene():
     else:
         st.info(TXT("اضغط ▶️ تشغيل", "Press ▶️ Run"))
 
-
-# =============================================
-# تبويب ٤: المعجم الهندسي (الجديد – دمج المعجم + أسرار الحروف)
-# =============================================
-# (تم نقله إلى ملف lexicon.py)
-
-
 # =============================================
 # تبويب ٥: الشواهد التاريخية
 # =============================================
@@ -603,7 +593,6 @@ def render_evidence():
         ax_comp.legend(facecolor='#0a0f1e', edgecolor='white', labelcolor='white', fontsize=10)
         ax_comp.tick_params(colors='white'); ax_comp.grid(True, alpha=0.2, axis='y')
         plt.tight_layout(); st.pyplot(fig_comp)
-
 
 # =============================================
 # تبويب ٦: هندسة الصراط
@@ -742,7 +731,6 @@ def render_path_geometry():
         </p>
     </div>
     """, unsafe_allow_html=True)
-
 
 # =============================================
 # دوال استدعاء التبويبات الجديدة
