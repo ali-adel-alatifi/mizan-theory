@@ -8,9 +8,6 @@ import streamlit as st
 import pandas as pd
 from config import TXT
 
-# =============================================
-# 2. واجهة شبكة الناجين
-# =============================================
 def render_network():
     """عرض شبكة الناجين."""
 
@@ -32,7 +29,6 @@ def render_network():
             {"from": "أبو عبد الله", "msg": "السلام عليكم ورحمة الله وبركاته. ثبتنا الله وإياكم على الصراط المستقيم."},
             {"from": "أم محمد", "msg": "وعليكم السلام. من كان له ورد قرآن هذا الأسبوع؟"},
         ]
-    # -------------------------------------------------------------
 
     st.header("🤝 شبكة الناجين – حبل الله الرقمي")
     st.markdown(TXT(
@@ -44,19 +40,15 @@ def render_network():
         "This network gathers people of stability. Join them and find a companion on the path."
     ))
 
-    # تبويبات داخل الشبكة
     net_tab1, net_tab2, net_tab3 = st.tabs([
         TXT("🗺️ خريطة الناجين", "🗺️ Survivors Map"),
         TXT("💬 المنتدى", "💬 Forum"),
         TXT("🔍 ابحث عن رفيق", "🔍 Find a Companion"),
     ])
 
-    # ----- التبويب 1: خريطة الناجين -----
     with net_tab1:
         st.subheader(TXT("🗺️ خريطة الناجين حول العالم", "🗺️ Survivors Map Worldwide"))
         df = pd.DataFrame(st.session_state.survivors_db)
-
-        # إضافة إحداثيات وهمية للمدن
         city_coords = {
             "مكة المكرمة": (21.42, 39.83), "المدينة المنورة": (24.47, 39.61),
             "إسطنبول": (41.01, 28.98), "القاهرة": (30.04, 31.24),
@@ -65,11 +57,8 @@ def render_network():
         }
         df["lat"] = df["city"].map(lambda c: city_coords.get(c, (0,0))[0])
         df["lon"] = df["city"].map(lambda c: city_coords.get(c, (0,0))[1])
-
-        # عرض الخريطة
         st.map(df[df["lat"] != 0], latitude="lat", longitude="lon", size=10)
 
-        # جدول الناجين
         st.markdown("---")
         st.subheader(TXT("📋 سجل الناجين", "📋 Survivors Registry"))
         st.dataframe(
@@ -80,16 +69,11 @@ def render_network():
             hide_index=True, use_container_width=True
         )
 
-    # ----- التبويب 2: المنتدى -----
     with net_tab2:
         st.subheader(TXT("💬 منتدى الناجين", "💬 Survivors Forum"))
         st.caption(TXT("اكتب رسالة قصيرة لإخوانك في الشبكة.", "Write a short message to your brothers in the network."))
-
-        # عرض الرسائل السابقة
-        for msg in st.session_state.forum_messages[-10:]:  # آخر 10 رسائل
+        for msg in st.session_state.forum_messages[-10:]:
             st.markdown(f"**{msg['from']}**: {msg['msg']}")
-
-        # إرسال رسالة جديدة
         with st.form("new_message", clear_on_submit=True):
             user_name = st.text_input(TXT("اسمك:", "Your name:"), placeholder=TXT("أبو فلان", "Abu Fulan"))
             user_msg = st.text_area(TXT("رسالتك:", "Your message:"), placeholder=TXT("اكتب رسالة...", "Write a message..."))
@@ -98,15 +82,10 @@ def render_network():
                     st.session_state.forum_messages.append({"from": user_name, "msg": user_msg})
                     st.rerun()
 
-    # ----- التبويب 3: البحث عن رفيق -----
     with net_tab3:
         st.subheader(TXT("🔍 ابحث عن رفيق الصراط", "🔍 Find a Path Companion"))
-        st.caption(TXT(
-            "أدخل مدينتك أو بلدك لتجد أقرب الناجين إليك.",
-            "Enter your city or country to find survivors near you."
-        ))
+        st.caption(TXT("أدخل مدينتك أو بلدك لتجد أقرب الناجين إليك.", "Enter your city or country to find survivors near you."))
         search_city = st.text_input(TXT("المدينة:", "City:"), placeholder=TXT("مثال: إسطنبول", "Example: Istanbul"))
-
         if search_city:
             df = pd.DataFrame(st.session_state.survivors_db)
             matches = df[df["city"].str.contains(search_city, case=False)]
@@ -117,7 +96,6 @@ def render_network():
             else:
                 st.warning(TXT("لم نجد ناجين في هذه المدينة بعد. كن أنت الأول!", "No survivors found yet. Be the first!"))
 
-    # ----- الانضمام إلى الشبكة -----
     st.markdown("---")
     st.subheader(TXT("🕋 انضم إلى الشبكة", "🕋 Join the Network"))
     with st.form("join_network", clear_on_submit=True):
