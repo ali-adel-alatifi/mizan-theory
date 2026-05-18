@@ -1,6 +1,6 @@
 # mizan/ahlulbayt.py
 """
-مدرسة آل البيت - الثبات في الفتنة
+مدرسة آل البيت – الثبات في الفتنة
 النماذج العليا: الإمام علي، الحسن، الحسين رضي الله عنهم
 """
 
@@ -24,10 +24,12 @@ AHLULBAYT_DATA = [
         ),
         "W": 0.98, "B": 0.98, "S": 0.96,
         "lessons": TXT(
-            "**الولاء الخالص:** لم يسجد لصنم قط (W=1). **البراءة العملية:** وقف في وجه الفتن والانحرافات بكل حزم (B=1). "
-            "**الثبات:** ظل ثابتاً على الحق في السلم والحرب، في العسر واليسر.",
-            "**Pure Loyalty:** Never prostrated to an idol (W=1). **Practical Disavowal:** Stood firm against strife and deviation (B=1). "
-            "**Stability:** Remained steadfast in peace and war."
+            "**الولاء الخالص:** لم يسجد لصنم قط، فعُرف بـ 'كرّم الله وجهه'. نشأ في حجر النبوة، فكان أول من آمن. "
+            "**البراءة العملية:** وقف في وجه الفتن والانحرافات بكل حزم؛ حارب المارقين والقاسطين والناكثين. "
+            "**الثبات:** ظل ثابتاً على الحق في السلم والحرب، في العسر واليسر، حتى استُشهد وهو في محراب عبادته.",
+            "**Pure Loyalty:** Never prostrated to an idol, known as 'Karram Allahu Wajhah'. Raised in the Prophet's care, he was the first to believe. "
+            "**Practical Disavowal:** Stood firm against strife and deviation; fought the renegades, the oppressors, and the oath-breakers. "
+            "**Stability:** Remained steadfast on truth in peace and war, in hardship and ease, until martyred in his prayer niche."
         ),
         "test": {
             "question": TXT("بماذا لقب الإمام علي؟", "What was Imam Ali's title?"),
@@ -46,10 +48,12 @@ AHLULBAYT_DATA = [
         ),
         "W": 0.95, "B": 0.85, "S": 0.81,
         "lessons": TXT(
-            "**الولاء العالي:** حفيد رسول الله، نشأ في بيت النبوة (W عالٍ). **البراءة الحكيمة:** تنازل عن الخلافة حقناً لدماء المسلمين (براءة من الفتنة والفرقة). "
-            "**الثبات:** ثبت على مبدأه في الحفاظ على وحدة الأمة.",
-            "**High Loyalty:** Grandson of the Prophet, raised in the prophetic house. **Wise Disavowal:** Gave up the caliphate to spare Muslim blood (disavowal of discord). "
-            "**Stability:** Remained steadfast in preserving the Ummah's unity."
+            "**الولاء العالي:** سيد شباب أهل الجنة، حفيد رسول الله، نشأ في بيت النبوة وتغذى من معينها. "
+            "**البراءة الحكيمة:** تنازل عن الخلافة حقناً لدماء المسلمين، وبراءةً من الفتنة والفرقة، فجمع الله به القلوب. "
+            "**الثبات:** ثبت على مبدأ الحفاظ على وحدة الأمة، وفضّل الإصلاح على السلطان.",
+            "**High Loyalty:** Master of the youth of Paradise, grandson of the Prophet, raised in the prophetic house. "
+            "**Wise Disavowal:** Gave up the caliphate to spare Muslim blood, a disavowal of discord and division, and Allah united hearts through him. "
+            "**Stability:** Remained steadfast on preserving the Ummah's unity, preferring reform over power."
         ),
         "test": {
             "question": TXT("ما أعظم ما فعله الحسن لوحدة الأمة؟", "What great act did Hassan do for unity?"),
@@ -68,10 +72,12 @@ AHLULBAYT_DATA = [
         ),
         "W": 1.0, "B": 1.0, "S": 1.0,
         "lessons": TXT(
-            "**الولاء المطلق:** بذل نفسه وروحه وأهله في سبيل الله (W=1). **البراءة القصوى:** واجه الطاغوت بكل وضوح حتى الشهادة (B=1). "
-            "**الثبات الأبدي:** أصبحت واقعة كربلاء رمزاً خالداً للثبات على الحق في وجه الظلم.",
-            "**Absolute Loyalty:** Gave himself, his soul, and his family for Allah (W=1). **Ultimate Disavowal:** Confronted tyranny until martyrdom (B=1). "
-            "**Eternal Stability:** Karbala became an eternal symbol of steadfastness."
+            "**الولاء المطلق:** بذل نفسه وروحه وأهله في سبيل الله، فكانت كربلاء ذروة الفداء والتسليم. "
+            "**البراءة القصوى:** واجه الطاغوت بكل وضوح حتى الشهادة، رافعاً راية: 'لا والله لا أعطيكم بيدي إعطاء الذليل، ولا أقر لكم إقرار العبيد'. "
+            "**الثبات الأبدي:** أصبحت واقعة كربلاء رمزاً خالداً للثبات على الحق في وجه الظلم، تلهب قلوب المؤمنين جيلاً بعد جيل.",
+            "**Absolute Loyalty:** Gave himself, his soul, and his family for Allah; Karbala became the peak of sacrifice and submission. "
+            "**Ultimate Disavowal:** Confronted tyranny with absolute clarity until martyrdom, raising the banner: 'No, by Allah, I will not give you my hand like a humiliated person, nor will I flee like a slave.' "
+            "**Eternal Stability:** Karbala became an eternal symbol of steadfastness against injustice, igniting the hearts of believers generation after generation."
         ),
         "test": {
             "question": TXT("ما هدف خروج الحسين كما قال؟", "What was Hussein's goal in his own words?"),
@@ -89,16 +95,17 @@ def render_ahlulbayt():
     st.header(TXT("🏴 مدرسة آل البيت – الثبات في الفتنة", "🏴 School of Ahlul Bayt – Stability in Strife"))
     st.markdown(TXT(
         "### ﴿إِنَّمَا يُرِيدُ اللَّهُ لِيُذْهِبَ عَنكُمُ الرِّجْسَ أَهْلَ الْبَيْتِ وَيُطَهِّرَكُمْ تَطْهِيرًا﴾",
-        "### Allah only intends to keep away impurity from you, O People of the Household."
+        "### Allah only intends to keep away impurity from you, O People of the Household, and to purify you thoroughly."
     ))
     st.caption(TXT(
-        "هؤلاء هم الذين جسّدوا معادلة الثبات (S = W x B) في أقسى الفتن وأصعب الامتحانات. انظر كيف توزعوا على فضاء القيم.",
-        "These are those who embodied the stability equation in the harshest trials."
+        "هؤلاء هم الذين جسّدوا معادلة الثبات (S = W × B) في أقسى الفتن وأصعب الامتحانات. "
+        "تأمل في سيرهم، وانظر أين موقعك منهم، واسأل نفسك: أين أنا من هذا الثبات؟",
+        "These are those who embodied the stability equation (S = W × B) in the harshest trials. "
+        "Reflect on their lives, see where you stand among them, and ask yourself: Where am I in relation to this stability?"
     ))
 
     # عرض النماذج الثلاثة
     cols = st.columns(3)
-
     for i, person in enumerate(AHLULBAYT_DATA):
         with cols[i]:
             st.markdown(f"""
@@ -114,7 +121,7 @@ def render_ahlulbayt():
     # عرض مفصل لكل منهم
     st.markdown("---")
     selected_person = st.selectbox(
-        TXT("اختر نموذجاً للتفصيل:", "Choose a model for details:"),
+        TXT("اختر نموذجاً للتفصيل والتأمل:", "Choose a model for details and reflection:"),
         [p["name"] for p in AHLULBAYT_DATA]
     )
 
@@ -128,7 +135,7 @@ def render_ahlulbayt():
         st.markdown(person["lessons"])
 
     with col2:
-        # مخطط دائري لمؤشراته
+        # مخطط مؤشراته
         fig, ax = plt.subplots(figsize=(5, 5), facecolor='#0a0f1e')
         ax.set_facecolor('#0a0f1e')
         labels = ['W (الولاء)', 'B (البراءة)', 'S (الثبات)']
