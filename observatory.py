@@ -10,6 +10,40 @@ import plotly.express as px
 from logic import calculate_S
 from live_data import fetch_live_indicators, build_world_data
 
+# =============================================
+# دالة إصلاح النصوص العربية
+# =============================================
+def fix_rtl_display():
+    """إصلاح مشكلة عرض النصوص العربية في Streamlit"""
+    st.markdown("""
+    <style>
+    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
+    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
+        direction: rtl !important;
+        text-align: right !important;
+        unicode-bidi: plaintext !important;
+    }
+    /* العناوين الرئيسية */
+    .stTitle, .stHeader, .stSubheader {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* صناديق المعلومات */
+    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* جداول البيانات */
+    .stDataFrame {
+        direction: rtl !important;
+    }
+    /* أسماء الدول في المخططات */
+    .gtitle, .gsubtitle {
+        direction: rtl !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 WORLD_DATA_SIMULATED = [
     {"country": "السعودية", "iso": "SAU", "pop": 36, "gdp": 23000, "worship": 0.9, "charity": 0.7, "justice": 0.7, "consult": 0.6, "loyalty": 0.8, "prayer": 0.8, "crime": 0.2, "divorce": 0.3, "suicide": 0.1, "alcohol": 0.05, "riba": 0.4, "taghut": 0.3},
     {"country": "الإمارات", "iso": "ARE", "pop": 10, "gdp": 50000, "worship": 0.7, "charity": 0.8, "justice": 0.6, "consult": 0.4, "loyalty": 0.7, "prayer": 0.7, "crime": 0.2, "divorce": 0.3, "suicide": 0.1, "alcohol": 0.3, "riba": 0.7, "taghut": 0.3},
@@ -96,11 +130,25 @@ def compute_world_mizan():
         W_pure = True
         B_compassion = (1 - d["divorce"]) * 2 - 1
         B_disavowal = (1 - d["taghut"]) * 2 - 1
-        S_final, E_val, gate_name, gate_msg, gate_color, istidraj_gap = calculate_S(W_raw, B_raw, d["gdp"] / 100000, W_pure, B_compassion, B_disavowal)
-        results.append({"الدولة": d["country"], "ISO": d["iso"], "السكان (مليون)": d["pop"], "الناتج (GDP)": d["gdp"], "W": round(W_raw, 3), "B": round(B_raw, 3), "S (الثبات)": round(S_final, 3), "فجوة الاستدراج": round(istidraj_gap, 3), "الحكم": gate_name})
+        gdp_normalized = min(1.0, d["gdp"] / 100000)
+        S_final, E_val, gate_name, gate_msg, gate_color, istidraj_gap = calculate_S(
+            W_raw, B_raw, gdp_normalized, W_pure, B_compassion, B_disavowal
+        )
+        results.append({
+            "الدولة": d["country"],
+            "ISO": d["iso"],
+            "السكان (مليون)": d["pop"],
+            "الناتج (GDP)": d["gdp"],
+            "W": round(W_raw, 3),
+            "B": round(B_raw, 3),
+            "S (الثبات)": round(S_final, 3),
+            "فجوة الاستدراج": round(istidraj_gap, 3),
+            "الحكم": gate_name
+        })
     return pd.DataFrame(results)
 
 def render_observatory():
+    fix_rtl_display()
     st.header("🌍 المرصد الحضاري العالمي")
     st.markdown("### 📡 محطة الأرصاد الحضارية – القانون الكوني الحي")
     st.caption("النقاط الذهبية = ثبات | النقاط البرتقالية = استدراج | النقاط الحمراء = انهيار")
@@ -112,14 +160,56 @@ def render_observatory():
         elif row["S (الثبات)"] > 0.3: return "#ffdd57"
         else: return "#888888"
     df["اللون"] = df.apply(get_color, axis=1)
-    fig = px.scatter_geo(df, locations="ISO", locationmode="ISO-3", size="السكان (مليون)", color="فجوة الاستدراج", hover_name="الدولة", hover_data={"W": True, "B": True, "S (الثبات)": True, "فجوة الاستدراج": True, "الحكم": True, "السكان (مليون)": True, "الناتج (GDP)": True}, color_continuous_scale=["#ff4444", "#ffaa00", "#ffdd57", "#FFD700"], range_color=[0, 0.5], projection="natural earth", title="خريطة الميزان العالمية – S = W x B")
-    fig.update_geos(showcoastlines=True, coastlinecolor="white", showland=True, landcolor="#0a0f1e")
-    fig.update_layout(geo=dict(bgcolor='rgba(0,0,0,0)'), paper_bgcolor='rgba(0,0,0,0)')
+    fig = px.scatter_geo(
+        df, 
+        locations="ISO", 
+        locationmode="ISO-3", 
+        size="السكان (مليون)", 
+        color="فجوة الاستدراج", 
+        hover_name="الدولة", 
+        hover_data={
+            "W": True, 
+            "B": True, 
+            "S (الثبات)": True, 
+            "فجوة الاستدراج": True, 
+            "الحكم": True, 
+            "السكان (مليون)": True, 
+            "الناتج (GDP)": True
+        }, 
+        color_continuous_scale=["#ff4444", "#ffaa00", "#ffdd57", "#FFD700"], 
+        range_color=[0, 0.5], 
+        projection="natural earth", 
+        title="خريطة الميزان العالمية – S = W x B"
+    )
+    fig.update_geos(
+        showcoastlines=True, 
+        coastlinecolor="white", 
+        showland=True, 
+        landcolor="#0a0f1e"
+    )
+    fig.update_layout(
+        geo=dict(bgcolor='rgba(0,0,0,0)'), 
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(color="white")
+    )
     st.plotly_chart(fig, use_container_width=True)
     st.markdown("---")
     st.subheader("📊 جدول الأمم – الميزان التفصيلي")
     display_cols = ["الدولة", "W", "B", "S (الثبات)", "فجوة الاستدراج", "الحكم"]
-    st.dataframe(df[display_cols].sort_values("S (الثبات)", ascending=False).style.background_gradient(subset=["S (الثبات)"], cmap="YlOrRd").background_gradient(subset=["فجوة الاستدراج"], cmap="RdYlGn_r").format({"W": "{:.3f}", "B": "{:.3f}", "S (الثبات)": "{:.3f}", "فجوة الاستدراج": "{:.3f}"}), hide_index=True, use_container_width=True)
+    st.dataframe(
+        df[display_cols].sort_values("S (الثبات)", ascending=False)
+        .style
+        .background_gradient(subset=["S (الثبات)"], cmap="YlOrRd")
+        .background_gradient(subset=["فجوة الاستدراج"], cmap="RdYlGn_r")
+        .format({
+            "W": "{:.3f}", 
+            "B": "{:.3f}", 
+            "S (الثبات)": "{:.3f}", 
+            "فجوة الاستدراج": "{:.3f}"
+        }),
+        hide_index=True, 
+        use_container_width=True
+    )
     st.markdown("---")
     high_S = df[df["S (الثبات)"] > 0.6]
     high_gap = df[df["فجوة الاستدراج"] > 0.3]
