@@ -16,43 +16,9 @@ from components import (render_welcome, render_compass, render_nation_lab,
                         render_new_healer, render_new_network,
                         render_new_academy, render_new_ahlulbayt,
                         render_new_appendices, render_new_the_one_law,
-                        render_new_spiritual_energy, render_new_civilization_cycle)
+                        render_new_spiritual_energy, render_new_civilization_cycle,
+                        render_social_fabric)
 from ui_enhancements import apply_global_css, render_enhanced_sidebar, render_enhanced_header, render_enhanced_footer
-
-# =============================================
-# دوال مساعدة للترجمة والاتجاه
-# =============================================
-def set_rtl():
-    st.markdown("""
-    <style>
-    html, body, .stApp { direction: rtl; text-align: right; }
-    .stMarkdown, .stText, .stInfo, .stSuccess, .stWarning, .stError { text-align: right; }
-    [data-testid="stSidebar"] {
-        left: auto !important;
-        right: 0 !important;
-    }
-    [data-testid="stAppViewContainer"] {
-        margin-left: 0 !important;
-        margin-right: 300px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-def set_ltr():
-    st.markdown("""
-    <style>
-    html, body, .stApp { direction: ltr; text-align: left; }
-    .stMarkdown, .stText, .stInfo, .stSuccess, .stWarning, .stError { text-align: left; }
-    [data-testid="stSidebar"] {
-        left: 0 !important;
-        right: auto !important;
-    }
-    [data-testid="stAppViewContainer"] {
-        margin-left: 300px !important;
-        margin-right: 0 !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
 # =============================================
 # إعدادات الصفحة
@@ -65,7 +31,7 @@ st.set_page_config(
 )
 
 # =============================================
-# الأنماط CSS
+# الأنماط CSS الشاملة (تشمل إصلاح RTL والرموز)
 # =============================================
 apply_global_css()
 
@@ -87,14 +53,6 @@ if 'init' not in st.session_state:
     st.session_state.init = True
 
 # =============================================
-# ضبط اتجاه الصفحة حسب اللغة
-# =============================================
-if st.session_state.lang == "ar":
-    set_rtl()
-else:
-    set_ltr()
-
-# =============================================
 # الشريط الجانبي
 # =============================================
 render_enhanced_sidebar()
@@ -112,9 +70,9 @@ st.markdown("---")
 render_welcome()
 
 # =============================================
-# التبويبات الـ 15
+# التبويبات الـ 16
 # =============================================
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15, tab16 = st.tabs([
     TXT("🧍 البوصلة", "🧍 Compass"),
     TXT("🏛️ مختبر الأمة", "🏛️ Nation Lab"),
     TXT("🌌 المشهد الكوني", "🌌 Cosmic Scene"),
@@ -129,7 +87,8 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13
     TXT("📚 الملاحق", "📚 Appendices"),
     TXT("⚛️ القانون الواحد", "⚛️ The One Law"),
     TXT("⚡ الطاقة الروحية", "⚡ Spiritual Energy"),
-    TXT("🔄 الدورة الحضارية", "🔄 Civilization Cycle")
+    TXT("🔄 الدورة الحضارية", "🔄 Civilization Cycle"),
+    TXT("🧬 النسيج الاجتماعي", "🧬 Social Fabric")
 ])
 
 with tab1:
@@ -176,6 +135,9 @@ with tab14:
 
 with tab15:
     render_new_civilization_cycle()
+
+with tab16:
+    render_social_fabric()
 
 # =============================================
 # التذييل
