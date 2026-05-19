@@ -30,6 +30,34 @@ st.set_page_config(
 )
 
 # =============================================
+# تعريف جميع متغيرات الجلسة مسبقاً (حل الخطأ)
+# =============================================
+if 'init' not in st.session_state:
+    st.session_state.lang = "ar"
+    st.session_state.slider_values = {f"V{i}": 0.0 for i in range(N_IND)}
+    st.session_state.slider_values["W_pure"] = True
+    st.session_state.slider_values["E_val"] = 0.5
+    st.session_state.compass_answers = {}
+    st.session_state.live_run = False
+    st.session_state.live_init = False
+    st.session_state.path_W = [0.5]
+    st.session_state.path_B = [0.5]
+    st.session_state.path_kappa = [0.0]
+    st.session_state.spiritual_nudge = None
+    
+    # تعريف متغيرات الطاقة الروحية (لحل الخطأ)
+    st.session_state.spiritual_noor = 0.6
+    st.session_state.spiritual_raan = 0.2
+    st.session_state.spiritual_conductivity = 0.7
+    st.session_state.spiritual_multiplier = 1.0
+    st.session_state.prayer_status = 0.5
+    st.session_state.patience_tank = 0.5
+    st.session_state.maun_today = False
+    st.session_state.maun_streak = 0
+    
+    st.session_state.init = True
+
+# =============================================
 # تنسيق CSS لتحسين عرض اللغة العربية
 # =============================================
 st.markdown("""
@@ -145,23 +173,6 @@ st.markdown("""
 
 </style>
 """, unsafe_allow_html=True)
-
-# =============================================
-# تهيئة متغيرات الجلسة
-# =============================================
-if 'init' not in st.session_state:
-    st.session_state.lang = "ar"
-    st.session_state.slider_values = {f"V{i}": 0.0 for i in range(N_IND)}
-    st.session_state.slider_values["W_pure"] = True
-    st.session_state.slider_values["E_val"] = 0.5
-    st.session_state.compass_answers = {}
-    st.session_state.live_run = False
-    st.session_state.live_init = False
-    st.session_state.path_W = [0.5]
-    st.session_state.path_B = [0.5]
-    st.session_state.path_kappa = [0.0]
-    st.session_state.spiritual_nudge = None
-    st.session_state.init = True
 
 # =============================================
 # الشريط الجانبي
