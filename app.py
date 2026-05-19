@@ -1,7 +1,7 @@
 # mizan/app.py
 """
 المدخل الرئيسي لتطبيق مختبر الميزان
-يدعم الترجمة الكاملة
+يدعم الترجمة الكاملة واتجاه RTL/LTR (مع شريط جانبي ديناميكي)
 """
 
 import streamlit as st
@@ -30,42 +30,27 @@ st.set_page_config(
 )
 
 # =============================================
-# تعريف جميع متغيرات الجلسة مسبقاً (حل الخطأ)
+# تحديد اللغة لاستخدامها في CSS
 # =============================================
-if 'init' not in st.session_state:
+if "lang" not in st.session_state:
     st.session_state.lang = "ar"
-    st.session_state.slider_values = {f"V{i}": 0.0 for i in range(N_IND)}
-    st.session_state.slider_values["W_pure"] = True
-    st.session_state.slider_values["E_val"] = 0.5
-    st.session_state.compass_answers = {}
-    st.session_state.live_run = False
-    st.session_state.live_init = False
-    st.session_state.path_W = [0.5]
-    st.session_state.path_B = [0.5]
-    st.session_state.path_kappa = [0.0]
-    st.session_state.spiritual_nudge = None
-    
-    # تعريف متغيرات الطاقة الروحية (لحل الخطأ)
-    st.session_state.spiritual_noor = 0.6
-    st.session_state.spiritual_raan = 0.2
-    st.session_state.spiritual_conductivity = 0.7
-    st.session_state.spiritual_multiplier = 1.0
-    st.session_state.prayer_status = 0.5
-    st.session_state.patience_tank = 0.5
-    st.session_state.maun_today = False
-    st.session_state.maun_streak = 0
-    
-    st.session_state.init = True
+
+is_rtl = (st.session_state.lang == "ar")
 
 # =============================================
-# تنسيق CSS لتحسين عرض اللغة العربية
+# تنسيق CSS الديناميكي (بناءً على اللغة)
 # =============================================
-st.markdown("""
+rtl_css = """
 <style>
-/* تنسيق الخطوط والنصوص العربية */
+/* تنسيق الخطوط */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
 
-/* جعل النصوص العربية تظهر بشكل صحيح */
+/* إعدادات الصفحة الأساسية */
+.stApp {
+    font-family: 'Cairo', sans-serif;
+}
+
+/* إجبار النصوص العربية على الاتجاه الصحيح */
 .arabic-text {
     font-family: 'Cairo', sans-serif;
     direction: rtl !important;
@@ -99,11 +84,6 @@ st.markdown("""
     white-space: normal !important;
     display: block !important;
     width: 100% !important;
-}
-
-/* تنسيق الشريط الجانبي */
-[data-testid="stSidebar"] {
-    background-color: #0d1528;
 }
 
 /* تنسيق الأزرار */
@@ -152,30 +132,37 @@ st.markdown("""
     color: #FFD700 !important;
     font-weight: bold;
 }
-
-/* إصلاح تموضع الشريط الجانبي */
-[data-testid="stSidebar"] {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    height: 100vh !important;
-    z-index: 999 !important;
-    overflow-y: auto !important;
-}
-
-[data-testid="stAppViewContainer"] {
-    margin-left: 300px !important;
-    margin-right: 0 !important;
-    padding-right: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-}
-
 </style>
-""", unsafe_allow_html=True)
+"""
+
+st.markdown(rtl_css, unsafe_allow_html=True)
 
 # =============================================
-# الشريط الجانبي
+# إعدادات اللغة
+# =============================================
+if 'init' not in st.session_state:
+    st.session_state.slider_values = {f"V{i}": 0.0 for i in range(N_IND)}
+    st.session_state.slider_values["W_pure"] = True
+    st.session_state.slider_values["E_val"] = 0.5
+    st.session_state.compass_answers = {}
+    st.session_state.live_run = False
+    st.session_state.live_init = False
+    st.session_state.path_W = [0.5]
+    st.session_state.path_B = [0.5]
+    st.session_state.path_kappa = [0.0]
+    st.session_state.spiritual_nudge = None
+    st.session_state.spiritual_noor = 0.6
+    st.session_state.spiritual_raan = 0.2
+    st.session_state.spiritual_conductivity = 0.7
+    st.session_state.spiritual_multiplier = 1.0
+    st.session_state.prayer_status = 0.5
+    st.session_state.patience_tank = 0.5
+    st.session_state.maun_today = False
+    st.session_state.maun_streak = 0
+    st.session_state.init = True
+
+# =============================================
+# الشريط الجانبي (سيتم عرضه تلقائياً على اليمين إذا كانت اللغة عربية)
 # =============================================
 with st.sidebar:
     st.markdown(f"""
