@@ -34,5 +34,30 @@ def apply_rtl_fix():
         direction: rtl !important;
         text-align: right !important;
     }
+    
+    /* ===== إصلاح عرض الآية القرآنية ===== */
+    .verse-text {
+        word-wrap: break-word !important;
+        white-space: normal !important;
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+    
+    .verse-text span {
+        display: inline-block !important;
+    }
+    
+    .stAlert {
+        word-wrap: break-word !important;
+        white-space: normal !important;
+    }
+    
+    div[data-testid="stMarkdownContainer"] {
+        word-wrap: break-word !important;
+        white-space: normal !important;
+    }
+    /* ===== نهاية إصلاح عرض الآية ===== */
+    
     </style>
     """, unsafe_allow_html=True)
