@@ -8,20 +8,48 @@ import streamlit as st
 import numpy as np
 from config import TXT, LETTERS_DB
 
+# =============================================
+# دالة إصلاح النصوص العربية
+# =============================================
+def fix_rtl_display():
+    """إصلاح مشكلة عرض النصوص العربية في Streamlit"""
+    st.markdown("""
+    <style>
+    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
+    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
+        direction: rtl !important;
+        text-align: right !important;
+        unicode-bidi: plaintext !important;
+    }
+    /* العناوين الرئيسية */
+    .stTitle, .stHeader, .stSubheader {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* صناديق المعلومات */
+    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* الأعمدة */
+    .stColumn {
+        direction: rtl !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 def render_the_one_law():
+    fix_rtl_display()
+    
     st.header(TXT("⚛️ القانون الواحد", "⚛️ The One Law"))
     st.markdown(TXT(
         "### ﴿وَالسَّمَاءَ رَفَعَهَا وَوَضَعَ الْمِيزَانَ﴾ [الرحمن: ٧]",
         "### And the heaven He raised and imposed the balance."
     ))
     
-    # =============================================
-    # ١. تجليات القانون في ستة مستويات
-    # =============================================
     st.markdown("---")
     st.subheader(TXT("🔬 تجليات القانون في مستويات الوجود", "🔬 Manifestations of the Law in Levels of Existence"))
     
-    # المستوى 1: الفيزياء
     st.markdown(TXT(
         """
         ### ١. قانون فيزيائي: الجذب والتنافر
@@ -47,7 +75,6 @@ def render_the_one_law():
         """
     ))
     
-    # المستوى 2: الكيمياء
     st.markdown(TXT(
         """
         ### ٢. قانون كيميائي: الروابط وطاقة التنشيط والتوبة الجزيئية
@@ -75,7 +102,6 @@ def render_the_one_law():
         """
     ))
 
-    # المستوى 3: البيولوجيا
     st.markdown(TXT(
         """
         ### ٣. قانون بيولوجي: المناعة والحماية
@@ -95,7 +121,6 @@ def render_the_one_law():
         """
     ))
     
-    # المستوى 4: الفطرة
     st.markdown(TXT(
         """
         ### ٤. قانون فطري: ميل النفس ونفورها
@@ -113,7 +138,6 @@ def render_the_one_law():
         """
     ))
     
-    # المستوى 5: التاريخ
     st.markdown(TXT(
         """
         ### ٥. قانون تاريخي: صعود الأمم وسقوطها
@@ -133,7 +157,6 @@ def render_the_one_law():
         """
     ))
     
-    # المستوى 6: الشرع
     st.markdown(TXT(
         """
         ### ٦. قانون شرعي: التطبيق الواعي
@@ -153,9 +176,6 @@ def render_the_one_law():
         """
     ))
 
-    # =============================================
-    # ٢. التناظر بين أركان الإسلام والقوى الأربع
-    # =============================================
     st.markdown("---")
     st.subheader(TXT("⚛️ أركان الإسلام والقوى الأربع", "⚛️ Pillars of Islam & the Four Forces"))
     
@@ -205,9 +225,6 @@ def render_the_one_law():
         for col, val in zip(cols, row):
             col.markdown(val)
 
-    # =============================================
-    # ٣. المعادلة الموسعة
-    # =============================================
     st.markdown("---")
     st.subheader(TXT("🧮 المعادلة الموسعة", "🧮 The Expanded Equation"))
     st.code("""
@@ -233,9 +250,6 @@ def calc_S_final(W, B, E, source_constants, dual_constants, manifestation_vars,
     return np.clip(S, 0.001, 1.0)
     """, language="python")
 
-    # =============================================
-    # ٤. الخلاصة
-    # =============================================
     st.markdown("---")
     st.markdown(TXT(
         """
