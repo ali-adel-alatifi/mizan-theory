@@ -8,52 +8,9 @@ import streamlit as st
 from config import TXT
 from utils import export_session_data, import_session_data
 
-# =============================================
-# دالة إصلاح النصوص العربية
-# =============================================
-def fix_rtl_display():
-    """إصلاح مشكلة عرض النصوص العربية في Streamlit"""
-    st.markdown("""
-    <style>
-    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
-    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
-        direction: rtl !important;
-        text-align: right !important;
-        unicode-bidi: plaintext !important;
-    }
-    /* العناوين الرئيسية */
-    .stTitle, .stHeader, .stSubheader {
-        direction: rtl !important;
-        text-align: right !important;
-    }
-    /* صناديق المعلومات */
-    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
-        direction: rtl !important;
-        text-align: right !important;
-    }
-    /* الأزرار */
-    button {
-        direction: rtl !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-# =============================================
-# 1. بيانات الدورات الثلاث
-# =============================================
-COURSES = [
-    # ... (نفس البيانات الموجودة في ملفك الأصلي)
-]
-
-# =============================================
-# 2. واجهة الجامعة
-# =============================================
 def render_academy():
     """عرض جامعة الميزان المفتوحة."""
     
-    # === تطبيق الحل أولاً ===
-    fix_rtl_display()
-
     st.header(TXT("🎓 جامعة الميزان المفتوحة", "🎓 Mizan Open University"))
     st.markdown(TXT(
         """
@@ -99,7 +56,7 @@ def render_academy():
         course = next(c for c in COURSES if c["id"] == course_id)
         progress = st.session_state.academy_progress.get(course_id, {"current_lesson": 0, "completed": False, "score": 0})
 
-        if st.button(TXT("🔙 العودة للدورات", "🔙 Back to Courses")):
+        if st.button(TXT("🔙 العودة للدورات", "🔙 Back to Courses"), key="btn_back_to_courses"):
             st.session_state.selected_course = None
             st.rerun()
 
@@ -115,12 +72,12 @@ def render_academy():
                 col1, col2 = st.columns(2)
                 with col1:
                     if lesson_idx > 0:
-                        if st.button(TXT("⬅️ الدرس السابق", "⬅️ Previous")):
+                        if st.button(TXT("⬅️ الدرس السابق", "⬅️ Previous"), key="btn_prev_lesson"):
                             progress["current_lesson"] -= 1
                             st.session_state.academy_progress[course_id] = progress
                             st.rerun()
                 with col2:
-                    if st.button(TXT("➡️ الدرس التالي", "➡️ Next")):
+                    if st.button(TXT("➡️ الدرس التالي", "➡️ Next"), key="btn_next_lesson"):
                         progress["current_lesson"] += 1
                         st.session_state.academy_progress[course_id] = progress
                         st.rerun()
@@ -129,7 +86,7 @@ def render_academy():
                 st.subheader(TXT("📝 اختبار الدورة", "📝 Course Test"))
                 st.markdown(course["test_question"])
                 ans = st.radio(TXT("اختر الإجابة:", "Choose:"), course["test_options"], key=f"test_{course_id}")
-                if st.button(TXT("✅ تحقق من الإجابة", "✅ Check Answer"), type="primary"):
+                if st.button(TXT("✅ تحقق من الإجابة", "✅ Check Answer"), key="btn_check_answer", type="primary"):
                     if course["test_options"].index(ans) == course["test_answer"]:
                         st.success(TXT("🎉 إجابة صحيحة! أحسنت.", "🎉 Correct! Well done."))
                         st.balloons()
@@ -154,7 +111,7 @@ def render_academy():
         for cert in st.session_state.academy_certificates:
             st.markdown(f"- ✅ {cert}")
 
-    # أزرار الحفظ والتحميل
+    # أزرار الحفظ والتحميل (مع مفاتيح فريدة)
     st.markdown("---")
     st.subheader(TXT("💾 حفظ/استعادة تقدمك", "💾 Save/Restore Your Progress"))
     col_save, col_load = st.columns(2)
