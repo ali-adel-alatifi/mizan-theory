@@ -31,6 +31,67 @@ def apply_global_css():
         font-family: 'Cairo', sans-serif;
     }
     
+    /* ===== إصلاح اتجاه النصوص للعربية (RTL) ===== */
+    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
+    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
+        direction: rtl !important;
+        text-align: right !important;
+        unicode-bidi: plaintext !important;
+    }
+    
+    /* العناوين الرئيسية */
+    .stTitle, .stHeader, .stSubheader {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    
+    /* صناديق المعلومات */
+    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    
+    /* الأزرار والمنزلقات وحقول الإدخال */
+    button, .stSlider, .stTextInput input, .stTextArea textarea, .stSelectbox div {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    
+    /* جداول البيانات */
+    .stDataFrame {
+        direction: rtl !important;
+    }
+    
+    /* التبويبات */
+    .stTabs [data-baseweb="tab-list"] {
+        direction: rtl !important;
+    }
+    .stTabs [data-baseweb="tab"] {
+        direction: rtl !important;
+    }
+    
+    /* الشريط الجانبي */
+    [data-testid="stSidebar"] {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    [data-testid="stSidebar"] > div {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    
+    /* المحتوى الرئيسي */
+    [data-testid="stAppViewContainer"] {
+        direction: rtl !important;
+    }
+    
+    /* نصوص المخططات */
+    .matplotlib-text {
+        direction: rtl !important;
+    }
+    
+    /* ===== نهاية إصلاح RTL ===== */
+    
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Cairo', sans-serif;
         color: #FFD700;
