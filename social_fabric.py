@@ -1,163 +1,157 @@
 # mizan/social_fabric.py
 """
-النسيج الاجتماعي – المجتمع كخلية حية
-محاكاة بصرية للعلاقات بين الأفراد بناءً على توازن W و B
+محاكي المجتمع كخلية حية
+النسيج الاجتماعي: تفاعل الأفراد بناءً على W و B
 """
 
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Circle, FancyBboxPatch
 import random
 from config import TXT
 
+# =============================================
+# دالة إصلاح النصوص العربية
+# =============================================
+def fix_rtl_display():
+    """إصلاح مشكلة عرض النصوص العربية في Streamlit"""
+    st.markdown("""
+    <style>
+    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
+    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
+        direction: rtl !important;
+        text-align: right !important;
+        unicode-bidi: plaintext !important;
+    }
+    /* العناوين الرئيسية */
+    .stTitle, .stHeader, .stSubheader {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* صناديق المعلومات */
+    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* الأزرار والمنزلقات */
+    button, .stSlider {
+        direction: rtl !important;
+    }
+    /* نصوص المخططات */
+    .matplotlib-text {
+        direction: rtl !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 def render_social_fabric():
-    st.header(TXT("🤝 النسيج الاجتماعي – المجتمع كخلية حية", "🤝 Social Fabric – Society as a Living Cell"))
+    fix_rtl_display()
+    
+    st.header(TXT("🧬 محاكي المجتمع كخلية حية", "🧬 Social Fabric Simulator"))
     st.caption(TXT(
-        "شاهد كيف تتشكل العلاقات بين الأفراد (النجوم) بناءً على درجة توازنهم في W و B. "
-        "المتقاربون يتجاذبون، والمتنافرون يتباعدون. ﴿إِنَّمَا الْمُؤْمِنُونَ إِخْوَةٌ﴾",
-        "Watch how relationships form between individuals (stars) based on their balance in W and B. "
-        "Those close attract, and those opposed repel."
+        "هذا المشهد يحاكي المجتمع كنسيج حي. كل نقطة تمثل فرداً. الألوان تعكس درجة توازنه (S = W × B). "
+        "الأفراد المتوازنون يتجاذبون ويشكلون نسيجاً متماسكاً. غير المتوازنين يتباعدون أو يتنافرون.",
+        "This scene simulates society as a living fabric. Each dot represents an individual. Colors reflect stability (S = W × B). "
+        "Balanced individuals attract each other and form a cohesive fabric. Unbalanced ones drift apart or repel."
     ))
 
-    # ─────────────────────────────────────────
-    # إعدادات المحاكاة
-    # ─────────────────────────────────────────
-    st.subheader(TXT("🎛️ إعدادات النسيج", "🎛️ Fabric Settings"))
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        n_people = st.slider(TXT("عدد الأفراد", "Number of People"), 20, 100, 50, 5, key="sf_people")
-    with c2:
-        avg_W = st.slider(TXT("متوسط W (الولاء)", "Average W (Loyalty)"), 0.0, 1.0, 0.55, 0.05, key="sf_W")
-    with c3:
-        avg_B = st.slider(TXT("متوسط B (البراءة)", "Average B (Disavowal)"), 0.0, 1.0, 0.52, 0.05, key="sf_B")
+    col_set1, col_set2, col_set3 = st.columns(3)
+    with col_set1:
+        n_individuals = st.slider(TXT("عدد الأفراد", "Number of Individuals"), 20, 100, 50, 5, key="fab_n")
+    with col_set2:
+        avg_W = st.slider(TXT("متوسط W (الولاء)", "Average W (Loyalty)"), 0.0, 1.0, 0.5, 0.05, key="fab_W")
+    with col_set3:
+        avg_B = st.slider(TXT("متوسط B (البراءة)", "Average B (Disavowal)"), 0.0, 1.0, 0.5, 0.05, key="fab_B")
 
-    c4, c5 = st.columns(2)
-    with c4:
-        spread = st.slider(TXT("درجة التشتت", "Spread"), 0.01, 0.3, 0.1, 0.01, key="sf_spread")
-    with c5:
-        attraction_strength = st.slider(TXT("قوة التجاذب", "Attraction Strength"), 0.0, 0.1, 0.03, 0.01, key="sf_attract")
+    if "fab_individuals" not in st.session_state:
+        st.session_state.fab_individuals = None
+    if st.button(TXT("🔄 توليد مجتمع جديد", "🔄 Generate New Society"), use_container_width=True):
+        st.session_state.fab_individuals = None
+        st.rerun()
 
-    # ─────────────────────────────────────────
-    # توليد المجتمع
-    # ─────────────────────────────────────────
-    if st.button(TXT("▶️ توليد / تحديث المجتمع", "▶️ Generate / Update Society"), use_container_width=True, type="primary"):
-        np.random.seed(42)
-        random.seed(42)
-        
-        # توليد الأفراد
-        W_vals = np.clip(np.random.normal(avg_W, spread, n_people), 0.01, 1.0)
-        B_vals = np.clip(np.random.normal(avg_B, spread, n_people), 0.01, 1.0)
-        S_vals = W_vals * B_vals
-        
-        # توليد مواقع عشوائية
-        positions = np.random.uniform(0, 10, (n_people, 2))
-        
-        # محاكاة التجاذب والتنافر (خطوات قليلة للتوضيح)
-        for _ in range(20):
-            for i in range(n_people):
-                for j in range(i+1, n_people):
-                    diff = positions[j] - positions[i]
-                    dist = np.linalg.norm(diff)
-                    if dist < 0.01: dist = 0.01
-                    
-                    # حساب "التوافق" بين الشخصين
-                    compatibility = 1 - abs(S_vals[i] - S_vals[j])
-                    
-                    # إذا كانا متوافقين (متقاربين في S): يتجاذبان
-                    # إذا كانا غير متوافقين (متباعدين في S): يتنافران
-                    force = attraction_strength * (compatibility - 0.5) * 2
-                    
-                    direction = diff / dist
-                    positions[i] += direction * force
-                    positions[j] -= direction * force
-            
-            # إبقاء الأفراد داخل الحدود
-            positions = np.clip(positions, 0, 10)
-        
-        # تخزين النتائج
-        st.session_state.sf_positions = positions
-        st.session_state.sf_W_vals = W_vals
-        st.session_state.sf_B_vals = B_vals
-        st.session_state.sf_S_vals = S_vals
-        st.session_state.sf_generated = True
+    if st.session_state.fab_individuals is None:
+        np.random.seed(random.randint(0, 9999))
+        n = n_individuals
+        Ws = np.random.normal(avg_W, 0.15, n).clip(0, 1)
+        Bs = np.random.normal(avg_B, 0.15, n).clip(0, 1)
+        xs = np.random.uniform(0, 10, n)
+        ys = np.random.uniform(0, 10, n)
+        st.session_state.fab_individuals = {"W": Ws, "B": Bs, "x": xs, "y": ys, "iterations": 0}
+    else:
+        data = st.session_state.fab_individuals
+        Ws = data["W"]
+        Bs = data["B"]
+        xs = data["x"].copy()
+        ys = data["y"].copy()
+        n = len(Ws)
+        Ss = Ws * Bs
 
-    # ─────────────────────────────────────────
-    # عرض النسيج
-    # ─────────────────────────────────────────
-    if st.session_state.get("sf_generated", False):
-        positions = st.session_state.sf_positions
-        W_vals = st.session_state.sf_W_vals
-        B_vals = st.session_state.sf_B_vals
-        S_vals = st.session_state.sf_S_vals
-        
-        # الألوان حسب الثبات
-        def get_social_color(S):
-            if S >= 0.7: return '#FFD700'      # ثبات عالي – ذهبي
-            elif S >= 0.5: return '#00FF88'    # ثبات متوسط – أخضر
-            elif S >= 0.3: return '#FFA500'    # ضعيف – برتقالي
-            else: return '#FF4444'             # منهار – أحمر
+        for i in range(n):
+            fx, fy = 0.0, 0.0
+            for j in range(n):
+                if i == j: continue
+                dx = xs[j] - xs[i]
+                dy = ys[j] - ys[i]
+                dist = max(np.sqrt(dx**2 + dy**2), 0.1)
+                S_diff = 1 - abs(Ss[i] - Ss[j])
+                if S_diff > 0.5:
+                    force = S_diff * 0.02
+                    fx += dx / dist * force
+                    fy += dy / dist * force
+                else:
+                    force = (1 - S_diff) * 0.01
+                    fx -= dx / dist * force
+                    fy -= dy / dist * force
+            xs[i] = np.clip(xs[i] + fx, 0, 10)
+            ys[i] = np.clip(ys[i] + fy, 0, 10)
 
-        colors = [get_social_color(s) for s in S_vals]
-        sizes = 50 + S_vals * 300  # حجم النجمة يعكس S
+        data["x"] = xs
+        data["y"] = ys
+        data["iterations"] += 1
+        st.session_state.fab_individuals = data
 
-        # رسم النسيج
-        fig, ax = plt.subplots(figsize=(12, 8), facecolor='#0a0f1e')
-        ax.set_facecolor('#0a0f1e')
-        ax.set_xlim(0, 10); ax.set_ylim(0, 10)
-        ax.axis('off')
+    data = st.session_state.fab_individuals
+    Ws = data["W"]
+    Bs = data["B"]
+    xs = data["x"]
+    ys = data["y"]
+    Ss = Ws * Bs
+    n = len(Ws)
 
-        # رسم خطوط الوصل (العلاقات) بين المتقاربين
-        for i in range(len(positions)):
-            for j in range(i+1, len(positions)):
-                dist = np.linalg.norm(positions[j] - positions[i])
-                compatibility = 1 - abs(S_vals[i] - S_vals[j])
-                if compatibility > 0.7 and dist < 2.0:
-                    alpha = 0.1 + 0.5 * compatibility
-                    ax.plot([positions[i,0], positions[j,0]], [positions[i,1], positions[j,1]],
-                           color='#FFD700', alpha=alpha, lw=0.5)
+    fig, ax = plt.subplots(figsize=(10, 10), facecolor='#0a0f1e')
+    ax.set_facecolor('#0a0f1e')
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+    ax.set_title(TXT("النسيج الاجتماعي – المجتمع كخلية حية", "Social Fabric – Society as a Living Cell"), color='white', fontsize=13)
 
-        # رسم الأفراد (النجوم)
-        ax.scatter(positions[:,0], positions[:,1], s=sizes, c=colors, alpha=0.9,
-                  edgecolors='white', linewidths=0.5, zorder=5)
+    colors = []
+    for i in range(n):
+        s = Ss[i]
+        if s >= 0.7: colors.append('#FFD700')
+        elif s >= 0.4: colors.append('#FFA500')
+        elif s >= 0.2: colors.append('#FF6347')
+        else: colors.append('#888888')
+    ax.scatter(xs, ys, s=80, c=colors, alpha=0.8, edgecolors='white', linewidths=0.5, zorder=5)
 
-        ax.set_title(TXT("النسيج الاجتماعي – العلاقات بين الأفراد",
-                        "Social Fabric – Relationships Between Individuals"),
-                    color='white', fontsize=14, fontweight='bold')
-        plt.tight_layout()
-        st.pyplot(fig)
+    for i in range(n):
+        for j in range(i+1, n):
+            dist = np.sqrt((xs[j]-xs[i])**2 + (ys[j]-ys[i])**2)
+            S_diff = 1 - abs(Ss[i] - Ss[j])
+            if S_diff > 0.7 and dist < 3:
+                ax.plot([xs[i], xs[j]], [ys[i], ys[j]], color='#FFD700', alpha=S_diff*0.3, lw=0.5, zorder=1)
 
-        # ─────────────────────────────────────────
-        # إحصائيات المجتمع
-        # ─────────────────────────────────────────
-        st.markdown("---")
-        st.subheader(TXT("📊 إحصائيات المجتمع", "📊 Community Statistics"))
-        col_s1, col_s2, col_s3, col_s4 = st.columns(4)
-        col_s1.metric(TXT("متوسط W", "Avg W"), f"{np.mean(W_vals):.2f}")
-        col_s2.metric(TXT("متوسط B", "Avg B"), f"{np.mean(B_vals):.2f}")
-        col_s3.metric(TXT("متوسط S", "Avg S"), f"{np.mean(S_vals):.2f}")
-        col_s4.metric(TXT("عدد الأفراد", "Individuals"), n_people)
+    st.pyplot(fig)
 
-        # توزيع الأفراد على الفئات
-        high_S = np.sum(S_vals >= 0.7)
-        mid_S = np.sum((S_vals >= 0.5) & (S_vals < 0.7))
-        low_S = np.sum((S_vals >= 0.3) & (S_vals < 0.5))
-        col_S = np.sum(S_vals < 0.3)
+    st.markdown("---")
+    st.subheader(TXT("📊 إحصائيات المجتمع", "📊 Community Statistics"))
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric(TXT("متوسط W", "Avg W"), f"{np.mean(Ws):.2f}")
+    c2.metric(TXT("متوسط B", "Avg B"), f"{np.mean(Bs):.2f}")
+    c3.metric(TXT("متوسط S", "Avg S"), f"{np.mean(Ss):.2f}")
+    c4.metric(TXT("عدد المتوازنين (S>0.7)", "Balanced (S>0.7)"), f"{np.sum(Ss > 0.7)}")
 
-        st.markdown(f"""
-        <div style="background:rgba(20,30,60,0.8);border-radius:15px;padding:20px;margin:10px 0;">
-            <p>🟡 <b>{TXT('ثبات عالي', 'High Stability')} (S ≥ 0.7):</b> {high_S} {TXT('فرداً', 'individuals')} ({100*high_S/n_people:.0f}%)</p>
-            <p>🟢 <b>{TXT('ثبات متوسط', 'Medium Stability')} (0.5 ≤ S < 0.7):</b> {mid_S} {TXT('فرداً', 'individuals')} ({100*mid_S/n_people:.0f}%)</p>
-            <p>🟠 <b>{TXT('ثبات ضعيف', 'Low Stability')} (0.3 ≤ S < 0.5):</b> {low_S} {TXT('فرداً', 'individuals')} ({100*low_S/n_people:.0f}%)</p>
-            <p>🔴 <b>{TXT('منهار', 'Collapsed')} (S < 0.3):</b> {col_S} {TXT('فرداً', 'individuals')} ({100*col_S/n_people:.0f}%)</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # خلاصة تحليلية
-        if np.mean(S_vals) > 0.7:
-            st.success(TXT("✅ مجتمع متماسك. الثبات عالٍ، والعلاقات قوية بين الأفراد.", "✅ Cohesive society. High stability, strong relationships."))
-        elif np.mean(S_vals) > 0.5:
-            st.info(TXT("ℹ️ مجتمع متوسط التماسك. توجد بؤر ضعف تحتاج إلى تقوية.", "ℹ️ Moderately cohesive society. Some weak spots need strengthening."))
-        elif np.mean(S_vals) > 0.3:
-            st.warning(TXT("⚠️ مجتمع متفكك. فجوة الاستدراج واضحة. العلاقات ضعيفة.", "⚠️ Fragmented society. Clear Istidraj gap. Weak relationships."))
-        else:
-            st.error(TXT("🚨 مجتمع منهار. الثبات شبه معدوم. لا توجد روابط تذكر.", "🚨 Collapsed society. Stability nearly nonexistent. No significant bonds."))
+    if st.button(TXT("🔄 إعادة ضبط المحاكاة", "🔄 Reset Simulation"), use_container_width=True):
+        st.session_state.fab_individuals = None
+        st.rerun()
