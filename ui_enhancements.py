@@ -32,37 +32,31 @@ def apply_global_css():
     }
     
     /* ===== إصلاح اتجاه النصوص للعربية (RTL) ===== */
-    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
     div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
         direction: rtl !important;
         text-align: right !important;
         unicode-bidi: plaintext !important;
     }
     
-    /* العناوين الرئيسية */
     .stTitle, .stHeader, .stSubheader {
         direction: rtl !important;
         text-align: right !important;
     }
     
-    /* صناديق المعلومات */
     .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
         direction: rtl !important;
         text-align: right !important;
     }
     
-    /* الأزرار والمنزلقات وحقول الإدخال */
     button, .stSlider, .stTextInput input, .stTextArea textarea, .stSelectbox div {
         direction: rtl !important;
         text-align: right !important;
     }
     
-    /* جداول البيانات */
     .stDataFrame {
         direction: rtl !important;
     }
     
-    /* التبويبات */
     .stTabs [data-baseweb="tab-list"] {
         direction: rtl !important;
     }
@@ -70,7 +64,6 @@ def apply_global_css():
         direction: rtl !important;
     }
     
-    /* الشريط الجانبي */
     [data-testid="stSidebar"] {
         direction: rtl !important;
         text-align: right !important;
@@ -80,17 +73,32 @@ def apply_global_css():
         text-align: right !important;
     }
     
-    /* المحتوى الرئيسي */
     [data-testid="stAppViewContainer"] {
         direction: rtl !important;
     }
     
-    /* نصوص المخططات */
     .matplotlib-text {
         direction: rtl !important;
     }
     
-    /* ===== نهاية إصلاح RTL ===== */
+    /* ===== إصلاح تخطيط الصفحة (ملء الشاشة) ===== */
+    [data-testid="stSidebar"] {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+        z-index: 999 !important;
+        overflow-y: auto !important;
+    }
+    
+    [data-testid="stAppViewContainer"] {
+        margin-left: 0 !important;
+        padding-right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* ===== نهاية إصلاح التخطيط ===== */
     
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Cairo', sans-serif;
@@ -233,18 +241,6 @@ def apply_global_css():
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     }
 
-    /* إصلاح تموضع الشريط الجانبي */
-    [data-testid="stSidebar"] {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        height: 100vh !important;
-        z-index: 999 !important;
-        overflow-y: auto !important;
-    }
-    [data-testid="stAppViewContainer"] {
-        margin-left: 300px;
-    }
     </style>
     """, unsafe_allow_html=True)
 
