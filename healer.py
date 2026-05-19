@@ -8,6 +8,36 @@ import streamlit as st
 from config import TXT
 
 # =============================================
+# دالة إصلاح النصوص العربية
+# =============================================
+def fix_rtl_display():
+    """إصلاح مشكلة عرض النصوص العربية في Streamlit"""
+    st.markdown("""
+    <style>
+    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
+    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
+        direction: rtl !important;
+        text-align: right !important;
+        unicode-bidi: plaintext !important;
+    }
+    /* العناوين الرئيسية */
+    .stTitle, .stHeader, .stSubheader {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* صناديق المعلومات */
+    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* الأزرار */
+    button {
+        direction: rtl !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# =============================================
 # 1. الأسئلة – لحظات صدق مع النفس
 # =============================================
 HEALER_QUESTIONS = [
@@ -172,13 +202,8 @@ HEALING_PRESCRIPTIONS = {
     },
 }
 
-# =============================================
-# 3. المحلل الشخصي الذكي – رحلة من السؤال إلى اليقين
-# =============================================
 def render_healer():
-    """عرض طبيب القلوب التفاعلي."""
-    
-    # --- الغلاف الافتتاحي ---
+    fix_rtl_display()
     st.header(TXT("🩺 طبيب القلوب", "🩺 Heart Healer"))
     st.markdown(TXT(
         """
@@ -193,13 +218,11 @@ def render_healer():
         """
     ))
 
-    # تهيئة الجلسة
     if "healer_answers" not in st.session_state:
         st.session_state.healer_answers = {}
     if "healer_done" not in st.session_state:
         st.session_state.healer_done = False
 
-    # إذا لم يكتمل التشخيص
     if not st.session_state.healer_done:
         for q in HEALER_QUESTIONS:
             st.markdown("---")
@@ -219,11 +242,8 @@ def render_healer():
                 st.session_state.healer_done = True
                 st.rerun()
 
-    # بعد اكتمال التشخيص
     else:
-        # تحديد المشكلة الرئيسية من إجابة السؤال الثالث (الذنب)
         main_issue = st.session_state.healer_answers.get("sins", TXT("شهوة تحاصرني", "A lust that besieges me"))
-        # نبحث عن الكلمة المفتاحية في إجابته
         issue_key = None
         for key in HEALING_PRESCRIPTIONS:
             if key in main_issue:
@@ -234,12 +254,10 @@ def render_healer():
 
         pres = HEALING_PRESCRIPTIONS[issue_key]
 
-        # --- عرض التشخيص (النور) ---
         st.markdown("---")
         st.subheader(TXT("📋 التشخيص", "📋 Diagnosis"))
         st.warning(pres["diagnosis"])
 
-        # --- محاكاة حساب الموقع (W, B) ---
         mood_map = {
             TXT("مطمئن بذكر الله", "At peace with Allah's remembrance"): 0.9,
             TXT("متقلب بين اليقين والغفلة", "Fluctuating between certainty and heedlessness"): 0.4,
@@ -273,7 +291,7 @@ def render_healer():
         ) / 4
         w_raw = max(-1.0, min(1.0, w_raw * 2 - 1))
 
-        b_raw = 0.5  # تقدير متوسط
+        b_raw = 0.5
         S_score = ((w_raw + 1) / 2) * ((b_raw + 1) / 2)
 
         col1, col2, col3 = st.columns(3)
@@ -281,7 +299,6 @@ def render_healer():
         col2.metric("B (البراءة)", f"{b_raw:+.2f}")
         col3.metric("S (الثبات)", f"{S_score:.2f}")
 
-        # --- الروشتة العلاجية ---
         st.markdown("---")
         st.subheader(TXT("💊 الروشتة العلاجية", "💊 The Prescription"))
         st.markdown(TXT("#### 📖 آيات تتدبرها:", "#### 📖 Verses to reflect on:"))
@@ -290,7 +307,6 @@ def render_healer():
         st.markdown(TXT(f"#### 🕋 حديث شريف:\n{pres['hadith']}", f"#### 🕋 Hadith:\n{pres['hadith']}"))
         st.markdown(TXT(f"#### 🏃 خطة عملية:\n{pres['action']}", f"#### 🏃 Action Plan:\n{pres['action']}"))
 
-        # --- رسالة أمل ---
         st.markdown("---")
         st.markdown(TXT(
             """
@@ -305,7 +321,6 @@ def render_healer():
             """
         ))
 
-        # زر إعادة
         if st.button(TXT("🔄 أريد أن أبدأ من جديد", "🔄 I want to start over")):
             st.session_state.healer_answers = {}
             st.session_state.healer_done = False
