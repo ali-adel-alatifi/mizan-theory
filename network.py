@@ -8,10 +8,44 @@ import streamlit as st
 import pandas as pd
 from config import TXT
 
-def render_network():
-    """عرض شبكة الناجين."""
+# =============================================
+# دالة إصلاح النصوص العربية
+# =============================================
+def fix_rtl_display():
+    """إصلاح مشكلة عرض النصوص العربية في Streamlit"""
+    st.markdown("""
+    <style>
+    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
+    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
+        direction: rtl !important;
+        text-align: right !important;
+        unicode-bidi: plaintext !important;
+    }
+    /* العناوين الرئيسية */
+    .stTitle, .stHeader, .stSubheader {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* صناديق المعلومات */
+    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* الأزرار وحقول الإدخال */
+    button, input, textarea {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* جداول البيانات */
+    .stDataFrame {
+        direction: rtl !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-    # --- تهيئة البيانات داخل الدالة (حل آمن من الاختفاء بعد إعادة الضبط) ---
+def render_network():
+    fix_rtl_display()
+    
     if "survivors_db" not in st.session_state:
         st.session_state.survivors_db = [
             {"name": "أبو عبد الله", "city": "مكة المكرمة", "country": "السعودية", "W": 0.85, "B": 0.80, "status": "مؤمن قوي"},
