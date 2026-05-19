@@ -264,14 +264,16 @@ def export_session_data(data_dict, filename_prefix="mizan_data"):
         data=json_str,
         file_name=f"{filename_prefix}.json",
         mime="application/json",
-        use_container_width=True
+        use_container_width=True,
+        key=f"download_{filename_prefix}"  # مفتاح فريد لتجنب التكرار
     )
 
 def import_session_data(keys_to_update):
     """رفع ملف JSON وتحديث مفاتيح الجلسة المحددة."""
     uploaded_file = st.file_uploader(
         TXT("اختر ملف JSON لاستعادة بياناتك", "Choose a JSON file to restore your data"),
-        type=["json"]
+        type=["json"],
+        key="file_uploader_session_data"  # مفتاح فريد
     )
     if uploaded_file is not None:
         try:
