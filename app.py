@@ -21,6 +21,11 @@ from components import (render_welcome, render_compass, render_nation_lab,
 from ui_enhancements import apply_global_css, render_enhanced_sidebar, render_enhanced_header, render_enhanced_footer
 
 # =============================================
+# استيراد إصلاح RTL البديل
+# =============================================
+from rtl_fix import apply_rtl_fix
+
+# =============================================
 # إعدادات الصفحة
 # =============================================
 st.set_page_config(
@@ -31,9 +36,10 @@ st.set_page_config(
 )
 
 # =============================================
-# الأنماط CSS الشاملة (تشمل إصلاح RTL والرموز)
+# تطبيق إصلاح RTL (الأساسي + البديل)
 # =============================================
 apply_global_css()
+apply_rtl_fix()  # تطبيق الإصلاح البديل لضمان العمل
 
 # =============================================
 # تهيئة متغيرات الجلسة
