@@ -8,7 +8,39 @@ import streamlit as st
 import pandas as pd
 from config import TXT, LETTERS_DB
 
+# =============================================
+# دالة إصلاح النصوص العربية
+# =============================================
+def fix_rtl_display():
+    """إصلاح مشكلة عرض النصوص العربية في Streamlit"""
+    st.markdown("""
+    <style>
+    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
+    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
+        direction: rtl !important;
+        text-align: right !important;
+        unicode-bidi: plaintext !important;
+    }
+    /* العناوين الرئيسية */
+    .stTitle, .stHeader, .stSubheader {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* صناديق المعلومات */
+    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* جداول البيانات */
+    .stDataFrame {
+        direction: rtl !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 def render_lexicon():
+    fix_rtl_display()
+    
     st.header(TXT("📖 المعجم الهندسي – الحروف وقيمها وأسرارها", "📖 Geometric Lexicon – Letters, Values & Secrets"))
 
     # =============================================
@@ -131,5 +163,4 @@ def render_lexicon():
     # ٣. أسرار الحروف (الألف، الميم، القاف، التاء)
     # =============================================
     st.subheader(TXT("أسرار الحروف", "Secrets of the Letters"))
-    
-    # ... (باقي شرح أسرار الحروف كما هو بدون تعديل) ...
+    # ... (باقي شرح أسرار الحروف كما هو في ملفك الأصلي)
