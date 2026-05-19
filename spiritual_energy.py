@@ -39,7 +39,7 @@ def fix_rtl_display():
     """, unsafe_allow_html=True)
 
 # =============================================
-# 1. مؤشرات الطاقة الروحية
+# 1. مؤشرات الطاقة الروحية (مع التأكد من وجودها في الجلسة)
 # =============================================
 if "spiritual_noor" not in st.session_state:
     st.session_state.spiritual_noor = 0.6
