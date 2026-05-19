@@ -1,7 +1,7 @@
 # mizan/app.py
 """
 المدخل الرئيسي لتطبيق مختبر الميزان
-يدعم الترجمة الكاملة واتجاه RTL/LTR (مع شريط جانبي ديناميكي)
+يدعم الترجمة الكاملة (بدون RTL CSS)
 """
 
 import streamlit as st
@@ -30,35 +30,14 @@ st.set_page_config(
 )
 
 # =============================================
-# تحديد اللغة لاستخدامها في CSS
+# تنسيق CSS بسيط جداً (لتحسين المظهر فقط)
 # =============================================
-if "lang" not in st.session_state:
-    st.session_state.lang = "ar"
-
-is_rtl = (st.session_state.lang == "ar")
-
-# =============================================
-# تنسيق CSS الديناميكي (بناءً على اللغة)
-# =============================================
-rtl_css = """
+st.markdown("""
 <style>
-/* تنسيق الخطوط */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-
-/* إعدادات الصفحة الأساسية */
 .stApp {
     font-family: 'Cairo', sans-serif;
 }
-
-/* إجبار النصوص العربية على الاتجاه الصحيح */
-.arabic-text {
-    font-family: 'Cairo', sans-serif;
-    direction: rtl !important;
-    display: inline-block !important;
-    text-align: right !important;
-}
-
-/* تنسيق العنوان الرئيسي */
 .golden-title {
     font-size: 2.8em !important;
     font-weight: 900 !important;
@@ -71,8 +50,6 @@ rtl_css = """
     display: block !important;
     width: 100% !important;
 }
-
-/* تنسيق الآية القرآنية */
 .verse-text {
     text-align: center !important;
     color: #FFD700 !important;
@@ -85,62 +62,14 @@ rtl_css = """
     display: block !important;
     width: 100% !important;
 }
-
-/* تنسيق الأزرار */
-.stButton > button {
-    background: linear-gradient(135deg, rgba(20, 30, 60, 0.9), rgba(30, 40, 70, 0.9));
-    border: 2px solid #FFD700;
-    color: #FFD700;
-    border-radius: 12px;
-    padding: 12px 25px;
-    font-weight: bold;
-    font-family: 'Cairo', sans-serif;
-    width: 100%;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.stButton > button:hover {
-    background: #FFD700;
-    color: #0a0f1e;
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-    transform: translateY(-2px);
-}
-
-/* تنسيق التبويبات */
-.stTabs [data-baseweb="tab-list"] {
-    gap: 5px;
-    background: rgba(13, 21, 40, 0.8);
-    border-radius: 15px;
-    padding: 5px;
-    border: 1px solid rgba(255, 215, 0, 0.2);
-}
-
-.stTabs [data-baseweb="tab"] {
-    background: transparent;
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    border-radius: 10px;
-    color: #CCC;
-    padding: 10px 18px;
-    font-family: 'Cairo', sans-serif;
-    transition: all 0.3s ease;
-}
-
-.stTabs [aria-selected="true"] {
-    background: rgba(255, 215, 0, 0.15) !important;
-    border: 2px solid #FFD700 !important;
-    color: #FFD700 !important;
-    font-weight: bold;
-}
 </style>
-"""
-
-st.markdown(rtl_css, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # =============================================
-# إعدادات اللغة
+# تهيئة متغيرات الجلسة
 # =============================================
 if 'init' not in st.session_state:
+    st.session_state.lang = "ar"
     st.session_state.slider_values = {f"V{i}": 0.0 for i in range(N_IND)}
     st.session_state.slider_values["W_pure"] = True
     st.session_state.slider_values["E_val"] = 0.5
@@ -162,7 +91,7 @@ if 'init' not in st.session_state:
     st.session_state.init = True
 
 # =============================================
-# الشريط الجانبي (سيتم عرضه تلقائياً على اليمين إذا كانت اللغة عربية)
+# الشريط الجانبي
 # =============================================
 with st.sidebar:
     st.markdown(f"""
