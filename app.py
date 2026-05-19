@@ -1,7 +1,7 @@
 # mizan/app.py
 """
 المدخل الرئيسي لتطبيق مختبر الميزان
-يدعم الترجمة الكاملة (يعمل بنظام LTR من اليسار لليمين)
+يدعم الترجمة الكاملة (بدون شريط جانبي - مخصص للهاتف)
 """
 
 import streamlit as st
@@ -26,7 +26,7 @@ st.set_page_config(
     page_title=TXT("⚖️ مختبر الميزان", "⚖️ The Mizan Lab"),
     page_icon="⚖️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"  # إخفاء الشريط الجانبي تماماً
 )
 
 # =============================================
@@ -91,54 +91,67 @@ if 'init' not in st.session_state:
     st.session_state.init = True
 
 # =============================================
-# الشريط الجانبي
+# قائمة التنقل (بدلاً من الشريط الجانبي)
 # =============================================
-with st.sidebar:
-    st.markdown(f"""
-    <div style='text-align:center;padding:15px;background:linear-gradient(135deg,#1a1a2e,#16213e);
-    border-radius:15px;margin-bottom:20px;border:2px solid #FFD700;'>
-        <p style='font-size:2.5em;margin:0;'>⚖️</p>
-        <h2 style='color:#FFD700;margin:5px 0;font-size:1.3em;'>{TXT('مختبر الميزان', 'The Mizan Lab')}</h2>
-        <p style='color:#e0e0e0;font-size:0.7em;margin:2px 0;'>{TXT('محطة الأرصاد الحضارية', 'Global Observatory')}</p>
-        <p style='color:#FFD700;font-size:1em;margin:5px 0;font-weight:bold;'>S = W x B</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    if st.button(TXT("🇬🇧 English", "🇸🇦 العربية"), use_container_width=True, key="btn_lang_sidebar"):
-        st.session_state.lang = "en" if st.session_state.lang == "ar" else "ar"
-        st.rerun()
-    
-    st.markdown("---")
-    st.markdown(f"### 🧭 {TXT('روابط سريعة', 'Quick Links')}")
-    
-    tabs_info = [
-        ("🧍", TXT("البوصلة", "Compass"), TXT("تحديد موقعك", "Find your position")),
-        ("🏛️", TXT("مختبر الأمة", "Nation Lab"), TXT("تحليل الدول", "Analyze nations")),
-        ("🌌", TXT("المشهد الكوني", "Cosmic Scene"), TXT("محاكاة حية", "Live simulation")),
-        ("📖", TXT("المعجم", "Lexicon"), TXT("أسرار الحروف", "Letter secrets")),
-        ("📜", TXT("الشواهد", "Evidence"), TXT("مقارنة التاريخ", "Compare history")),
-        ("📐", TXT("الصراط", "Path"), TXT("مسارك", "Your path")),
-        ("🌍", TXT("المرصد", "Observatory"), TXT("خريطة العالم", "World map")),
-        ("🩺", TXT("طبيب القلوب", "Healer"), TXT("روشتة علاجية", "Prescription")),
-        ("🤝", TXT("شبكة الناجين", "Network"), TXT("تواصل", "Connect")),
-        ("🎓", TXT("الجامعة", "Academy"), TXT("دورات", "Courses")),
-        ("🏴", TXT("آل البيت", "Ahlul Bayt"), TXT("نماذج", "Models")),
-        ("📚", TXT("الملاحق", "Appendices"), TXT("مراجع", "References")),
-        ("⚛️", TXT("القانون الواحد", "The One Law"), TXT("تجليات", "Manifestations")),
+selected_tab = st.selectbox(
+    TXT("اختر التبويب", "Choose tab"),
+    [
+        TXT("🧍 البوصلة", "🧍 Compass"),
+        TXT("🏛️ مختبر الأمة", "🏛️ Nation Lab"),
+        TXT("🌌 المشهد الكوني", "🌌 Cosmic Scene"),
+        TXT("📖 المعجم", "📖 Lexicon"),
+        TXT("📜 الشواهد", "📜 Evidence"),
+        TXT("📐 الصراط", "📐 Path"),
+        TXT("🌍 المرصد", "🌍 Observatory"),
+        TXT("🩺 طبيب القلوب", "🩺 Healer"),
+        TXT("🤝 شبكة الناجين", "🤝 Network"),
+        TXT("🎓 الجامعة", "🎓 Academy"),
+        TXT("🏴 آل البيت", "🏴 Ahlul Bayt"),
+        TXT("📚 الملاحق", "📚 Appendices"),
+        TXT("⚛️ القانون الواحد", "⚛️ The One Law"),
+        TXT("⚡ الطاقة الروحية", "⚡ Spiritual Energy"),
+        TXT("🔄 الدورة الحضارية", "🔄 Civilization Cycle"),
+        TXT("🧬 النسيج الاجتماعي", "🧬 Social Fabric")
     ]
-    
-    for icon, name, desc in tabs_info:
-        st.markdown(f"{icon} **{name}** — *{desc}*")
-    
-    st.markdown("---")
-    if st.button(TXT("🔄 إعادة ضبط كل شيء", "🔄 Full Reset"), key="btn_reset_all", use_container_width=True):
-        for k in list(st.session_state.keys()):
-            if k not in ("lang",):
-                del st.session_state[k]
-        st.rerun()
-    
-    st.markdown("---")
-    st.caption(TXT("© 2026 علي عادل العاطفي\nمختبر الميزان v2.0", "© 2026 Ali Adel Alatifi\nMizan Lab v2.0"))
+)
+
+# =============================================
+# عرض المحتوى حسب الاختيار
+# =============================================
+st.markdown("---")
+
+if selected_tab == TXT("🧍 البوصلة", "🧍 Compass"):
+    render_compass()
+elif selected_tab == TXT("🏛️ مختبر الأمة", "🏛️ Nation Lab"):
+    render_nation_lab()
+elif selected_tab == TXT("🌌 المشهد الكوني", "🌌 Cosmic Scene"):
+    render_cosmic_scene()
+elif selected_tab == TXT("📖 المعجم", "📖 Lexicon"):
+    render_new_lexicon()
+elif selected_tab == TXT("📜 الشواهد", "📜 Evidence"):
+    render_evidence()
+elif selected_tab == TXT("📐 الصراط", "📐 Path"):
+    render_path_geometry()
+elif selected_tab == TXT("🌍 المرصد", "🌍 Observatory"):
+    render_new_observatory()
+elif selected_tab == TXT("🩺 طبيب القلوب", "🩺 Healer"):
+    render_new_healer()
+elif selected_tab == TXT("🤝 شبكة الناجين", "🤝 Network"):
+    render_new_network()
+elif selected_tab == TXT("🎓 الجامعة", "🎓 Academy"):
+    render_new_academy()
+elif selected_tab == TXT("🏴 آل البيت", "🏴 Ahlul Bayt"):
+    render_new_ahlulbayt()
+elif selected_tab == TXT("📚 الملاحق", "📚 Appendices"):
+    render_new_appendices()
+elif selected_tab == TXT("⚛️ القانون الواحد", "⚛️ The One Law"):
+    render_new_the_one_law()
+elif selected_tab == TXT("⚡ الطاقة الروحية", "⚡ Spiritual Energy"):
+    render_new_spiritual_energy()
+elif selected_tab == TXT("🔄 الدورة الحضارية", "🔄 Civilization Cycle"):
+    render_new_civilization_cycle()
+elif selected_tab == TXT("🧬 النسيج الاجتماعي", "🧬 Social Fabric"):
+    render_social_fabric()
 
 # =============================================
 # العنوان الرئيسي والآية
@@ -171,76 +184,6 @@ st.markdown("---")
 # عرض الترحيب ودليل المستخدم
 # =============================================
 render_welcome()
-
-# =============================================
-# التبويبات الـ 16
-# =============================================
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15, tab16 = st.tabs([
-    TXT("🧍 البوصلة", "🧍 Compass"),
-    TXT("🏛️ مختبر الأمة", "🏛️ Nation Lab"),
-    TXT("🌌 المشهد الكوني", "🌌 Cosmic Scene"),
-    TXT("📖 المعجم", "📖 Lexicon"),
-    TXT("📜 الشواهد", "📜 Evidence"),
-    TXT("📐 الصراط", "📐 Path"),
-    TXT("🌍 المرصد", "🌍 Observatory"),
-    TXT("🩺 طبيب القلوب", "🩺 Healer"),
-    TXT("🤝 شبكة الناجين", "🤝 Network"),
-    TXT("🎓 الجامعة", "🎓 Academy"),
-    TXT("🏴 آل البيت", "🏴 Ahlul Bayt"),
-    TXT("📚 الملاحق", "📚 Appendices"),
-    TXT("⚛️ القانون الواحد", "⚛️ The One Law"),
-    TXT("⚡ الطاقة الروحية", "⚡ Spiritual Energy"),
-    TXT("🔄 الدورة الحضارية", "🔄 Civilization Cycle"),
-    TXT("🧬 النسيج الاجتماعي", "🧬 Social Fabric")
-])
-
-with tab1:
-    render_compass()
-
-with tab2:
-    render_nation_lab()
-
-with tab3:
-    render_cosmic_scene()
-
-with tab4:
-    render_new_lexicon()
-
-with tab5:
-    render_evidence()
-
-with tab6:
-    render_path_geometry()
-
-with tab7:
-    render_new_observatory()
-
-with tab8:
-    render_new_healer()
-
-with tab9:
-    render_new_network()
-
-with tab10:
-    render_new_academy()
-
-with tab11:
-    render_new_ahlulbayt()
-
-with tab12:
-    render_new_appendices()
-
-with tab13:
-    render_new_the_one_law()
-
-with tab14:
-    render_new_spiritual_energy()
-
-with tab15:
-    render_new_civilization_cycle()
-
-with tab16:
-    render_social_fabric()
 
 # =============================================
 # التذييل
