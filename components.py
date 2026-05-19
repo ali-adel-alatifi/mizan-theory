@@ -26,12 +26,50 @@ from appendices import render_appendices
 from lexicon import render_lexicon
 from the_one_law import render_the_one_law
 from spiritual_energy import render_spiritual_energy
-from civilization_cycle import render_civilization_cycle  # ← الجديد
+from civilization_cycle import render_civilization_cycle
+from social_fabric import render_social_fabric
+
+
+# =============================================
+# دالة إصلاح النصوص العربية (مشتركة لجميع الدوال)
+# =============================================
+def fix_rtl_display():
+    """إصلاح مشكلة عرض النصوص العربية في Streamlit"""
+    st.markdown("""
+    <style>
+    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
+    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
+        direction: rtl !important;
+        text-align: right !important;
+        unicode-bidi: plaintext !important;
+    }
+    /* العناوين الرئيسية */
+    .stTitle, .stHeader, .stSubheader {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* صناديق المعلومات */
+    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* الأزرار والمنزلقات */
+    button, .stSlider {
+        direction: rtl !important;
+    }
+    /* نصوص المخططات */
+    .matplotlib-text {
+        direction: rtl !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 
 # =============================================
 # رسالة الترحيب ودليل المستخدم
 # =============================================
 def render_welcome():
+    fix_rtl_display()
     with st.expander(TXT("📜 رسالة ترحيب", "📜 Welcome Message"), expanded=True):
         st.markdown(f"""
         <div class="message-box">
@@ -96,6 +134,7 @@ def render_welcome():
         **١٣. القانون الواحد:** تجليات القانون من الذرة إلى المجرة.
         **١٤. الطاقة الروحية:** محاكاة قوانين الطاقة الروحية.
         **١٥. الدورة الحضارية:** محاكاة صعود وسقوط الأمم.
+        **١٦. النسيج الاجتماعي:** المجتمع كخلية حية.
 
         **المعادلة المركزية:** **S = W × B** (العلاقة **ضرب لا جمع**).
         """,
@@ -117,6 +156,7 @@ def render_welcome():
         **13. The One Law:** Manifestations from atom to galaxy.
         **14. Spiritual Energy:** Simulate spiritual energy laws.
         **15. Civilization Cycle:** Simulate the rise and fall of nations.
+        **16. Social Fabric:** Society as a living cell.
 
         **Central Equation:** **S = W x B** (multiplication, not addition).
         """))
@@ -126,6 +166,7 @@ def render_welcome():
 # تبويب ١: بوصلة الإسلام الحنيف
 # =============================================
 def render_compass():
+    fix_rtl_display()
     st.header(TXT("🧍 بوصلة الإسلام الحنيف – اكتشف موقعك بدقة", "🧍 Compass – Discover Your Precise Position"))
 
     col_set1, col_set2 = st.columns([3, 1])
@@ -223,6 +264,7 @@ def render_compass():
 # تبويب ٢: مختبر الأمة المتكامل
 # =============================================
 def render_nation_lab():
+    fix_rtl_display()
     st.header(TXT("🏛️ مختبر الأمة – المنزلقات والذكاء الاصطناعي", "🏛️ Nation Lab – Sliders & AI"))
 
     with st.expander(TXT("🎛️ مؤشرات الطاقة الروحية", "🎛️ Spiritual Energy Indicators"), expanded=True):
@@ -401,6 +443,7 @@ def render_nation_lab():
 # تبويب ٣: المشهد الكوني الحي
 # =============================================
 def render_cosmic_scene():
+    fix_rtl_display()
     st.header(TXT("🌌 المشهد الكوني الحي", "🌌 Live Cosmic Scene"))
 
     with st.expander(TXT("⚙️ إعدادات المشهد", "⚙️ Scene Settings"), expanded=False):
@@ -509,6 +552,7 @@ def render_cosmic_scene():
 # تبويب ٥: الشواهد التاريخية
 # =============================================
 def render_evidence():
+    fix_rtl_display()
     st.header(TXT("📜 الشواهد التاريخية – حين ينطق التاريخ مصدقًا للمعادلة",
                    "📜 Historical Evidence – When History Bears Witness"))
 
@@ -590,6 +634,7 @@ def render_evidence():
 # تبويب ٦: هندسة الصراط
 # =============================================
 def render_path_geometry():
+    fix_rtl_display()
     st.header(TXT("📐 هندسة الصراط – البرهان النبوي والنموذج الإبراهيمي",
                    "📐 Path Geometry – Prophetic Proof & Abrahamic Model"))
 
@@ -755,5 +800,9 @@ def render_new_the_one_law():
 def render_new_spiritual_energy():
     render_spiritual_energy()
 
-def render_new_civilization_cycle():  # ← الجديد
+def render_new_civilization_cycle():
     render_civilization_cycle()
+
+def render_social_fabric():
+    from social_fabric import render_social_fabric as _render
+    _render()
