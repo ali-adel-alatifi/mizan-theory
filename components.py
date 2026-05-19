@@ -25,7 +25,8 @@ from ahlulbayt import render_ahlulbayt
 from appendices import render_appendices
 from lexicon import render_lexicon
 from the_one_law import render_the_one_law
-from spiritual_energy import render_spiritual_energy  # ← الجديد
+from spiritual_energy import render_spiritual_energy
+from civilization_cycle import render_civilization_cycle  # ← الجديد
 
 # =============================================
 # رسالة الترحيب ودليل المستخدم
@@ -94,6 +95,7 @@ def render_welcome():
         **١٢. الملاحق الموسوعية:** مراجع متخصصة.
         **١٣. القانون الواحد:** تجليات القانون من الذرة إلى المجرة.
         **١٤. الطاقة الروحية:** محاكاة قوانين الطاقة الروحية.
+        **١٥. الدورة الحضارية:** محاكاة صعود وسقوط الأمم.
 
         **المعادلة المركزية:** **S = W × B** (العلاقة **ضرب لا جمع**).
         """,
@@ -114,6 +116,7 @@ def render_welcome():
         **12. Appendices:** Specialized references.
         **13. The One Law:** Manifestations from atom to galaxy.
         **14. Spiritual Energy:** Simulate spiritual energy laws.
+        **15. Civilization Cycle:** Simulate the rise and fall of nations.
 
         **Central Equation:** **S = W x B** (multiplication, not addition).
         """))
@@ -749,5 +752,8 @@ def render_new_lexicon():
 def render_new_the_one_law():
     render_the_one_law()
 
-def render_new_spiritual_energy():  # ← الجديد
+def render_new_spiritual_energy():
     render_spiritual_energy()
+
+def render_new_civilization_cycle():  # ← الجديد
+    render_civilization_cycle()
