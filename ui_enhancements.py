@@ -98,29 +98,40 @@ def apply_global_css():
         max-width: 100% !important;
     }
     
+    /* ===== إصلاح عرض العنوان الرئيسي ===== */
+    .golden-title {
+        font-size: 2.8em !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+        background: linear-gradient(180deg, #FFF8DC 0%, #FFD700 30%, #B8860B 100%);
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        margin: 5px 0 !important;
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.3) !important;
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    .stMarkdown p {
+        text-align: center !important;
+        margin: 5px 0 !important;
+    }
+    
     /* ===== إصلاح عرض الآية القرآنية ===== */
     .verse-text {
+        text-align: center !important;
+        color: #FFD700 !important;
+        font-size: 1.3em !important;
+        margin: 15px 0 !important;
+        line-height: 2.2 !important;
+        font-family: 'Amiri Quran', serif !important;
         word-wrap: break-word !important;
         white-space: normal !important;
         display: block !important;
         width: 100% !important;
-        text-align: center !important;
     }
     
-    .verse-text span {
-        display: inline-block !important;
-    }
-    
-    .stAlert {
-        word-wrap: break-word !important;
-        white-space: normal !important;
-    }
-    
-    div[data-testid="stMarkdownContainer"] {
-        word-wrap: break-word !important;
-        white-space: normal !important;
-    }
-    /* ===== نهاية إصلاح عرض الآية ===== */
+    /* ===== نهاية الإصلاحات ===== */
     
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Cairo', sans-serif;
