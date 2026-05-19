@@ -1,7 +1,7 @@
 # mizan/app.py
 """
 المدخل الرئيسي لتطبيق مختبر الميزان
-يدعم الترجمة الكاملة واتجاه RTL/LTR
+يدعم الترجمة الكاملة
 """
 
 import streamlit as st
@@ -30,70 +30,22 @@ st.set_page_config(
 )
 
 # =============================================
-# حل CSS النهائي (مباشر في app.py)
+# تنسيق CSS لتحسين عرض اللغة العربية
 # =============================================
 st.markdown("""
 <style>
-/* ===== 1. إصلاح اتجاه النصوص للعربية (RTL) ===== */
-html, body, .stApp {
-    direction: rtl !important;
-    unicode-bidi: plaintext !important;
-}
+/* تنسيق الخطوط والنصوص العربية */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
 
-div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
+/* جعل النصوص العربية تظهر بشكل صحيح */
+.arabic-text {
+    font-family: 'Cairo', sans-serif;
     direction: rtl !important;
-    text-align: right !important;
-    unicode-bidi: plaintext !important;
-}
-
-.stTitle, .stHeader, .stSubheader {
-    direction: rtl !important;
+    display: inline-block !important;
     text-align: right !important;
 }
 
-.stAlert, .stInfo, .stSuccess, .stWarning, .stError {
-    direction: rtl !important;
-    text-align: right !important;
-}
-
-button, .stSlider, .stTextInput input, .stTextArea textarea, .stSelectbox div {
-    direction: rtl !important;
-    text-align: right !important;
-}
-
-.stDataFrame {
-    direction: rtl !important;
-}
-
-.stTabs [data-baseweb="tab-list"] {
-    direction: rtl !important;
-}
-.stTabs [data-baseweb="tab"] {
-    direction: rtl !important;
-}
-
-/* ===== 2. إصلاح تخطيط الشريط الجانبي ===== */
-[data-testid="stSidebar"] {
-    position: fixed !important;
-    top: 0 !important;
-    right: 0 !important;  /* تم التغيير من left إلى right */
-    height: 100vh !important;
-    width: 300px !important;
-    z-index: 999 !important;
-    overflow-y: auto !important;
-    direction: rtl !important;
-    text-align: right !important;
-}
-
-[data-testid="stAppViewContainer"] {
-    margin-right: 300px !important;  /* تم التغيير من margin-left إلى margin-right */
-    margin-left: 0 !important;
-    padding-right: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-}
-
-/* ===== 3. إصلاح العناوين المشتتة ===== */
+/* تنسيق العنوان الرئيسي */
 .golden-title {
     font-size: 2.8em !important;
     font-weight: 900 !important;
@@ -107,7 +59,7 @@ button, .stSlider, .stTextInput input, .stTextArea textarea, .stSelectbox div {
     width: 100% !important;
 }
 
-/* إصلاح النصوص الطويلة */
+/* تنسيق الآية القرآنية */
 .verse-text {
     text-align: center !important;
     color: #FFD700 !important;
@@ -121,14 +73,39 @@ button, .stSlider, .stTextInput input, .stTextArea textarea, .stSelectbox div {
     width: 100% !important;
 }
 
-/* إصلاح التبويبات */
+/* تنسيق الشريط الجانبي */
+[data-testid="stSidebar"] {
+    background-color: #0d1528;
+}
+
+/* تنسيق الأزرار */
+.stButton > button {
+    background: linear-gradient(135deg, rgba(20, 30, 60, 0.9), rgba(30, 40, 70, 0.9));
+    border: 2px solid #FFD700;
+    color: #FFD700;
+    border-radius: 12px;
+    padding: 12px 25px;
+    font-weight: bold;
+    font-family: 'Cairo', sans-serif;
+    width: 100%;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.stButton > button:hover {
+    background: #FFD700;
+    color: #0a0f1e;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+/* تنسيق التبويبات */
 .stTabs [data-baseweb="tab-list"] {
     gap: 5px;
     background: rgba(13, 21, 40, 0.8);
     border-radius: 15px;
     padding: 5px;
     border: 1px solid rgba(255, 215, 0, 0.2);
-    flex-wrap: wrap !important;  /* يسمح للتبويبات بالالتفاف */
 }
 
 .stTabs [data-baseweb="tab"] {
@@ -148,25 +125,22 @@ button, .stSlider, .stTextInput input, .stTextArea textarea, .stSelectbox div {
     font-weight: bold;
 }
 
-/* ===== 4. إصلاح الأزرار ===== */
-.stButton > button {
-    background: linear-gradient(135deg, rgba(20, 30, 60, 0.9), rgba(30, 40, 70, 0.9));
-    border: 2px solid #FFD700;
-    color: #FFD700;
-    border-radius: 12px;
-    padding: 12px 25px;
-    font-weight: bold;
-    font-family: 'Cairo', sans-serif;
-    width: 100%;
-    transition: all 0.3s ease;
-    cursor: pointer;
+/* إصلاح تموضع الشريط الجانبي */
+[data-testid="stSidebar"] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    z-index: 999 !important;
+    overflow-y: auto !important;
 }
 
-.stButton > button:hover {
-    background: #FFD700;
-    color: #0a0f1e;
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-    transform: translateY(-2px);
+[data-testid="stAppViewContainer"] {
+    margin-left: 300px !important;
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
 }
 
 </style>
