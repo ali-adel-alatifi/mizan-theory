@@ -7,7 +7,46 @@
 import streamlit as st
 from config import TXT
 
+# =============================================
+# دالة إصلاح النصوص العربية
+# =============================================
+def fix_rtl_display():
+    """إصلاح مشكلة عرض النصوص العربية في Streamlit"""
+    st.markdown("""
+    <style>
+    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
+    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
+        direction: rtl !important;
+        text-align: right !important;
+        unicode-bidi: plaintext !important;
+    }
+    /* العناوين الرئيسية */
+    .stTitle, .stHeader, .stSubheader {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* صناديق المعلومات */
+    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* التبويبات */
+    .stTabs [data-baseweb="tab-list"] {
+        direction: rtl !important;
+    }
+    .stTabs [data-baseweb="tab"] {
+        direction: rtl !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# =============================================
+# دالة عرض الملاحق
+# =============================================
 def render_appendices():
+    # === تطبيق الحل أولاً ===
+    fix_rtl_display()
+    
     st.header(TXT("📚 الملاحق الموسوعية", "📚 Encyclopedic Appendices"))
     st.caption(TXT(
         "المراجع المتخصصة لنظرية الدين القيم والإسلام الحنيف",
