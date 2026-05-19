@@ -10,6 +10,41 @@ import matplotlib.pyplot as plt
 from config import TXT
 
 # =============================================
+# دالة إصلاح النصوص العربية
+# =============================================
+def fix_rtl_display():
+    """إصلاح مشكلة عرض النصوص العربية في Streamlit"""
+    st.markdown("""
+    <style>
+    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
+    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
+        direction: rtl !important;
+        text-align: right !important;
+        unicode-bidi: plaintext !important;
+    }
+    /* العناوين الرئيسية */
+    .stTitle, .stHeader, .stSubheader {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* صناديق المعلومات */
+    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* الأزرار والقوائم */
+    button, select, .stSelectbox {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* نصوص المخططات */
+    .matplotlib-text {
+        direction: rtl !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# =============================================
 # 1. قاعدة بيانات آل البيت
 # =============================================
 AHLULBAYT_DATA = [
@@ -92,6 +127,10 @@ AHLULBAYT_DATA = [
 # =============================================
 def render_ahlulbayt():
     """عرض مدرسة آل البيت."""
+    
+    # === تطبيق الحل أولاً ===
+    fix_rtl_display()
+    
     st.header(TXT("🏴 مدرسة آل البيت – الثبات في الفتنة", "🏴 School of Ahlul Bayt – Stability in Strife"))
     st.markdown(TXT(
         "### ﴿إِنَّمَا يُرِيدُ اللَّهُ لِيُذْهِبَ عَنكُمُ الرِّجْسَ أَهْلَ الْبَيْتِ وَيُطَهِّرَكُمْ تَطْهِيرًا﴾",
