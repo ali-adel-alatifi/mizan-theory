@@ -98,7 +98,29 @@ def apply_global_css():
         max-width: 100% !important;
     }
     
-    /* ===== نهاية إصلاح التخطيط ===== */
+    /* ===== إصلاح عرض الآية القرآنية ===== */
+    .verse-text {
+        word-wrap: break-word !important;
+        white-space: normal !important;
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+    
+    .verse-text span {
+        display: inline-block !important;
+    }
+    
+    .stAlert {
+        word-wrap: break-word !important;
+        white-space: normal !important;
+    }
+    
+    div[data-testid="stMarkdownContainer"] {
+        word-wrap: break-word !important;
+        white-space: normal !important;
+    }
+    /* ===== نهاية إصلاح عرض الآية ===== */
     
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Cairo', sans-serif;
