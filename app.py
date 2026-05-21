@@ -10,13 +10,14 @@ import warnings
 warnings.filterwarnings('ignore')
 
 from config import TXT, INDICATORS_META, N_IND
-from components import (render_welcome, render_compass, render_nation_lab,
-                        render_cosmic_scene, render_new_lexicon, render_evidence,
+from components import (render_compass, render_nation_lab,
+                        render_cosmic_scene, render_evidence,
                         render_path_geometry, render_new_observatory,
                         render_new_healer, render_new_network,
                         render_new_academy, render_new_ahlulbayt,
-                        render_new_appendices, render_new_the_one_law,
-                        render_new_spiritual_energy)
+                        render_new_the_one_law, render_new_social_fabric)
+from welcome import render_welcome
+from reference import render_reference
 from ui_enhancements import apply_global_css, render_enhanced_sidebar, render_enhanced_header, render_enhanced_footer
 
 # =============================================
@@ -107,71 +108,62 @@ render_enhanced_header()
 st.markdown("---")
 
 # =============================================
-# عرض الترحيب ودليل المستخدم
+# التبويبات الـ 13
 # =============================================
-render_welcome()
-
-# =============================================
-# التبويبات الـ 14
-# =============================================
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13 = st.tabs([
+    TXT("🏠 البداية", "🏠 Home"),
     TXT("🧍 البوصلة", "🧍 Compass"),
     TXT("🏛️ مختبر الأمة", "🏛️ Nation Lab"),
     TXT("🌌 المشهد الكوني", "🌌 Cosmic Scene"),
-    TXT("📖 المعجم", "📖 Lexicon"),
+    TXT("🧬 محاكي المجتمع", "🧬 Social Fabric"),
     TXT("📜 الشواهد", "📜 Evidence"),
-    TXT("📐 الصراط", "📐 Path"),
+    TXT("📐 هندسة الصراط", "📐 Path Geometry"),
     TXT("🌍 المرصد", "🌍 Observatory"),
     TXT("🩺 طبيب القلوب", "🩺 Healer"),
     TXT("🤝 شبكة الناجين", "🤝 Network"),
     TXT("🎓 الجامعة", "🎓 Academy"),
     TXT("🏴 آل البيت", "🏴 Ahlul Bayt"),
-    TXT("📚 الملاحق", "📚 Appendices"),
-    TXT("⚛️ القانون الواحد", "⚛️ The One Law"),
-    TXT("⚡ الطاقة الروحية", "⚡ Spiritual Energy")
+    TXT("📚 الدليل المرجعي", "📚 Reference")
 ])
 
 with tab1:
-    render_compass()
+    render_welcome()
 
 with tab2:
-    render_nation_lab()
+    render_compass()
 
 with tab3:
-    render_cosmic_scene()
+    render_nation_lab()
 
 with tab4:
-    render_new_lexicon()
+    render_cosmic_scene()
 
 with tab5:
-    render_evidence()
+    render_new_social_fabric()
 
 with tab6:
-    render_path_geometry()
+    render_evidence()
 
 with tab7:
-    render_new_observatory()
+    render_path_geometry()
 
 with tab8:
-    render_new_healer()
+    render_new_observatory()
 
 with tab9:
-    render_new_network()
+    render_new_healer()
 
 with tab10:
-    render_new_academy()
+    render_new_network()
 
 with tab11:
-    render_new_ahlulbayt()
+    render_new_academy()
 
 with tab12:
-    render_new_appendices()
+    render_new_ahlulbayt()
 
 with tab13:
-    render_new_the_one_law()
-
-with tab14:
-    render_new_spiritual_energy()
+    render_reference()
 
 # =============================================
 # التذييل
