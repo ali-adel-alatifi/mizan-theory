@@ -1,3 +1,12 @@
+import sys
+import traceback
+
+try:
+    # بقية كود التطبيق
+except Exception as e:
+    st.error(f"🚨 حدث خطأ: {str(e)}")
+    st.code(traceback.format_exc())
+    st.stop()
 # mizan/app.py
 """
 المدخل الرئيسي لتطبيق مختبر الميزان
