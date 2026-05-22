@@ -9,6 +9,36 @@ import streamlit as st
 from config import TXT
 
 # =============================================
+# دالة إصلاح النصوص العربية
+# =============================================
+def fix_rtl_display():
+    """إصلاح مشكلة عرض النصوص العربية في Streamlit"""
+    st.markdown("""
+    <style>
+    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
+    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
+        direction: rtl !important;
+        text-align: right !important;
+        unicode-bidi: plaintext !important;
+    }
+    /* العناوين الرئيسية */
+    .stTitle, .stHeader, .stSubheader {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* صناديق المعلومات */
+    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    /* الأزرار */
+    button {
+        direction: rtl !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# =============================================
 # ١. الأسئلة – محطات صدق مع قانون السببية
 # =============================================
 HEALER_QUESTIONS = [
@@ -218,6 +248,9 @@ HEALING_PRESCRIPTIONS = {
 # =============================================
 def render_healer():
     """عرض طبيب القلوب التفاعلي."""
+    
+    # === تطبيق الحل أولاً ===
+    fix_rtl_display()
     
     # --- الغلاف الافتتاحي ---
     st.header("🩺 طبيب القلوب")
