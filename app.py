@@ -32,7 +32,7 @@ try:
                             render_new_observatory, render_new_healer, render_new_network,
                             render_new_academy, render_new_ahlulbayt, render_social_fabric,
                             render_new_the_one_law, render_new_prayer_cycle,
-                            render_new_spiritual_energy, render_new_lexicon)
+                            render_new_spiritual_energy)
     from ui_enhancements import apply_global_css, render_enhanced_sidebar, render_enhanced_header, render_enhanced_footer
 
     # =============================================
