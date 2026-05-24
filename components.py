@@ -22,6 +22,7 @@ from healer import render_healer
 from network import render_network
 from academy import render_academy
 from ahlulbayt import render_ahlulbayt
+from lexicon import render_lexicon
 from the_one_law import render_the_one_law
 from spiritual_energy import render_spiritual_energy
 from prayer_cycle import render_prayer_cycle
@@ -66,8 +67,8 @@ def fix_rtl_display():
 # =============================================
 # رسالة الترحيب ودليل المستخدم (النسخة المتقدمة)
 # =============================================
-#def render_welcome():
-    #fix_rtl_display()
+def render_welcome():
+    fix_rtl_display()
     with st.expander(TXT("📜 رسالة ترحيب", "📜 Welcome Message"), expanded=True):
         st.markdown(f"""
         <div class="message-box">
