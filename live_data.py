@@ -1,175 +1,199 @@
 # mizan/live_data.py
 """
-الرادار الأخلاقي للعالم الرقمي
-يحلل المشاعر والاتجاهات من المصادر الرقمية ويطبق معادلة الميزان
+وحدة البيانات الحية - تجلب مؤشرات حقيقية من الإنترنت إن أمكن
+وتطبق معادلة الميزان عليها، وإلا تعود للبيانات المحاكية.
 """
 
 import streamlit as st
 import pandas as pd
 import numpy as np
 import requests
-import json
-from datetime import datetime, timedelta
-import re
-
-# محاولة استيراد TextBlob (اختياري)
-try:
-    from textblob import TextBlob
-    TEXTBLOB_AVAILABLE = True
-except ImportError:
-    TEXTBLOB_AVAILABLE = False
+from datetime import datetime
 
 # =============================================
-# 1. دوال تحليل المشاعر الأساسية
+# 1. دوال جلب البيانات من مصادر متعددة
 # =============================================
 
-def analyze_sentiment(text):
-    """تحليل المشاعر للنص (إيجابي/سلبي/محايد)."""
-    if not text or not isinstance(text, str):
-        return 0.0
+@st.cache_data(ttl=86400)
+def fetch_gpi_data():
+    """جلب مؤشر السلام العالمي (Global Peace Index)"""
     try:
-        if TEXTBLOB_AVAILABLE:
-            blob = TextBlob(text)
-            return blob.sentiment.polarity
-        else:
-            positive_words = ['حق', 'عدل', 'خير', 'نور', 'إيمان', 'تقوى', 'ولاء', 'ثبات', 'رحمة', 'عطاء']
-            negative_words = ['ظلم', 'باطل', 'شر', 'فساد', 'كفر', 'نفاق', 'طاغوت', 'انهيار', 'جهل']
-            text_lower = text.lower()
-            pos_count = sum(1 for word in positive_words if word in text_lower)
-            neg_count = sum(1 for word in negative_words if word in text_lower)
-            total = pos_count + neg_count
-            if total == 0:
-                return 0.0
-            return (pos_count - neg_count) / total
-    except Exception:
-        return 0.0
+        url = "https://raw.githubusercontent.com/owid/owid-datasets/master/datasets/Global%20Peace%20Index%20-%20Institute%20for%20Economics%20%26%20Peace.csv"
+        df = pd.read_csv(url)
+        latest_year = df["Year"].max()
+        df_latest = df[df["Year"] == latest_year]
+        return df_latest.to_dict('records')
+    except Exception as e:
+        st.warning(f"⚠️ تعذر جلب GPI: {e}")
+        return []
 
-# =============================================
-# 2. جلب البيانات من المصادر المفتوحة
-# =============================================
-
-@st.cache_data(ttl=1800)
-def fetch_news_sentiment(query="الدين القيم", language="ar"):
-    """جلب المقالات الإخبارية وتحليل مشاعرها."""
+@st.cache_data(ttl=86400)
+def fetch_cpi_data():
+    """جلب مؤشر مدركات الفساد (Corruption Perceptions Index)"""
     try:
-        api_key = st.secrets.get("NEWS_API_KEY", "")
-        if not api_key:
-            return None, None
-        url = f"https://newsapi.org/v2/everything?q={query}&language={language}&apiKey={api_key}"
-        response = requests.get(url, timeout=10)
-        data = response.json()
-        if data.get("status") == "ok":
-            articles = data.get("articles", [])
-            sentiments = []
-            for article in articles[:20]:
-                text = article.get("title", "") + " " + article.get("description", "")
-                polarity = analyze_sentiment(text)
-                sentiments.append(polarity)
-            if sentiments:
-                avg_sentiment = np.mean(sentiments)
-                return avg_sentiment, len(sentiments)
-        return None, None
-    except Exception:
-        return None, None
+        url = "https://raw.githubusercontent.com/owid/owid-datasets/master/datasets/Corruption%20Perceptions%20Index%20-%20Transparency%20International.csv"
+        df = pd.read_csv(url)
+        latest_year = df["Year"].max()
+        df_latest = df[df["Year"] == latest_year]
+        return df_latest.to_dict('records')
+    except Exception as e:
+        st.warning(f"⚠️ تعذر جلب CPI: {e}")
+        return []
 
-@st.cache_data(ttl=1800)
-def fetch_reddit_sentiment(subreddit="islam", query="الدين القيم"):
-    """جلب منشورات Reddit وتحليل مشاعرها."""
+@st.cache_data(ttl=86400)
+def fetch_hdi_data():
+    """جلب مؤشر التنمية البشرية (Human Development Index)"""
     try:
-        url = f"https://api.pushshift.io/reddit/search/submission/?subreddit={subreddit}&q={query}&size=20"
-        response = requests.get(url, timeout=10)
-        data = response.json()
-        posts = data.get("data", [])
-        sentiments = []
-        for post in posts[:20]:
-            text = post.get("title", "") + " " + post.get("selftext", "")
-            polarity = analyze_sentiment(text)
-            sentiments.append(polarity)
-        if sentiments:
-            avg_sentiment = np.mean(sentiments)
-            return avg_sentiment, len(sentiments)
-        return None, None
-    except Exception:
-        return None, None
+        url = "https://raw.githubusercontent.com/owid/owid-datasets/master/datasets/Human%20Development%20Index%20-%20UNDP.csv"
+        df = pd.read_csv(url)
+        latest_year = df["Year"].max()
+        df_latest = df[df["Year"] == latest_year]
+        return df_latest.to_dict('records')
+    except Exception as e:
+        st.warning(f"⚠️ تعذر جلب HDI: {e}")
+        return []
 
-@st.cache_data(ttl=1800)
-def fetch_twitter_sentiment_simulated(query="الدين القيم"):
-    """محاكاة لبيانات تويتر."""
-    np.random.seed(hash(query) % 1000)
-    sentiment = np.random.normal(0.2, 0.3)
-    sentiment = max(-1.0, min(1.0, sentiment))
-    return sentiment, 100
-
-@st.cache_data(ttl=1800)
-def fetch_youtube_sentiment_simulated(query="الدين القيم"):
-    """محاكاة لبيانات يوتيوب."""
-    np.random.seed(hash(query) % 2000)
-    sentiment = np.random.normal(0.1, 0.4)
-    sentiment = max(-1.0, min(1.0, sentiment))
-    return sentiment, 50
-
-# =============================================
-# 3. الدالة الرئيسية لجمع البيانات الحية
-# =============================================
-
-def fetch_live_indicators(mode="auto", manual_values=None):
-    """
-    جلب البيانات الحية أو استخدام القيم اليدوية.
-    المعاملات:
-        mode: "auto" (رادار حي) أو "manual" (إدخال يدوي)
-        manual_values: قاموس يحتوي على قيم W و B و E إذا كان الوضع يدوياً
-    """
-    if mode == "manual" and manual_values:
+@st.cache_data(ttl=86400)
+def fetch_world_bank_data():
+    """جلب بيانات GDP per capita و Population من البنك الدولي"""
+    try:
+        gdp_url = "https://raw.githubusercontent.com/owid/owid-datasets/master/datasets/GDP%20per%20capita%20-%20World%20Bank.csv"
+        gdp_df = pd.read_csv(gdp_url)
+        latest_year = gdp_df["Year"].max()
+        gdp_latest = gdp_df[gdp_df["Year"] == latest_year]
+        
+        pop_url = "https://raw.githubusercontent.com/owid/owid-datasets/master/datasets/Population%20-%20World%20Bank.csv"
+        pop_df = pd.read_csv(pop_url)
+        pop_latest = pop_df[pop_df["Year"] == latest_year]
+        
         return {
-            "status": "manual",
-            "sentiment_avg": manual_values.get("sentiment", 0.0),
-            "trend_direction": manual_values.get("trend", 0.0),
-            "engagement_count": manual_values.get("engagement", 100),
-            "sources": {"mode": "manual"},
+            "gdp": gdp_latest.to_dict('records'),
+            "pop": pop_latest.to_dict('records')
+        }
+    except Exception as e:
+        st.warning(f"⚠️ تعذر جلب بيانات البنك الدولي: {e}")
+        return {"gdp": [], "pop": []}
+
+# =============================================
+# 2. الدالة الرئيسية لجلب جميع البيانات الحية
+# =============================================
+
+def fetch_live_indicators():
+    """جلب جميع البيانات الحية المتاحة من المصادر المفتوحة."""
+    with st.spinner("جاري جلب البيانات الحية من المصادر العالمية..."):
+        gpi = fetch_gpi_data()
+        cpi = fetch_cpi_data()
+        hdi = fetch_hdi_data()
+        wb = fetch_world_bank_data()
+        
+        return {
+            "status": "live" if gpi or cpi or hdi or wb["gdp"] else "simulated",
+            "gpi": gpi,
+            "cpi": cpi,
+            "hdi": hdi,
+            "gdp": wb["gdp"],
+            "pop": wb["pop"],
             "timestamp": datetime.now().isoformat()
         }
+
+# =============================================
+# 3. دمج البيانات الحية مع البيانات المحاكية
+# =============================================
+
+def merge_live_data_with_simulated(live_data, simulated_countries):
+    """دمج البيانات الحية مع البيانات المحاكية وتحديث القيم الفعلية."""
+    # تحويل البيانات الحية إلى قاموس للبحث السريع حسب الدولة
+    live_dict = {}
     
-    with st.spinner("📡 تشغيل الرادار الأخلاقي... جاري تحليل المشاعر والاتجاهات من العالم الرقمي"):
-        news_sentiment, news_count = fetch_news_sentiment()
-        reddit_sentiment, reddit_count = fetch_reddit_sentiment()
-        twitter_sentiment, twitter_count = fetch_twitter_sentiment_simulated()
-        youtube_sentiment, youtube_count = fetch_youtube_sentiment_simulated()
+    # معالجة بيانات GPI
+    for row in live_data.get("gpi", []):
+        country = row.get("Entity", "")
+        if country:
+            if country not in live_dict:
+                live_dict[country] = {}
+            # GPI Score (1-5، حيث 1 = الأكثر سلامًا)
+            gpi_score = row.get("GPI score", 2.5)
+            # تحويل GPI إلى مقياس الجريمة (كلما ارتفع GPI، ارتفعت الجريمة)
+            live_dict[country]["crime"] = min(0.9, max(0.1, (gpi_score - 1) / 4 * 0.8 + 0.1))
+            # السلام = 1 - crime (يستخدم لـ justice)
+            live_dict[country]["peace"] = 1 - live_dict[country]["crime"]
+    
+    # معالجة بيانات CPI
+    for row in live_data.get("cpi", []):
+        country = row.get("Entity", "")
+        if country:
+            if country not in live_dict:
+                live_dict[country] = {}
+            cpi_score = row.get("CPI score", 50)  # 0-100
+            # تحويل CPI إلى مقياس العدالة (كلما ارتفع CPI، ارتفعت العدالة)
+            live_dict[country]["justice"] = min(0.9, max(0.1, cpi_score / 100 * 0.8 + 0.1))
+            # قياس الشفافية (مؤشر للشورى)
+            live_dict[country]["consult"] = live_dict[country]["justice"] * 0.7
+    
+    # معالجة بيانات HDI
+    for row in live_data.get("hdi", []):
+        country = row.get("Entity", "")
+        if country:
+            if country not in live_dict:
+                live_dict[country] = {}
+            hdi_score = row.get("HDI", 0.7)  # 0-1
+            # HDI يعكس التنمية البشرية (التعليم، الصحة، مستوى المعيشة)
+            live_dict[country]["development"] = min(0.9, max(0.1, hdi_score * 0.9))
+            # يستخدم لتحسين مؤشرات التمكين
+            live_dict[country]["empowerment"] = live_dict[country]["development"] * 0.8
+    
+    # معالجة بيانات GDP
+    for row in live_data.get("gdp", []):
+        country = row.get("Entity", "")
+        if country:
+            if country not in live_dict:
+                live_dict[country] = {}
+            gdp_val = row.get("GDP per capita (current US$)", 10000)
+            live_dict[country]["gdp_real"] = gdp_val
+    
+    # معالجة بيانات Population
+    for row in live_data.get("pop", []):
+        country = row.get("Entity", "")
+        if country:
+            if country not in live_dict:
+                live_dict[country] = {}
+            pop_val = row.get("Population (historical estimates)", 10000000)
+            live_dict[country]["pop_real"] = pop_val
+    
+    # دمج البيانات المحاكية مع البيانات الحية
+    merged = []
+    for sim in simulated_countries:
+        country_name = sim["country"]
+        live = live_dict.get(country_name, {})
         
-        sentiments = []
-        counts = []
-        if news_sentiment is not None:
-            sentiments.append(news_sentiment)
-            counts.append(news_count)
-        if reddit_sentiment is not None:
-            sentiments.append(reddit_sentiment)
-            counts.append(reddit_count)
-        if twitter_sentiment is not None:
-            sentiments.append(twitter_sentiment)
-            counts.append(twitter_count)
-        if youtube_sentiment is not None:
-            sentiments.append(youtube_sentiment)
-            counts.append(youtube_count)
+        # تحديث القيم الموجودة
+        sim["gdp"] = round(live.get("gdp_real", sim["gdp"]) / 1000) * 1000  # تقريب إلى أقرب ألف
+        sim["pop"] = round(live.get("pop_real", sim["pop"]) * 1000000) / 1000000  # بالملايين
         
-        if sentiments:
-            total_count = sum(counts) if counts else 1
-            weighted_sentiment = sum(s * c for s, c in zip(sentiments, counts)) / total_count
-        else:
-            weighted_sentiment = 0.0
+        # تحديث مؤشرات الجريمة والعدالة إذا كانت متاحة
+        if "crime" in live:
+            sim["crime"] = round(live["crime"], 2)
+        if "justice" in live:
+            sim["justice"] = round(live["justice"], 2)
         
-        trend_direction = np.random.normal(0.1, 0.2)
-        trend_direction = max(-1.0, min(1.0, trend_direction))
-        engagement_count = sum(counts) if counts else 100
+        # تحسين مؤشرات أخرى بناءً على البيانات الحية
+        if "empowerment" in live:
+            sim["consult"] = round((sim["consult"] + live["empowerment"]) / 2, 2)
         
-        return {
-            "status": "live" if sentiments else "simulated",
-            "sentiment_avg": weighted_sentiment,
-            "trend_direction": trend_direction,
-            "engagement_count": engagement_count,
-            "sources": {
-                "news": {"sentiment": news_sentiment, "count": news_count},
-                "reddit": {"sentiment": reddit_sentiment, "count": reddit_count},
-                "twitter": {"sentiment": twitter_sentiment, "count": twitter_count},
-                "youtube": {"sentiment": youtube_sentiment, "count": youtube_count}
-            },
-            "timestamp": datetime.now().isoformat()
-        }
+        merged.append(sim)
+    
+    return merged
+
+# =============================================
+# 4. الدالة الرئيسية لبناء بيانات العالم
+# =============================================
+
+def build_world_data(live_data):
+    """دمج البيانات الحية مع المحاكاة وإرجاع القائمة النهائية للدول."""
+    from observatory import WORLD_DATA_SIMULATED
+    simulated = WORLD_DATA_SIMULATED
+    
+    if live_data["status"] == "live":
+        return merge_live_data_with_simulated(live_data, simulated)
+    else:
+        return simulated
