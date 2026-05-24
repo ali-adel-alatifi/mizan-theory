@@ -22,12 +22,13 @@ from healer import render_healer
 from network import render_network
 from academy import render_academy
 from ahlulbayt import render_ahlulbayt
-from appendices import render_appendices
 from lexicon import render_lexicon
 from the_one_law import render_the_one_law
 from spiritual_energy import render_spiritual_energy
 from prayer_cycle import render_prayer_cycle
 from social_fabric import render_social_fabric
+
+# تم إزالة استيراد appendices
 
 
 # =============================================
@@ -799,6 +800,3 @@ def render_new_spiritual_energy():
 
 def render_new_lexicon():
     render_lexicon()
-
-def render_new_appendices():
-    render_appendices()
