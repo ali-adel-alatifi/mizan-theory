@@ -1,130 +1,175 @@
-# mizan/observatory.py
+# mizan/live_data.py
 """
 الرادار الأخلاقي للعالم الرقمي
-يطبق معادلة الميزان على المشاعر والاتجاهات من العالم الرقمي
+يحلل المشاعر والاتجاهات من المصادر الرقمية ويطبق معادلة الميزان
 """
 
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
-from logic import calculate_S
-from live_data import fetch_live_indicators, build_world_data
-from config import TXT  # ✅ هذا هو السطر المهم
+import requests
+import json
+from datetime import datetime, timedelta
+import re
 
-def fix_rtl_display():
-    st.markdown("""
-    <style>
-    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
-        direction: rtl !important;
-        text-align: right !important;
-        unicode-bidi: plaintext !important;
-    }
-    .stTitle, .stHeader, .stSubheader { direction: rtl !important; text-align: right !important; }
-    .stAlert, .stInfo, .stSuccess, .stWarning, .stError { direction: rtl !important; text-align: right !important; }
-    .stDataFrame { direction: rtl !important; }
-    </style>
-    """, unsafe_allow_html=True)
+# محاولة استيراد TextBlob (اختياري)
+try:
+    from textblob import TextBlob
+    TEXTBLOB_AVAILABLE = True
+except ImportError:
+    TEXTBLOB_AVAILABLE = False
 
-WORLD_DATA_SIMULATED = [
-    # ... (نفس البيانات كما هي)
-]
+# =============================================
+# 1. دوال تحليل المشاعر الأساسية
+# =============================================
 
-def render_observatory():
-    fix_rtl_display()
+def analyze_sentiment(text):
+    """تحليل المشاعر للنص (إيجابي/سلبي/محايد)."""
+    if not text or not isinstance(text, str):
+        return 0.0
+    try:
+        if TEXTBLOB_AVAILABLE:
+            blob = TextBlob(text)
+            return blob.sentiment.polarity
+        else:
+            positive_words = ['حق', 'عدل', 'خير', 'نور', 'إيمان', 'تقوى', 'ولاء', 'ثبات', 'رحمة', 'عطاء']
+            negative_words = ['ظلم', 'باطل', 'شر', 'فساد', 'كفر', 'نفاق', 'طاغوت', 'انهيار', 'جهل']
+            text_lower = text.lower()
+            pos_count = sum(1 for word in positive_words if word in text_lower)
+            neg_count = sum(1 for word in negative_words if word in text_lower)
+            total = pos_count + neg_count
+            if total == 0:
+                return 0.0
+            return (pos_count - neg_count) / total
+    except Exception:
+        return 0.0
+
+# =============================================
+# 2. جلب البيانات من المصادر المفتوحة
+# =============================================
+
+@st.cache_data(ttl=1800)
+def fetch_news_sentiment(query="الدين القيم", language="ar"):
+    """جلب المقالات الإخبارية وتحليل مشاعرها."""
+    try:
+        api_key = st.secrets.get("NEWS_API_KEY", "")
+        if not api_key:
+            return None, None
+        url = f"https://newsapi.org/v2/everything?q={query}&language={language}&apiKey={api_key}"
+        response = requests.get(url, timeout=10)
+        data = response.json()
+        if data.get("status") == "ok":
+            articles = data.get("articles", [])
+            sentiments = []
+            for article in articles[:20]:
+                text = article.get("title", "") + " " + article.get("description", "")
+                polarity = analyze_sentiment(text)
+                sentiments.append(polarity)
+            if sentiments:
+                avg_sentiment = np.mean(sentiments)
+                return avg_sentiment, len(sentiments)
+        return None, None
+    except Exception:
+        return None, None
+
+@st.cache_data(ttl=1800)
+def fetch_reddit_sentiment(subreddit="islam", query="الدين القيم"):
+    """جلب منشورات Reddit وتحليل مشاعرها."""
+    try:
+        url = f"https://api.pushshift.io/reddit/search/submission/?subreddit={subreddit}&q={query}&size=20"
+        response = requests.get(url, timeout=10)
+        data = response.json()
+        posts = data.get("data", [])
+        sentiments = []
+        for post in posts[:20]:
+            text = post.get("title", "") + " " + post.get("selftext", "")
+            polarity = analyze_sentiment(text)
+            sentiments.append(polarity)
+        if sentiments:
+            avg_sentiment = np.mean(sentiments)
+            return avg_sentiment, len(sentiments)
+        return None, None
+    except Exception:
+        return None, None
+
+@st.cache_data(ttl=1800)
+def fetch_twitter_sentiment_simulated(query="الدين القيم"):
+    """محاكاة لبيانات تويتر."""
+    np.random.seed(hash(query) % 1000)
+    sentiment = np.random.normal(0.2, 0.3)
+    sentiment = max(-1.0, min(1.0, sentiment))
+    return sentiment, 100
+
+@st.cache_data(ttl=1800)
+def fetch_youtube_sentiment_simulated(query="الدين القيم"):
+    """محاكاة لبيانات يوتيوب."""
+    np.random.seed(hash(query) % 2000)
+    sentiment = np.random.normal(0.1, 0.4)
+    sentiment = max(-1.0, min(1.0, sentiment))
+    return sentiment, 50
+
+# =============================================
+# 3. الدالة الرئيسية لجمع البيانات الحية
+# =============================================
+
+def fetch_live_indicators(mode="auto", manual_values=None):
+    """
+    جلب البيانات الحية أو استخدام القيم اليدوية.
+    المعاملات:
+        mode: "auto" (رادار حي) أو "manual" (إدخال يدوي)
+        manual_values: قاموس يحتوي على قيم W و B و E إذا كان الوضع يدوياً
+    """
+    if mode == "manual" and manual_values:
+        return {
+            "status": "manual",
+            "sentiment_avg": manual_values.get("sentiment", 0.0),
+            "trend_direction": manual_values.get("trend", 0.0),
+            "engagement_count": manual_values.get("engagement", 100),
+            "sources": {"mode": "manual"},
+            "timestamp": datetime.now().isoformat()
+        }
     
-    st.header("🌍 الرادار الأخلاقي للعالم الرقمي")
-    st.markdown("### 📡 محطة الرصد الأخلاقية – القانون الكوني الحي")
-    st.caption(TXT(
-        "يقيس هذا الرادار نبض العالم الرقمي في الزمن الحقيقي، ويطبق معادلة الميزان على المشاعر والاتجاهات.",
-        "This radar measures the pulse of the digital world in real-time, applying the Mizan equation to sentiment and trends."
-    ))
-    
-    # ─────────────────────────────────────────
-    # اختيار وضع التشغيل
-    # ─────────────────────────────────────────
-    col_mode1, col_mode2 = st.columns(2)
-    with col_mode1:
-        mode = st.radio(
-            TXT("وضع الرادار", "Radar Mode"),
-            [TXT("🖐️ يدوي (تحليل ثابت)", "🖐️ Manual (Static)"), TXT("📡 رادار أخلاقي حي", "📡 Live Ethical Radar")],
-            key="observatory_mode"
-        )
-    
-    # ─────────────────────────────────────────
-    # جلب البيانات حسب الوضع
-    # ─────────────────────────────────────────
-    if mode == TXT("🖐️ يدوي (تحليل ثابت)", "🖐️ Manual (Static)"):
-        st.caption(TXT("استخدم المنزلقات للتحكم في قيم W و B و E يدويًا.", "Use sliders to control W, B, and E manually."))
-        col_w, col_b, col_e = st.columns(3)
-        with col_w:
-            manual_w = st.slider("W (الولاء)", -1.0, 1.0, 0.5, 0.1, key="manual_w")
-        with col_b:
-            manual_b = st.slider("B (البراءة)", -1.0, 1.0, 0.5, 0.1, key="manual_b")
-        with col_e:
-            manual_e = st.slider("E (التمكين)", 0.0, 1.0, 0.5, 0.1, key="manual_e")
+    with st.spinner("📡 تشغيل الرادار الأخلاقي... جاري تحليل المشاعر والاتجاهات من العالم الرقمي"):
+        news_sentiment, news_count = fetch_news_sentiment()
+        reddit_sentiment, reddit_count = fetch_reddit_sentiment()
+        twitter_sentiment, twitter_count = fetch_twitter_sentiment_simulated()
+        youtube_sentiment, youtube_count = fetch_youtube_sentiment_simulated()
         
-        live_data = fetch_live_indicators(
-            mode="manual",
-            manual_values={"sentiment": manual_w, "trend": manual_b, "engagement": manual_e * 1000}
-        )
-    else:
-        st.caption(TXT(
-            "📡 الرادار الأخلاقي الحي يستخدم الذكاء الاصطناعي لتحليل المشاعر والاتجاهات من المصادر الحية.",
-            "📡 Live Ethical Radar uses AI to analyze sentiment and trends from live sources."
-        ))
-        live_data = fetch_live_indicators(mode="auto")
-    
-    # ─────────────────────────────────────────
-    # عرض بيانات الرادار
-    # ─────────────────────────────────────────
-    st.markdown("---")
-    st.subheader(TXT("📊 بيانات الرادار الأخلاقي", "📊 Ethical Radar Data"))
-    
-    col_s1, col_s2, col_s3, col_s4 = st.columns(4)
-    col_s1.metric(TXT("متوسط المشاعر", "Avg Sentiment"), f"{live_data.get('sentiment_avg', 0.0):.2f}")
-    col_s2.metric(TXT("اتجاه الاتجاه", "Trend Direction"), f"{live_data.get('trend_direction', 0.0):.2f}")
-    col_s3.metric(TXT("التفاعلات", "Engagement"), f"{live_data.get('engagement_count', 0)}")
-    col_s4.metric(TXT("حالة الرادار", "Radar Status"), 
-                 TXT("🟢 حي", "🟢 Live") if live_data.get("status") == "live" else 
-                 TXT("🟡 محاكاة", "🟡 Simulated"))
-    
-    # عرض نبض العالم الرقمي (مؤشر بصري)
-    st.markdown("---")
-    st.subheader(TXT("📡 نبض العالم الرقمي", "📡 Digital World Pulse"))
-    
-    pulse_value = (live_data.get('sentiment_avg', 0.0) + 1) / 2 * 100
-    st.progress(int(pulse_value), text=TXT(f"نبض العالم الرقمي: {pulse_value:.1f}%", f"Digital World Pulse: {pulse_value:.1f}%"))
-    
-    if pulse_value > 70:
-        st.success(TXT("🟢 العالم الرقمي في حالة ثبات عالٍ.", "🟢 The digital world is in high stability."))
-    elif pulse_value > 50:
-        st.info(TXT("🟡 العالم الرقمي في حالة متوسطة.", "🟡 The digital world is in moderate stability."))
-    elif pulse_value > 30:
-        st.warning(TXT("🟠 العالم الرقمي في حالة انحدار.", "🟠 The digital world is declining."))
-    else:
-        st.error(TXT("🔴 العالم الرقمي في حالة انهيار.", "🔴 The digital world is collapsing."))
-    
-    # عرض الخريطة والجدول
-    world_list = build_world_data(live_data)
-    df = pd.DataFrame(world_list)
-    
-    fig = px.scatter_geo(
-        df,
-        locations="iso",
-        locationmode="ISO-3",
-        size="pop",
-        color="worship",
-        hover_name="country",
-        hover_data={"worship": True, "taghut": True},
-        color_continuous_scale="RdYlGn",
-        projection="natural earth",
-        title=TXT("خريطة الميزان العالمية (تحديث حي)", "Global Mizan Map (Live Update)")
-    )
-    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', geo=dict(bgcolor='rgba(0,0,0,0)'))
-    st.plotly_chart(fig, use_container_width=True)
-    
-    st.markdown("---")
-    st.subheader(TXT("📊 جدول الأمم – الميزان التفصيلي", "📊 Nations Table – Detailed Mizan"))
-    display_cols = ["country", "worship", "taghut", "pop", "gdp"]
-    st.dataframe(df[display_cols], hide_index=True, use_container_width=True)
+        sentiments = []
+        counts = []
+        if news_sentiment is not None:
+            sentiments.append(news_sentiment)
+            counts.append(news_count)
+        if reddit_sentiment is not None:
+            sentiments.append(reddit_sentiment)
+            counts.append(reddit_count)
+        if twitter_sentiment is not None:
+            sentiments.append(twitter_sentiment)
+            counts.append(twitter_count)
+        if youtube_sentiment is not None:
+            sentiments.append(youtube_sentiment)
+            counts.append(youtube_count)
+        
+        if sentiments:
+            total_count = sum(counts) if counts else 1
+            weighted_sentiment = sum(s * c for s, c in zip(sentiments, counts)) / total_count
+        else:
+            weighted_sentiment = 0.0
+        
+        trend_direction = np.random.normal(0.1, 0.2)
+        trend_direction = max(-1.0, min(1.0, trend_direction))
+        engagement_count = sum(counts) if counts else 100
+        
+        return {
+            "status": "live" if sentiments else "simulated",
+            "sentiment_avg": weighted_sentiment,
+            "trend_direction": trend_direction,
+            "engagement_count": engagement_count,
+            "sources": {
+                "news": {"sentiment": news_sentiment, "count": news_count},
+                "reddit": {"sentiment": reddit_sentiment, "count": reddit_count},
+                "twitter": {"sentiment": twitter_sentiment, "count": twitter_count},
+                "youtube": {"sentiment": youtube_sentiment, "count": youtube_count}
+            },
+            "timestamp": datetime.now().isoformat()
+        }
