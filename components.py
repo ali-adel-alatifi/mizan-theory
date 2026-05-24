@@ -66,8 +66,8 @@ def fix_rtl_display():
 # =============================================
 # رسالة الترحيب ودليل المستخدم (النسخة المتقدمة)
 # =============================================
-def render_welcome():
-    fix_rtl_display()
+#def render_welcome():
+    #fix_rtl_display()
     with st.expander(TXT("📜 رسالة ترحيب", "📜 Welcome Message"), expanded=True):
         st.markdown(f"""
         <div class="message-box">
