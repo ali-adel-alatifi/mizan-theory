@@ -10,6 +10,7 @@ import numpy as np
 import plotly.express as px
 from logic import calculate_S
 from live_data import fetch_live_indicators, build_world_data
+from config import TXT  # ✅ هذا هو السطر المهم
 
 def fix_rtl_display():
     st.markdown("""
