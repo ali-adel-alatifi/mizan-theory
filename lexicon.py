@@ -1,477 +1,408 @@
-# mizan/lexicon.py
+# mizan/geometric_lexicon.py
 """
-المعجم الهندسي للقرآن – النسخة النهائية الشاملة
-يجمع بين: قدسية الوحي، دقة العلم، عمق الفلسفة، حكمة التاريخ، وتواضع العارفين
+المعجم الهندسي الشامل للقرآن الكريم
+النسخة النهائية – صرح واحد يلتقي فيه الوحي بالعلم والفلسفة والتاريخ
 """
 
 import streamlit as st
 import pandas as pd
-from config import TXT, LETTERS_DB
+from config import TXT
 
-def render_lexicon():
+def render_geometric_lexicon():
     st.header(TXT("📖 المعجم الهندسي للقرآن", "📖 The Geometric Lexicon of the Quran"))
     
-    # ─────────────────────────────────────────
-    # مقدمة: روح المعجم
-    # ─────────────────────────────────────────
-    with st.expander(TXT("🕋 مقدمة: روح المعجم", "🕋 Introduction: The Spirit of the Lexicon"), expanded=True):
+    # =============================================
+    # المقدمة: لماذا المعجم الهندسي؟
+    # =============================================
+    with st.expander(TXT("📜 مقدمة: لماذا المعجم الهندسي؟", "📜 Introduction: Why a Geometric Lexicon?"), expanded=True):
         st.markdown(TXT(
             """
-            ### ﴿كِتَابٌ أُحْكِمَتْ آيَاتُهُ ثُمَّ فُصِّلَتْ مِن لَّدُنْ حَكِيمٍ خَبِيرٍ﴾ [هود: ١]
+            <div style="background:rgba(20,30,60,0.7); border-radius:15px; padding:25px; margin:15px 0; border:1px solid #FFD700; line-height:2.2;">
+            <p>الحمد لله الذي جعل في كل حرف من كتابه آية، وفي كل كلمة معجزة، وفي كل آية نظامًا محكمًا.</p>
             
-            هذا المعجم ليس مجرد جدول حروف وأرقام. إنه محاولة متواضعة لقراءة **الوجه الهندسي للوحي**. 
-            فكما أن للكون لغة رياضية (الفيزياء)، فللقرآن لغة رياضية (حساب الجمل والتصنيف الوجودي).
+            <p>هذا المعجم ليس كغيره من المعاجم. إنه ليس مجرد جدول للحروف العربية بقيمها العددية. بل هو <b>محاولة متواضعة</b> – نعم، متواضعة – لفك شفرة من شفرات القرآن الكريم، لعلنا نقترب خطوة من فهم قوله تعالى: ﴿وَنَزَّلْنَا عَلَيْكَ الْكِتَابَ تِبْيَانًا لِّكُلِّ شَيْءٍ﴾.</p>
             
-            **نحن لا ندّعي الإحاطة، بل نقرع الباب.** نحن لا نزعم أننا فككنا الشفرة، بل نقول: 
-            "هذا ما فهمناه، وهذا ما انتهى إليه اجتهادنا، فإن كان صواباً فمن الله، وإن كان خطأً فمن أنفسنا".
+            <p>إنه يقوم على فرضية جريئة، ولكنها تستند إلى أدلة متراكمة: <b>أن الحروف العربية ليست مجرد أصوات، بل هي بصمات وجودية، تحمل قيمًا عددية ثابتة (حساب الجمل)، وأدوارًا رياضية في معادلة "الميزان" التي تحكم الوجود كله.</b></p>
             
-            **المصادر التي استندنا إليها:**
-            - **الوحي:** القرآن الكريم، والسنة النبوية المطهرة.
-            - **العقل:** قواعد المنطق والرياضيات (حساب الجمل، النسب، المعادلات).
-            - **الكون:** تجليات القانون الواحد في الفيزياء والكيمياء والبيولوجيا.
-            - **التاريخ:** سنن الله في صعود الحضارات وسقوطها.
-            - **الفطرة:** ما استقر في قلوب العارفين من تواضع أمام عظمة الخالق.
+            <p>في هذا المعجم، سنرى كيف يتجلى:</p>
+            <ul>
+                <li>🧬 <b>قدسية الوحي:</b> في استناد كل تصنيف إلى آيات الكتاب الحكيم وفواتح السور.</li>
+                <li>⚛️ <b>دقة العلم:</b> في استخدام حساب الجمل (نظام أبجد هوز) وقيم الحروف الثابتة عبر التاريخ.</li>
+                <li>💭 <b>عمق الفلسفة:</b> في التأمل في معاني الحروف الوجودية: المصدر، التجلي، الاشتراك.</li>
+                <li>📜 <b>حكمة التاريخ:</b> في النظر إلى تكرار الحروف في فواتح السور، وربطها بأحداث الوجود الكبرى (أيام الخلق، السماوات السبع).</li>
+                <li>🕋 <b>تواضع العارفين:</b> في الإقرار بأن هذا كله ليس إلا قطرة من بحر علم الله الذي لا قاع له، وأننا إن أصبنا فمن الله، وإن أخطأنا فمن أنفسنا، لقوله تعالى: ﴿وَمَا أُوتِيتُم مِّنَ الْعِلْمِ إِلَّا قَلِيلًا﴾.</li>
+            </ul>
+            </div>
             """,
             """
-            ### ﴿A Book whose verses are perfected and then presented in detail from [one who is] Wise and Acquainted.﴾ [Hud: 1]
+            <div style="background:rgba(20,30,60,0.7); border-radius:15px; padding:25px; margin:15px 0; border:1px solid #FFD700; line-height:2.2;">
+            <p>This lexicon is unlike any other. It is a humble attempt to decode one of the codes of the Noble Quran.</p>
             
-            This lexicon is not merely a table of letters and numbers. It is a humble attempt to read **the geometric face of revelation**.
-            Just as the universe has a mathematical language (physics), the Quran has a mathematical language (Abjad numerology and existential classification).
+            <p>It rests on a bold hypothesis: that Arabic letters are not mere sounds, but existential fingerprints, carrying fixed numerical values (Abjad numerals) and mathematical roles in the equation of "Al-Mizan" that governs all existence.</p>
             
-            **We do not claim comprehensive knowledge; we are merely knocking on the door.** We do not claim to have cracked the code; rather, we say:
-            "This is what we have understood, and this is what our efforts have reached. If it is correct, it is from Allah; if it is wrong, it is from ourselves."
-            
-            **Sources we relied upon:**
-            - **Revelation:** The Holy Quran and the purified Sunnah.
-            - **Reason:** Logic and mathematics (Abjad calculation, proportions, equations).
-            - **The Universe:** Manifestations of the One Law in physics, chemistry, and biology.
-            - **History:** Allah's laws in the rise and fall of civilizations.
-            - **Innate Nature:** What resides in the hearts of the wise: humility before the greatness of the Creator.
+            <p>In this lexicon, we witness the convergence of:</p>
+            <ul>
+                <li>🧬 <b>The Sanctity of Revelation</b></li>
+                <li>⚛️ <b>The Precision of Science</b></li>
+                <li>💭 <b>The Depth of Philosophy</b></li>
+                <li>📜 <b>The Wisdom of History</b></li>
+                <li>🕋 <b>The Humility of the Knowers</b></li>
+            </ul>
+            </div>
             """
         ))
 
-    # ─────────────────────────────────────────
-    # الباب الأول: أصل النظام – نظام أبجد هوز
-    # ─────────────────────────────────────────
-    st.markdown("---")
-    st.subheader(TXT("🏛️ الباب الأول: أصل النظام", "🏛️ Chapter One: The Origin of the System"))
-    
-    with st.expander(TXT("١. نظام أبجد هوز – أساس حساب الجمل", "1. The Abjad Hawaz System – Foundation of Gematria"), expanded=False):
+    # =============================================
+    # ١. الأساس: نظام أبجد هوز (حساب الجمل)
+    # =============================================
+    with st.expander(TXT("١. الأساس: نظام أبجد هوز (حساب الجمل)", "1. Foundation: The Abjad Hawaz System"), expanded=False):
         st.markdown(TXT(
             """
-            ### أصل النظام وتاريخه
+            قبل الإسلام، كان العرب يستخدمون نظامًا عدديًا يعتمد على الحروف الأبجدية. لكل حرف قيمة عددية ثابتة. هذا النظام يُعرف بـ **"حساب الجمل"** أو **"أبجد هوز"**. وهو نظام دقيق وموثق، استخدمه العلماء المسلمون الأوائل في التأريخ للأحداث، وفي علوم الحرف والعدد.
             
-            نظام "أبجد هوز" هو نظام عددي استخدمه العرب قبل الإسلام، حيث يُعطى كل حرف من الحروف الأبجدية قيمة عددية ثابتة.
-            وقد استخدم هذا النظام في التأريخ للأحداث، وفي بعض العلوم الإسلامية. ونحن نستخدمه هنا ليس كـ "دليل مستقل"،
-            بل كـ **أداة لفهم البنية الرياضية** التي أشار إليها القرآن في فواتح السور (الحروف المقطعة).
-            
-            ### الجدول الأساسي لنظام أبجد هوز
-            
-            | المجموعة | الحروف | القيم |
-            |:---|:---|:---|
-            | **الآحاد** | أ ب ج د هـ و ز ح ط | 1 2 3 4 5 6 7 8 9 |
-            | **العشرات** | ي ك ل م ن س ع ف ص | 10 20 30 40 50 60 70 80 90 |
-            | **المئات** | ق ر ش ت ث خ ذ ض ظ | 100 200 300 400 500 600 700 800 900 |
-            | **الألف** | غ | 1000 |
-            
-            > **تنبيه منهجي:** هذا الجدول ليس "اختراعاً" شخصياً. إنه جزء من التراث اللغوي العربي.
-            > ونحن نستخدم هذه القيم كمُدخلات في نظام حاسوبي حي، لا كأدلة مستقلة.
+            هذا الجدول ليس "اختراعًا" شخصيًا. إنه جزء من التراث اللغوي العربي. ونحن نستخدم هذه القيم كمُدخلات ثابتة (Constants) في نظام حاسوبي حي، يحاكي المعادلة الكونية.
             """,
             """
-            ### The Origin and History of the System
+            Before Islam, Arabs used a numerical system based on the alphabet. Each letter has a fixed numerical value. This system is known as **"Abjad numerals"** or **"Abjad Hawaz"**. It is a precise and documented system, used by early Muslim scholars for dating events and in the sciences of letters and numbers.
             
-            The "Abjad Hawaz" system is a numerical system used by Arabs before Islam, where each letter of the alphabet is assigned a fixed numerical value.
-            We use it here not as an "independent proof", but as a **tool for understanding the mathematical structure** indicated by the Quran in the openings of its chapters (the disjointed letters).
-            
-            ### The Basic Table of the Abjad Hawaz System
-            
-            | Group | Letters | Values |
-            |:---|:---|:---|
-            | **Units** | أ ب ج د هـ و ز ح ط | 1 2 3 4 5 6 7 8 9 |
-            | **Tens** | ي ك ل م ن س ع ف ص | 10 20 30 40 50 60 70 80 90 |
-            | **Hundreds** | ق ر ش ت ث خ ذ ض ظ | 100 200 300 400 500 600 700 800 900 |
-            | **Thousands** | غ | 1000 |
-            
-            > **Methodological Note:** This table is not a personal "invention". It is part of the Arabic linguistic heritage.
-            > We use these values as inputs in a live computational system, not as independent proofs.
+            This table is not a personal "invention". It is part of the Arabic linguistic heritage. We use these values as fixed inputs (Constants) in a living computer system that simulates the cosmic equation.
             """
         ))
+        
+        # جدول أساسي
+        abjad_table = [
+            ["الآحاد", "أ", "ب", "ج", "د", "هـ", "و", "ز", "ح", "ط"],
+            ["", 1, 2, 3, 4, 5, 6, 7, 8, 9],
+            ["العشرات", "ي", "ك", "ل", "م", "ن", "س", "ع", "ف", "ص"],
+            ["", 10, 20, 30, 40, 50, 60, 70, 80, 90],
+            ["المئات", "ق", "ر", "ش", "ت", "ث", "خ", "ذ", "ض", "ظ"],
+            ["", 100, 200, 300, 400, 500, 600, 700, 800, 900],
+            ["الألف", "غ", "", "", "", "", "", "", "", ""],
+            ["", 1000, "", "", "", "", "", "", "", ""],
+        ]
+        df_abjad = pd.DataFrame(abjad_table)
+        st.table(df_abjad)
 
-    # ─────────────────────────────────────────
-    # الباب الثاني: التصنيف الوجودي للحروف
-    # ─────────────────────────────────────────
-    st.markdown("---")
-    st.subheader(TXT("🔬 الباب الثاني: التصنيف الوجودي للحروف", "🔬 Chapter Two: The Existential Classification of Letters"))
-
-    with st.expander(TXT("٢. الفئات الست – منطق التصنيف", "2. The Six Categories – Logic of Classification"), expanded=False):
+    # =============================================
+    # ٢. التصنيف الوجودي للحروف – الفئات الست
+    # =============================================
+    with st.expander(TXT("٢. التصنيف الوجودي للحروف – الفئات الست", "2. Existential Classification – The Six Categories"), expanded=True):
         st.markdown(TXT(
             """
-            ### لماذا ست فئات؟
-            
-            العدد **ستة** له دلالة قرآنية عميقة: ﴿وَلَقَدْ خَلَقْنَا السَّمَاوَاتِ وَالْأَرْضَ وَمَا بَيْنَهُمَا فِي سِتَّةِ أَيَّامٍ﴾ [ق: ٣٨].
-            وكما أن الخلق تم في ستة أيام، فكذلك الكلام الإلهي (القرآن) يحمل في طياته نظاماً سداسياً.
-            
-            **كل حرف** من الحروف الثمانية والعشرين له:
-            - **قيمة عددية** (حساب الجمل).
-            - **تصنيف وجودي** (موقعه في نظام الوجود).
-            - **دور رياضي** (كيف يؤثر في معادلة S = W × B).
-            
-            ### الفئات الست:
-            
-            | الفئة | الوصف | عدد الحروف |
-            |:---|:---|:---|
-            | **الأولى: الذات الإلهية (المصدر)** | حروف تمثل صفات الله الخاصة. هي "المصدر" الذي تنبثق منه كل الصفات. | 2 |
-            | **الثانية: الازدواج** | حروف لها وجهان: وجه إلى الله ثابت، ووجه إلى الخلق متغير. | 2 |
-            | **الثالثة: التجلي الإلهي** | حروف تمثل صفات الله المتجلية في خلقه. تكرارها في الفواتح كثير. | 7 |
-            | **الرابعة: الاشتراك (الجسور)** | حروف تمثل القنوات التي تربط عالم الغيب بعالم الشهادة. | 3 |
-            | **الخامسة: المشغلات** | حروف تمثل أدوات المنطق والسببية في كلام الله. | 4 |
-            | **السادسة: أعمال الخلق** | حروف تمثل صفات وأفعال خاصة بالخلق، ذات وجهين (±). | 10 |
+            هذا هو قلب المعجم. لقد قمنا بتصنيف الحروف الثمانية والعشرين إلى **ست فئات وجودية**، بناءً على خصائصها الصفاتية، وتكرارها في فواتح السور، وسياقاتها القرآنية. كل فئة تمثل مرتبة من مراتب الوجود، ولها دور رياضي محدد في معادلة الميزان.
             """,
             """
-            ### Why Six Categories?
-            
-            The number **six** has a profound Quranic significance: ﴿And We certainly created the heavens and the earth and whatever is between them in six days.﴾ [Qaf: 38].
-            Just as creation was completed in six days, divine speech (the Quran) carries within it a sixfold system.
-            
-            **Each letter** of the twenty-eight has:
-            - **A numerical value** (Abjad gematria).
-            - **An existential classification** (its position in the system of existence).
-            - **A mathematical role** (how it affects the equation S = W × B).
-            
-            ### The Six Categories:
-            
-            | Category | Description | Number of Letters |
-            |:---|:---|:---|
-            | **First: Divine Essence (Source)** | Letters representing Allah's exclusive attributes. The "Source" from which all attributes emanate. | 2 |
-            | **Second: Duality** | Letters with two faces: one fixed towards Allah, one variable towards creation. | 2 |
-            | **Third: Divine Manifestation** | Letters representing Allah's attributes manifested in His creation. Their frequency in Quranic openings is high. | 7 |
-            | **Fourth: Connection (Bridges)** | Letters representing the channels connecting the Unseen world with the Seen world. | 3 |
-            | **Fifth: Operators** | Letters representing logical and causal tools in Allah's speech. | 4 |
-            | **Sixth: Actions of Creation** | Letters representing qualities and actions specific to creation, with two faces (±). | 10 |
+            This is the heart of the lexicon. We have classified the twenty-eight letters into **six existential categories**, based on their qualitative properties, frequency in Quranic openings, and Quranic contexts. Each category represents a level of existence and has a specific mathematical role in the Mizan equation.
             """
         ))
+        
+        # عرض الفئات الست
+        categories = {
+            TXT("الفئة الأولى: حروف الذات الإلهية (المصدر)", "Cat 1: Divine Essence (Source)"): {
+                'letters': {'ك': 20, 'ن': 50},
+                'desc': TXT(
+                    "حرفان فقط يمثلان صفات الله الخاصة التي لا يشاركه فيها أحد. هما المصدر الذي تنبثق منه كل الصفات. ظهورهما في فواتح السور مرة واحدة فقط (في سورتي مريم والقلم) يدل على التفرد والوحدانية.",
+                    "Only two letters represent Allah's exclusive attributes. They are the source from which all other attributes emanate. Their single appearance in Quranic openings indicates uniqueness and oneness."
+                )
+            },
+            TXT("الفئة الثانية: حروف الازدواج (ثابت ومتجلي)", "Cat 2: Duality (Fixed & Manifested)"): {
+                'letters': {'ق': 100, 'ص': 90},
+                'desc': TXT(
+                    "حرفان لهما وجهان: وجه ثابت في الذات الإلهية (الحق، الصمد)، ووجه متجلي في الخلق (القسط، الصبر). يظهران منفردين (سورتا ق وص) ومع غيرهما (سورتا الشورى ومريم)، للدلالة على جمعهما بين الثبات والتغير.",
+                    "Two letters with two faces: one fixed in the Divine Essence (The Truth, The Eternal), and one manifested in creation (Justice, Patience). They appear alone and with others, indicating their combination of constancy and change."
+                )
+            },
+            TXT("الفئة الثالثة: حروف التجلي الإلهي", "Cat 3: Divine Manifestation"): {
+                'letters': {'أ': 1, 'ل': 30, 'م': 40, 'ر': 200, 'س': 60, 'ح': 8, 'ط': 9},
+                'desc': TXT(
+                    "سبعة حروف تمثل صفات الله المتجلية في خلقه. تكرارها الكبير في فواتح السور (أ=13، ل=13، م=17...) يدل على تعدد التجليات مع وحدة المصدر. وهي تعمل 'كمُوَلِّدات' ترفع قيمتي W و B في المعادلة.",
+                    "Seven letters representing Allah's attributes manifested in His creation. Their frequent repetition in Quranic openings indicates the multiplicity of manifestations with the unity of the source. They act as 'generators' raising the values of W and B in the equation."
+                )
+            },
+            TXT("الفئة الرابعة: حروف الاشتراك (الجسور)", "Cat 4: Connection (Bridges)"): {
+                'letters': {'ع': 70, 'ي': 10, 'هـ': 5},
+                'desc': TXT(
+                    "ثلاثة حروف تمثل القنوات التي تربط عالم الغيب بعالم الشهادة. هي الجسور التي يعبر عليها الإدراك (ع)، والنداء (ي)، والهوية (هـ). وهي تمثل 'عوامل الاتزان' التي تضبط العلاقة بين W و B.",
+                    "Three letters representing the channels connecting the Unseen world with the Seen world. They are the bridges for perception ('A), calling (Y), and identity (H). They act as 'balance factors' regulating the relationship between W and B."
+                )
+            },
+            TXT("الفئة الخامسة: المشغلات المفتاحية", "Cat 5: Key Operators"): {
+                'letters': {'ف': 80, 'و': 6, 'ب': 2, 'ل': 30},
+                'desc': TXT(
+                    "أربعة حروف تمثل أدوات المنطق والسببية في كلام الله. هي التي تحدد كيفية تفاعل الأسباب مع النتائج. فالفاء (=) للسببية، والواو (×) للضرب، والباء (بـ) للاستعانة، واللام (→) للتعليل.",
+                    "Four letters representing the tools of logic and causality in Allah's speech. They determine how causes interact with results. Fa (=) for causality, Waw (×) for multiplication, Ba (by) for assistance, Lam (→) for purpose."
+                )
+            },
+            TXT("الفئة السادسة: حروف أعمال الخلق", "Cat 6: Actions of Creation"): {
+                'letters': {'ج': 3, 'خ': 600, 'د': 4, 'ذ': 700, 'ز': 7, 'ش': 300, 'ت': 400, 'ث': 500, 'ض': 800, 'ظ': 900, 'غ': 1000},
+                'desc': TXT(
+                    "أحد عشر حرفًا تمثل صفات وأفعال خاصة بالخلق. كل حرف منها له وجهان: إيجابي (إذا استُخدم في طاعة الله) وسلبي (إذا استُخدم في معصيته). وهي تمثل 'الإرادة الحرة' للإنسان، وتحدد قيمتها حسب توجيهه لها.",
+                    "Eleven letters representing qualities and actions specific to creation. Each has two faces: positive (when used in obeying Allah) and negative (when used in disobeying Him). They represent human 'free will', and their values are determined by their direction."
+                )
+            },
+        }
+        
+        for cat, data in categories.items():
+            st.markdown(f"### {cat}")
+            st.info(data['desc'])
+            df = pd.DataFrame(list(data['letters'].items()), columns=[TXT('الحرف', 'Letter'), TXT('القيمة', 'Value')])
+            st.dataframe(df, hide_index=True, use_container_width=True)
+            st.markdown("---")
 
-    # ─────────────────────────────────────────
-    # الباب الثالث: تفصيل الفئات الست
-    # ─────────────────────────────────────────
-    st.markdown("---")
-    st.subheader(TXT("📊 الباب الثالث: تفصيل الفئات الست", "📊 Chapter Three: Detailing the Six Categories"))
-
-    # تفصيل الفئات
-    categories_detail = [
-        {
-            "name": TXT("الفئة الأولى: الذات الإلهية (المصدر)", "Category 1: Divine Essence (Source)"),
-            "icon": "🔆",
-            "letters": [
-                {"letter": "ك", "value": 20, "attribute": TXT("الأمر (كُن)", "The Command (Be)"), "verse": "﴿إِنَّمَا أَمْرُهُ إِذَا أَرَادَ شَيْئًا أَنْ يَقُولَ لَهُ كُنْ فَيَكُونُ﴾ [يس: ٨٢]"},
-                {"letter": "ن", "value": 50, "attribute": TXT("النور الذاتي", "The Intrinsic Light"), "verse": "﴿اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ﴾ [النور: ٣٥]"},
-            ],
-            "secret": TXT(
-                "**المعادلة الأولى للوجود:** ك + ن = ع (20 + 50 = 70). الأمر + النور = الإدراك. الوجود لا يُدرك إلا بالنور.",
-                "**The First Equation of Existence:** K + N = A (20 + 50 = 70). Command + Light = Perception. Existence is only perceived through light."
-            )
-        },
-        {
-            "name": TXT("الفئة الثانية: الازدواج", "Category 2: Duality"),
-            "icon": "⚖️",
-            "letters": [
-                {"letter": "ق", "value": 100, "attribute": TXT("الثابت: الميزان / المتجلي: القسط والعدل", "Fixed: The Balance / Manifest: Justice"), "verse": "﴿وَالسَّمَاءَ رَفَعَهَا وَوَضَعَ الْمِيزَانَ﴾ [الرحمن: ٧]"},
-                {"letter": "ص", "value": 90, "attribute": TXT("الثابت: الصمد / المتجلي: الصبر والصدق", "Fixed: The Eternal / Manifest: Patience & Truthfulness"), "verse": "﴿ص ۚ وَالْقُرْآنِ ذِي الذِّكْرِ﴾ [ص: ١]"},
-            ],
-            "secret": TXT(
-                "للقاف وجهان: وجه إلى الله (الحق، القيوم) ووجه إلى الخلق (القسط، الدين القيم). وقيمته 100 تمثل تمام العدل وكمال الميزان.",
-                "Qaf has two faces: one towards Allah (The Truth, The Self-Subsisting) and one towards creation (Justice, The Upright Religion). Its value 100 represents perfect justice."
-            )
-        },
-        {
-            "name": TXT("الفئة الثالثة: التجلي الإلهي", "Category 3: Divine Manifestation"),
-            "icon": "🌟",
-            "letters": [
-                {"letter": "أ", "value": 1, "attribute": TXT("الوحدانية", "Oneness"), "freq": 13},
-                {"letter": "ل", "value": 30, "attribute": TXT("المُلك والعدل", "Kingship & Justice"), "freq": 13},
-                {"letter": "م", "value": 40, "attribute": TXT("الجمع والتماسك", "Gathering & Cohesion"), "freq": 17},
-                {"letter": "ر", "value": 200, "attribute": TXT("اليقظة والمراقبة", "Wakefulness & Watchfulness"), "freq": 6},
-                {"letter": "س", "value": 60, "attribute": TXT("السمع والاستجابة", "Hearing & Response"), "freq": 5},
-                {"letter": "ح", "value": 8, "attribute": TXT("الحياة والاستدامة", "Life & Sustainability"), "freq": 7},
-                {"letter": "ط", "value": 9, "attribute": TXT("الطهارة والمناعة", "Purity & Immunity"), "freq": 4},
-            ],
-            "secret": TXT(
-                "الألف (1) يتكرر 13 مرة: الوحدانية في الكثرة. والميم (40) الأكثر تكراراً (17): سر الجمع والتماسك. هذه الحروف ترفع W وB في المعادلة.",
-                "Alif (1) appears 13 times: Oneness in multiplicity. Meem (40) is the most frequent (17): the secret of gathering. These letters raise W and B in the equation."
-            )
-        },
-        {
-            "name": TXT("الفئة الرابعة: الاشتراك (الجسور)", "Category 4: Connection (Bridges)"),
-            "icon": "🌉",
-            "letters": [
-                {"letter": "ع", "value": 70, "attribute": TXT("جسر الإدراك والرؤية", "Bridge of Perception"), "desc": TXT("يربط عالم الغيب بعالم الشهادة عبر الإدراك", "Connects the Unseen with the Seen through perception")},
-                {"letter": "ي", "value": 10, "attribute": TXT("جسر النداء والنسبة", "Bridge of Calling & Belonging"), "desc": TXT("يربط العبد بربه عبر الدعاء (يا رب) والوحي (يا أيها)", "Connects servant to Lord through supplication and revelation")},
-                {"letter": "هـ", "value": 5, "attribute": TXT("جسر الهوية والحضور", "Bridge of Identity & Presence"), "desc": TXT("يحدد هوية الشيء: هو الله، هم المهتدون", "Determines identity: He is Allah, they are the guided")},
-            ],
-            "secret": TXT(
-                "هذه الحروف تشكل سلسلة: ك+ن=ع (المصدر ينتج الإدراك)، ع+ي=الاستجابة (الإدراك يثمر النداء)، ي+هـ=الهوية (النداء يثبت الهوية).",
-                "These letters form a chain: K+N=A (source produces perception), A+Y=response (perception bears calling), Y+H=identity (calling establishes identity)."
-            )
-        },
-        {
-            "name": TXT("الفئة الخامسة: المشغلات", "Category 5: Operators"),
-            "icon": "⚡",
-            "letters": [
-                {"letter": "ف", "value": 80, "symbol": "=", "role": TXT("فاء السببية: تربط السبب بالنتيجة حتماً", "Causative Fa: links cause to effect inevitably")},
-                {"letter": "و", "value": 6, "symbol": "× / +", "role": TXT("واو العطف: تجمع بين طرفين (ضرباً أو جمعاً)", "Conjunctive Waw: combines two sides (multiplication or addition)")},
-                {"letter": "ب", "value": 2, "symbol": TXT("بـ", "by"), "role": TXT("باء الاستعانة: أداة التوسل", "Instrumental Ba: the tool of seeking help")},
-                {"letter": "ل", "value": 30, "symbol": "→", "role": TXT("لام التعليل: سهم يوضح اتجاه الغاية", "Purposive Lam: an arrow clarifying the direction of purpose")},
-            ],
-            "secret": TXT(
-                "هذه الحروف هي 'أوامر التشغيل' في لغة القرآن. 'ف' تخبرك أن ما قبلها سبب وما بعدها نتيجة. 'و' تخبرك أن تجمع بين شيئين. 'ب' تخبرك أن تستعين. 'ل' تخبرك عن الغاية. إنها مشغلات المعادلة الكونية.",
-                "These letters are the 'operating commands' in the Quranic language. 'F' tells you the cause and effect. 'W' tells you to combine. 'B' tells you to seek help. 'L' tells you the purpose. They are the operators of the cosmic equation."
-            )
-        },
-        {
-            "name": TXT("الفئة السادسة: أعمال الخلق", "Category 6: Actions of Creation"),
-            "icon": "🧬",
-            "letters": [
-                {"letter": "ج", "value": 3, "positive": TXT("الجهاد، الجود", "Striving, Generosity"), "negative": TXT("الجهل، الجحود", "Ignorance, Ingratitude")},
-                {"letter": "خ", "value": 600, "positive": TXT("الخير، الخشية", "Goodness, Awe"), "negative": TXT("الخيانة، الخذلان", "Betrayal, Abandonment")},
-                {"letter": "ت", "value": 400, "positive": TXT("التوبة، التقوى", "Repentance, Piety"), "negative": TXT("التيه", "Arrogance, Loss")},
-                {"letter": "ش", "value": 300, "positive": TXT("الشكر، الشجاعة", "Gratitude, Courage"), "negative": TXT("الشهوة، الشرك", "Lust, Polytheism")},
-                {"letter": "غ", "value": 1000, "positive": TXT("الغفران", "Forgiveness"), "negative": TXT("الغل", "Malice")},
-            ],
-            "secret": TXT(
-                "هذه الحروف تمثل الإرادة البشرية الحرة. قيمها تحددها اختيارات الإنسان (±). وهي وحدها القادرة على رفع S أو خفضه بشكل كبير، لأنها ثمرة الامتحان.",
-                "These letters represent free human will. Their values are determined by human choices (±). They alone can significantly raise or lower S, because they are the fruit of the test."
-            )
-        },
-    ]
-
-    for cat in categories_detail:
-        with st.expander(f"{cat['icon']} **{cat['name']}**", expanded=False):
-            st.markdown(TXT("#### الحروف:", "#### Letters:"))
-            for l in cat['letters']:
-                st.markdown(f"- **{l['letter']}** = {l['value']} ({l.get('attribute', l.get('desc', ''))})")
-            if 'secret' in cat:
-                st.info(cat['secret'])
-
-    # ─────────────────────────────────────────
-    # الباب الرابع: أسرار الحروف – تأملات عميقة
-    # ─────────────────────────────────────────
-    st.markdown("---")
-    st.subheader(TXT("🔍 الباب الرابع: أسرار الحروف – تأملات عميقة", "🔍 Chapter Four: Secrets of the Letters – Deep Reflections"))
-
-    # سر الألف
-    with st.expander(TXT("🌟 سر الألف (ا = 1): الوحدانية في الكثرة", "🌟 The Secret of Alif (ا = 1): Oneness in Multiplicity"), expanded=False):
-        st.markdown(TXT(
-            """
-            **القيمة 1 = الوحدانية المطلقة.**
-            **التكرار 13 مرة في فواتح السور = التجلي في عالم الكثرة (الخلق).**
-            
-            هذا ليس تناقضاً، بل هو السر الأعظم:
-            - الله واحد في ذاته (قيمته 1)، ولكنه متجلي في خلقه (تكراره 13).
-            - الـ 1 لا يتجزأ، ولكنه يظهر في كل مكان.
-            - الألف هو الحرف الوحيد الذي لا ينطق بذاته (لا حركة له)، ومع ذلك هو أساس كل كلمة.
-            - إنه مثل "الله": لا تدركه الأبصار، ولكن كل شيء يدل عليه.
-            
-            **العلاقة مع الأسماء الحسنى:**
-            الألف هو حرف "الأحد"، "الأول"، "الآخر"، "الظاهر"، "الباطن".
-            قيمته 1، لأنه واحد في كل هذه الأسماء، لا شريك له.
-            
-            > **تأمل:** كما أن الألف لا يُنطق به وحده، بل يحتاج إلى غيره ليظهر، فكذلك الله: لا يُرى في الدنيا، ولكن آثاره في كل مكان.
-            """,
-            """
-            **Value 1 = Absolute Oneness.**
-            **Frequency 13 in Quranic openings = Manifestation in the world of multiplicity.**
-            
-            This is the greatest secret:
-            - Allah is One in His Essence (value 1), yet manifested in His creation (frequency 13).
-            - The 1 is indivisible, yet appears everywhere.
-            - Alif has no sound of its own, yet it is the basis of every word.
-            - It is like "Allah": vision does not perceive Him, yet everything points to Him.
-            
-            **Relation to the Beautiful Names:**
-            Alif is the letter of "The One", "The First", "The Last", "The Manifest", "The Hidden".
-            
-            > **Reflection:** Just as Alif cannot be pronounced alone but needs others to appear, so too Allah is not seen in this world, but His signs are everywhere.
-            """
-        ))
-
-    # سر منظومة (الم)
-    with st.expander(TXT("🕋 منظومة (الم): البصمة الصوتية لاسم الله", "🕋 The (ALM) System: The Sound Signature of Allah"), expanded=False):
-        st.markdown(TXT(
-            """
-            الحروف الثلاثة (ا، ل، م) هي "البصمة الصوتية" لأعظم اسم: **الله**.
-            والقرآن يفتتح بها 6 سور (بعدد أيام الخلق)، لأنها "أم الكتاب" و"أم الأسماء".
-            
-            انظر كيف تتجلى هذه الحروف في أسماء الله وصفاته:
-            
-            | الحرف | الرمز | أمثلة من أسماء الله التي تبدأ به | معانيها |
-            |:---|:---|:---|:---|
-            | **أ** | الوحدانية، البداية | الأحد، الأول، الآخر | أصل كل شيء |
-            | **ل** | المُلك، اللطف، العدل | الملك، اللطيف، العدل، الحليم | الله هو المَلِك |
-            | **م** | الجمع، العطاء، المنع | المعطي، المانع، المحيي، المميت | أسماء الأفعال |
-            
-            عندما تقرأ "الم"، فأنت تستحضر كل هذه الأسماء. ولهذا كان النبي ﷺ يقول:
-            "لا أقول الم حرف، ولكن ألف حرف، ولام حرف، وميم حرف". لأن كل حرف منها كنز من الأسماء.
-            """,
-            """
-            The three letters (A, L, M) are the "sound signature" of the greatest name: **Allah**.
-            The Quran opens with them in 6 suras (the days of creation), because they are "the mother of the book" and "the mother of names".
-            
-            | Letter | Symbol | Examples of Allah's Names | Meanings |
-            |:---|:---|:---|:---|
-            | **A** | Oneness | The One, The First, The Last | Origin of all |
-            | **L** | Kingship | The King, The Subtle, The Just | Allah is the King |
-            | **M** | Giving | The Giver, The Withholder | Names of actions |
-            
-            When you recite "ALM", you evoke all these names. Hence the Prophet ﷺ said:
-            "I do not say ALM is one letter, but Alif is a letter, Lam is a letter, and Meem is a letter."
-            """
-        ))
-
-    # سر حرف القاف
-    with st.expander(TXT("⚖️ سر حرف القاف (ق = 100): حرف الميزان", "⚖️ The Secret of Qaf (ق = 100): The Letter of the Balance"), expanded=False):
-        st.markdown(TXT(
-            """
-            حرف **القاف** هو حرف "الحق" و"القيوم" و"القسط" و"الدِّينُ القَيِّم". قيمته 100 هي كمال العدد وأساس النسب.
-            
-            للقاف وجهان:
-            - **وجه ثابت في الذات الإلهية:** ﴿الْحَقُّ﴾، ﴿الْقَيُّومُ﴾. وهذا ثابت لا يتغير.
-            - **وجه متجلي في الخلق:** ﴿الْقِسْطُ﴾ (العدل)، ﴿الدِّينُ الْقَيِّمُ﴾. وهذا ما أُمر الناس بإقامته.
-            
-            و"الدِّينُ الْقَيِّمُ" هو القانون الإلهي الحق الثابت، ميزان الله الذي فطر الناس عليه، والذي لا تبديل فيه.
-            
-            > **تأمل:** القاف في "الحق" (مكسورة) تدل على الثبات. والقاف في "القسط" (ساكنة) تدل على التجلي. الحركة فرق!
-            """,
-            """
-            The letter **Qaf** is the letter of "The Truth", "The Self-Subsisting", "Justice", and "The Upright Religion". Its value 100 is numerical perfection.
-            
-            Qaf has two faces:
-            - **Fixed in the Divine Essence:** "The Truth", "The Self-Subsisting". Unchanging.
-            - **Manifested in creation:** "Justice", "The Upright Religion". Commanded to be established.
-            
-            "Ad-Deen Al-Qayyim" is the divine law, the balance of Allah upon which people were created, with no alteration.
-            
-            > **Reflection:** The Qaf in "Al-Haqq" (with kasra) indicates fixity. The Qaf in "Al-Qist" (with sukun) indicates manifestation. The vowel makes the difference!
-            """
-        ))
-
-    # سر حرف التاء
-    with st.expander(TXT("🅃 سر حرف التاء (ت = 400): حرف القرار والمصير", "🅃 The Secret of Taa (ت = 400): The Letter of Decision"), expanded=False):
-        st.markdown(TXT(
-            """
-            حرف **التاء** هو حرف **الاتخاذ** و**التبعية**. قيمته 400 تشير إلى ثقل الاختيار.
-            
-            **الاتخاذ الإيجابي (الولاء):**
-            > ﴿وَاتَّخَذَ اللَّهُ إِبْرَاهِيمَ خَلِيلًا﴾ [النساء: ١٢٥]
-            
-            **الاتخاذ السلبي (الولاء للطاغوت):**
-            > ﴿أَفَرَأَيْتَ مَنِ اتَّخَذَ إِلَٰهَهُ هَوَاهُ﴾ [الجاثية: ٢٣]
-            > ﴿وَالَّذِينَ اتَّخَذُوا مِن دُونِهِ أَوْلِيَاءَ﴾ [الزمر: ٣]
-            
-            **التبعية الإيجابية:**
-            > ﴿وَاتَّبِعْ مِلَّةَ إِبْرَاهِيمَ حَنِيفًا﴾ [النحل: ١٢٣]
-            
-            **التبعية السلبية:**
-            > ﴿قَالُوا بَلْ نَتَّبِعُ مَا وَجَدْنَا عَلَيْهِ آبَاءَنَا﴾ [البقرة: ١٧٠]
-            
-            التاء هو حرف القرار. إما أن تتخذ الله وأولياءه، وإما أن تتخذ الطاغوت. إما أن تتبع ملة إبراهيم، وإما أن تتبع الأهواء. وهذا هو جوهر معادلة الميزان: **S = W × B**.
-            """,
-            """
-            The letter **Taa** is the letter of **taking (ittikhaadh)** and **following (ittibaa')**. Its value 400 indicates the weight of choice.
-            
-            **Positive Taking (Loyalty):** ﴿And Allah took Abraham as a friend.﴾
-            **Negative Taking (Taghut):** ﴿Have you seen the one who takes his desire as his god?﴾
-            **Positive Following:** ﴿And follow the way of Abraham.﴾
-            **Negative Following:** ﴿They said, "Rather, we will follow that which we found our fathers doing."﴾
-            
-            Taa is the letter of decision. Either you take Allah and His allies, or you take Taghut. This is the essence of the Mizan equation: **S = W × B**.
-            """
-        ))
-
-    # ─────────────────────────────────────────
-    # الباب الخامس: جدول الحروف الكامل
-    # ─────────────────────────────────────────
-    st.markdown("---")
-    st.subheader(TXT("📋 الباب الخامس: جدول الحروف الكامل", "📋 Chapter Five: The Complete Letter Table"))
-
-    with st.expander(TXT("🗂️ الجدول الكامل للحروف الثمانية والعشرين", "🗂️ Complete Table of the 28 Letters"), expanded=False):
-        all_letters = [
-            ("ك", 20, TXT("الذات الإلهية", "Divine Essence"), TXT("الأمر (كُن)", "The Command (Be)"), TXT("ثابت", "Constant")),
-            ("ن", 50, TXT("الذات الإلهية", "Divine Essence"), TXT("النور الذاتي", "Intrinsic Light"), TXT("ثابت", "Constant")),
-            ("ق", 100, TXT("الازدواج", "Duality"), TXT("الميزان / القسط", "Balance / Justice"), TXT("ثابت/متغير", "Fixed/Variable")),
-            ("ص", 90, TXT("الازدواج", "Duality"), TXT("الصمد / الصبر", "Eternal / Patience"), TXT("ثابت/متغير", "Fixed/Variable")),
-            ("أ", 1, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("الوحدانية", "Oneness"), TXT("مُوَلِّد W", "W Generator")),
-            ("ل", 30, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("المُلك والعدل", "Kingship & Justice"), TXT("مُوَلِّد B", "B Generator")),
-            ("م", 40, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("الجمع", "Gathering"), TXT("مُوَلِّد S", "S Generator")),
-            ("ر", 200, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("اليقظة", "Wakefulness"), TXT("مُوَلِّد المقاومة", "Resistance Generator")),
-            ("س", 60, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("السمع", "Hearing"), TXT("مُوَلِّد الاستجابة", "Response Generator")),
-            ("ح", 8, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("الحياة", "Life"), TXT("مُوَلِّد الاستدامة", "Sustainability Gen.")),
-            ("ط", 9, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("الطهارة", "Purity"), TXT("مُوَلِّد المناعة", "Immunity Generator")),
-            ("ع", 70, TXT("الاشتراك", "Connection"), TXT("الإدراك", "Perception"), TXT("جسر", "Bridge")),
-            ("ي", 10, TXT("الاشتراك", "Connection"), TXT("النداء والنسبة", "Calling & Belonging"), TXT("جسر", "Bridge")),
-            ("هـ", 5, TXT("الاشتراك", "Connection"), TXT("الهوية", "Identity"), TXT("جسر", "Bridge")),
-            ("ف", 80, TXT("المشغلات", "Operators"), TXT("السببية (=)", "Causality (=)"), TXT("مشغّل", "Operator")),
-            ("و", 6, TXT("المشغلات", "Operators"), TXT("العطف (×/+)", "Conjunction (×/+)"), TXT("مشغّل", "Operator")),
-            ("ب", 2, TXT("المشغلات", "Operators"), TXT("الاستعانة (بـ)", "Assistance (by)"), TXT("مشغّل", "Operator")),
-            ("ل", 30, TXT("المشغلات", "Operators"), TXT("التعليل (→)", "Purpose (→)"), TXT("مشغّل", "Operator")),
-            ("ت", 400, TXT("أعمال الخلق", "Actions of Creation"), TXT("التوبة / التيه", "Repentance / Arrogance"), TXT("إرادة حرة (±)", "Free Will (±)")),
-            ("ث", 500, TXT("أعمال الخلق", "Actions of Creation"), TXT("الثبات / الثبور", "Steadfastness / Perdition"), TXT("إرادة حرة (±)", "Free Will (±)")),
-            ("ج", 3, TXT("أعمال الخلق", "Actions of Creation"), TXT("الجهاد / الجهل", "Striving / Ignorance"), TXT("إرادة حرة (±)", "Free Will (±)")),
-            ("خ", 600, TXT("أعمال الخلق", "Actions of Creation"), TXT("الخير / الخيانة", "Good / Betrayal"), TXT("إرادة حرة (±)", "Free Will (±)")),
-            ("ذ", 700, TXT("أعمال الخلق", "Actions of Creation"), TXT("الذكر / الذل", "Remembrance / Humiliation"), TXT("إرادة حرة (±)", "Free Will (±)")),
-            ("ز", 7, TXT("أعمال الخلق", "Actions of Creation"), TXT("الزكاة / الزور", "Purification / Falsehood"), TXT("إرادة حرة (±)", "Free Will (±)")),
-            ("ش", 300, TXT("أعمال الخلق", "Actions of Creation"), TXT("الشكر / الشهوة", "Gratitude / Lust"), TXT("إرادة حرة (±)", "Free Will (±)")),
-            ("ض", 800, TXT("أعمال الخلق", "Actions of Creation"), TXT("الضبط / الضلال", "Precision / Misguidance"), TXT("إرادة حرة (±)", "Free Will (±)")),
-            ("ظ", 900, TXT("أعمال الخلق", "Actions of Creation"), TXT("الظفر / الظلم", "Victory / Injustice"), TXT("إرادة حرة (±)", "Free Will (±)")),
-            ("غ", 1000, TXT("أعمال الخلق", "Actions of Creation"), TXT("الغفران / الغل", "Forgiveness / Malice"), TXT("إرادة حرة (±)", "Free Will (±)")),
+    # =============================================
+    # ٣. جدول الحروف الكامل (28 حرفًا)
+    # =============================================
+    with st.expander(TXT("٣. جدول الحروف الكامل (28 حرفًا)", "3. Complete Letter Table (28 Letters)"), expanded=False):
+        full_table = [
+            ("ك", 20, TXT("الذات الإلهية", "Divine Essence"), TXT("ثابت الأمر والتكوين", "Constant of Command"), TXT("—", "—"), TXT("—", "—")),
+            ("ن", 50, TXT("الذات الإلهية", "Divine Essence"), TXT("ثابت النور الذاتي", "Constant of Intrinsic Light"), TXT("—", "—"), TXT("—", "—")),
+            ("ق", 100, TXT("الازدواج", "Duality"), TXT("ثابت الميزان / متغير القسط", "Fixed Balance / Variable Justice"), TXT("—", "—"), TXT("—", "—")),
+            ("ص", 90, TXT("الازدواج", "Duality"), TXT("ثابت الصمد / متغير الصبر والصدق", "Fixed Eternal / Variable Patience"), TXT("—", "—"), TXT("—", "—")),
+            ("أ", 1, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("مُوَلِّد W", "W Generator"), TXT("الوحدانية", "Oneness"), TXT("—", "—")),
+            ("ل", 30, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("مُوَلِّد B", "B Generator"), TXT("المُلك والعدل", "Kingship & Justice"), TXT("—", "—")),
+            ("م", 40, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("مُوَلِّد S", "S Generator"), TXT("الجمع والتماسك", "Gathering & Cohesion"), TXT("—", "—")),
+            ("ر", 200, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("مُوَلِّد المقاومة", "Resistance Generator"), TXT("اليقظة والمراقبة", "Awakening & Watching"), TXT("—", "—")),
+            ("س", 60, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("مُوَلِّد الاستجابة", "Response Generator"), TXT("السمع", "Hearing"), TXT("—", "—")),
+            ("ح", 8, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("مُوَلِّد الاستدامة", "Sustainability Generator"), TXT("الحياة", "Life"), TXT("—", "—")),
+            ("ط", 9, TXT("التجلي الإلهي", "Divine Manifestation"), TXT("مُوَلِّد المناعة", "Immunity Generator"), TXT("الطهارة", "Purity"), TXT("—", "—")),
+            ("ع", 70, TXT("الاشتراك (الجسور)", "Connection (Bridges)"), TXT("جسر الإدراك والرؤية", "Bridge of Perception"), TXT("—", "—"), TXT("—", "—")),
+            ("ي", 10, TXT("الاشتراك (الجسور)", "Connection (Bridges)"), TXT("جسر النداء والنسبة", "Bridge of Calling"), TXT("—", "—"), TXT("—", "—")),
+            ("هـ", 5, TXT("الاشتراك (الجسور)", "Connection (Bridges)"), TXT("جسر الهوية والحضور", "Bridge of Identity"), TXT("—", "—"), TXT("—", "—")),
+            ("ف", 80, TXT("المشغلات", "Operators"), TXT("علامة التساوي (=)", "Equality Sign (=)"), TXT("—", "—"), TXT("—", "—")),
+            ("و", 6, TXT("المشغلات", "Operators"), TXT("الضرب (×) أو الجمع (+)", "Multiplication (×) or Addition (+)"), TXT("—", "—"), TXT("—", "—")),
+            ("ب", 2, TXT("المشغلات", "Operators"), TXT("مفتاح الاستعانة (بـ)", "Key of Assistance (by)"), TXT("—", "—"), TXT("—", "—")),
+            ("ل", 30, TXT("المشغلات", "Operators"), TXT("سهم التعليل (→)", "Arrow of Purpose (→)"), TXT("—", "—"), TXT("—", "—")),
+            ("ج", 3, TXT("أعمال الخلق", "Actions of Creation"), TXT("إرادة حرة (±)", "Free Will (±)"), TXT("الجهاد، الجود", "Striving, Generosity"), TXT("الجهل، الجحود", "Ignorance, Denial")),
+            ("خ", 600, TXT("أعمال الخلق", "Actions of Creation"), TXT("إرادة حرة (±)", "Free Will (±)"), TXT("الخير، الخشية", "Good, Awe"), TXT("الخيانة، الخذلان", "Betrayal, Abandonment")),
+            ("د", 4, TXT("أعمال الخلق", "Actions of Creation"), TXT("إرادة حرة (±)", "Free Will (±)"), TXT("الدين، الدعوة", "Religion, Calling"), TXT("التدمير", "Destruction")),
+            ("ذ", 700, TXT("أعمال الخلق", "Actions of Creation"), TXT("إرادة حرة (±)", "Free Will (±)"), TXT("الذكر", "Remembrance"), TXT("الذل، الذنب", "Humiliation, Sin")),
+            ("ز", 7, TXT("أعمال الخلق", "Actions of Creation"), TXT("إرادة حرة (±)", "Free Will (±)"), TXT("الزكاة، الزهد", "Purification, Asceticism"), TXT("الزور، الزيغ", "Falsehood, Deviation")),
+            ("ش", 300, TXT("أعمال الخلق", "Actions of Creation"), TXT("إرادة حرة (±)", "Free Will (±)"), TXT("الشكر، الشجاعة", "Gratitude, Courage"), TXT("الشهوة، الشرك", "Lust, Polytheism")),
+            ("ت", 400, TXT("أعمال الخلق", "Actions of Creation"), TXT("إرادة حرة (±)", "Free Will (±)"), TXT("التوبة، التقوى", "Repentance, Piety"), TXT("التيه", "Wandering")),
+            ("ث", 500, TXT("أعمال الخلق", "Actions of Creation"), TXT("إرادة حرة (±)", "Free Will (±)"), TXT("الثبات، الثواب", "Steadfastness, Reward"), TXT("الثبور", "Destruction")),
+            ("ض", 800, TXT("أعمال الخلق", "Actions of Creation"), TXT("إرادة حرة (±)", "Free Will (±)"), TXT("الضياء", "Radiance"), TXT("الضلال", "Misguidance")),
+            ("ظ", 900, TXT("أعمال الخلق", "Actions of Creation"), TXT("إرادة حرة (±)", "Free Will (±)"), TXT("الظفر", "Victory"), TXT("الظلم", "Injustice")),
+            ("غ", 1000, TXT("أعمال الخلق", "Actions of Creation"), TXT("إرادة حرة (±)", "Free Will (±)"), TXT("الغفران", "Forgiveness"), TXT("الغل", "Malice")),
         ]
         
-        df_all = pd.DataFrame(all_letters, columns=[
-            TXT("الحرف", "Letter"),
-            TXT("القيمة", "Value"),
-            TXT("الفئة", "Category"),
-            TXT("الدلالة", "Meaning"),
-            TXT("الدور", "Role")
+        df_full = pd.DataFrame(full_table, columns=[
+            TXT("الحرف", "Letter"), TXT("القيمة", "Value"), TXT("الفئة", "Category"),
+            TXT("الدور في المعادلة", "Role in Equation"), TXT("الوجه الإيجابي", "Positive Face"), TXT("الوجه السلبي", "Negative Face")
         ])
-        st.dataframe(df_all, hide_index=True, use_container_width=True)
+        st.dataframe(df_full, hide_index=True, use_container_width=True)
 
-    # ─────────────────────────────────────────
-    # خاتمة المعجم: كلمة التواضع
-    # ─────────────────────────────────────────
-    st.markdown("---")
-    with st.expander(TXT("🙏 خاتمة: كلمة التواضع", "🙏 Conclusion: A Word of Humility"), expanded=False):
+    # =============================================
+    # ٤. أسرار الحروف: الألف، الميم، القاف، التاء
+    # =============================================
+    with st.expander(TXT("٤. أسرار الحروف: الألف، الميم، القاف، التاء", "4. Letter Secrets: Alif, Meem, Qaf, Taa"), expanded=False):
         st.markdown(TXT(
             """
-            ### ﴿وَمَا أُوتِيتُم مِّنَ الْعِلْمِ إِلَّا قَلِيلًا﴾ [الإسراء: ٨٥]
-            
-            هذا المعجم – بكل ما فيه من جداول وتصنيفات ومعادلات – ليس إلا **محاولة متواضعة** لفهم شيء من أسرار كتاب الله.
-            إنه ليس "العلم المطلق"، بل هو **اجتهاد بشري** يحتمل الصواب والخطأ.
-            
-            **نحن نقر بما يلي:**
-            1. أن علم الله لا يحاط به، وأن كلماته لا تنفد.
-            2. أن هذا المعجم هو "قراءة" من بين قراءات محتملة كثيرة.
-            3. أنه ليس بديلاً عن التدبر المباشر للقرآن، بل هو **أداة مساعدة** للتفكر.
-            4. أن الباب مفتوح لكل ناقد ومصحح ومضيف، فنحن طلاب علم، لا أرباب مذاهب.
-            
-            **فإن كان في هذا المعجم صواب، فمن الله وحده. وإن كان فيه خطأ، فمن أنفسنا والشيطان.**
-            ونسأل الله أن ينفع به، وأن يجعله خالصاً لوجهه، وأن يغفر لنا تقصيرنا وجهالتنا.
-            
-            > **تأمل أخير:** هذا المعجم هو "محاولة للفهم"، لا "ادعاء للحقيقة". وهو "خطوة على الطريق"، لا "نهاية المطاف". فكلما ازددنا علماً، ازددنا يقيناً بجهلنا. وكلما تعمقنا في بحر القرآن، أدركنا أننا لم نبلغ بعدُ شاطئه.
+            ### سر الألف (ا = 1): الوحدانية في الكثرة
+            **القيمة 1 = الوحدانية المطلقة.** **التكرار 13 مرة في فواتح السور = التجلي في عالم الكثرة.**
+            الألف هو الحرف الوحيد الذي لا ينطق بذاته، ومع ذلك هو أساس كل كلمة. إنه مثل "الله": لا تدركه الأبصار، ولكن كل شيء يدل عليه.
             """,
             """
-            ### ﴿And you have not been given of knowledge except a little.﴾ [Al-Isra: 85]
-            
-            This lexicon – with all its tables, classifications, and equations – is nothing but a **humble attempt** to understand something of the secrets of Allah's Book.
-            It is not "absolute knowledge", but rather **human effort** liable to correctness and error.
-            
-            **We acknowledge the following:**
-            1. That Allah's knowledge cannot be encompassed, and His words never end.
-            2. That this lexicon is one "reading" among many possible readings.
-            3. That it is not a substitute for direct reflection on the Quran, but an **aid** for contemplation.
-            4. That the door is open to every critic, corrector, and contributor, for we are students of knowledge, not founders of doctrines.
-            
-            **If there is correctness in this lexicon, it is from Allah alone. And if there is error, it is from ourselves and Satan.**
-            We ask Allah to benefit by it, to make it purely for His sake, and to forgive our shortcomings and ignorance.
-            
-            > **A Final Reflection:** This lexicon is "an attempt to understand", not "a claim to truth". It is "a step on the path", not "the end of the journey". For the more we increase in knowledge, the more certain we become of our ignorance. And the deeper we dive into the ocean of the Quran, the more we realize we have not yet reached its shore.
+            ### The Secret of Alif (ا = 1): Oneness in Multiplicity
+            **Value 1 = Absolute Oneness.** **Frequency 13 in openings = Manifestation in multiplicity.**
+            Alif has no sound of its own, yet is the basis of every word. It is like "Allah": vision does not perceive Him, yet everything points to Him.
             """
         ))
+        st.markdown(TXT(
+            """
+            ### منظومة (الم): قاعدة الأسماء الحسنى
+            الحروف الثلاثة (ا، ل، م) هي البصمة الصوتية لأعظم اسم: **الله**. القرآن يفتتح بها 6 سور (بعدد أيام الخلق).
+            | الحرف | الرمز | أمثلة من أسماء الله |
+            |:---|:---|:---|
+            | **أ** | الوحدانية | الأحد، الأول، الآخر |
+            | **ل** | المُلك والعدل | الملك، اللطيف، العدل |
+            | **م** | الجمع والعطاء | المعطي، المانع، المحيي، المميت |
+            """,
+            """
+            ### The (ALM) System: Foundation of the Beautiful Names
+            The three letters (A, L, M) are the sound signature of the greatest name: **Allah**. The Quran opens with them in 6 suras (the days of creation).
+            | Letter | Symbol | Examples of Allah's Names |
+            |:---|:---|:---|
+            | **A** | Oneness | The One, The First, The Last |
+            | **L** | Kingship | The King, The Subtle, The Just |
+            | **M** | Giving | The Giver, The Withholder, The Giver of Life |
+            """
+        ))
+        st.markdown(TXT(
+            """
+            ### سر حرف القاف (ق = 100): حرف الميزان
+            حرف **القاف** هو حرف "الحق" و"القيوم" و"القسط" و"الدِّينُ القَيِّم". قيمته 100 هي كمال العدد وأساس النسب.
+            **وجهه الثابت:** الحق، القيوم. **وجهه المتجلي:** القسط (العدل)، الدِّينُ القَيِّم.
+            """,
+            """
+            ### The Secret of Qaf (ق = 100): The Letter of the Balance
+            The letter **Qaf** is the letter of "The Truth", "The Self-Subsisting", "Justice", and "The Upright Religion". Its value 100 is numerical perfection.
+            **Its fixed face:** The Truth, The Self-Subsisting. **Its manifested face:** Justice, The Upright Religion.
+            """
+        ))
+        st.markdown(TXT(
+            """
+            ### سر حرف التاء (ت = 400): حرف القرار والمصير
+            حرف **التاء** هو حرف **الاتخاذ** و**التبعية**. إما أن تتخذ الله وأولياءه، وإما أن تتخذ الطاغوت. إما أن تتبع ملة إبراهيم، وإما أن تتبع الأهواء.
+            > ﴿وَاتَّخَذَ اللَّهُ إِبْرَاهِيمَ خَلِيلًا﴾ (ولاء)
+            > ﴿أَفَرَأَيْتَ مَنِ اتَّخَذَ إِلَٰهَهُ هَوَاهُ﴾ (طاغوت)
+            """,
+            """
+            ### The Secret of Taa (ت = 400): The Letter of Decision
+            The letter **Taa** is the letter of **taking** and **following**. Either you take Allah and His allies, or you take Taghut. Either you follow the way of Abraham, or you follow desires.
+            > ﴿And Allah took Abraham as a friend.﴾ (Loyalty)
+            > ﴿Have you seen the one who takes his desire as his god?﴾ (Taghut)
+            """
+        ))
+
+    # =============================================
+    # ٥. المعادلات الوجودية: من "كُن" إلى "هو"
+    # =============================================
+    with st.expander(TXT("٥. المعادلات الوجودية: من 'كُن' إلى 'هو'", "5. Existential Equations: From 'Be' to 'He'"), expanded=False):
+        st.markdown(TXT(
+            """
+            الحروف ليست مجرد قيم ثابتة، بل هي مترابطة في سلسلة من المعادلات الوجودية التي تروي قصة الخلق من الأمر (كُن) إلى المعرفة (هو):
+            
+            **١. المعادلة الأولى للوجود:**
+            ```
+            ك + ن = ع
+            20 + 50 = 70
+            ```
+            الأمر الإلهي (كُن) + النور الذاتي = الإدراك. الوجود لا يُدرك إلا بالنور.
+            
+            **٢. المعادلات الوجودية للجسور:**
+            ```
+            ع + ي = الاستجابة (الإدراك + النداء)
+            70 + 10 = 80 (قيمة الفاء = بداية السببية)
+            
+            ي + هـ = الهوية (النداء + الحضور)
+            10 + 5 = 15
+            
+            هـ → ك (الهوية تعود إلى المصدر: "كلٌ إلينا راجعون")
+            5 → 20
+            ```
+            
+            **٣. الدائرة المغلقة:**
+            من ك (كن) → إلى ن (النور) → إلى ع (الإدراك) → إلى ي (النداء) → إلى هـ (الهوية) → إلى ك (العودة إلى المصدر).
+            
+            هذه هي دورة الوجود من الأزل إلى الخلود، مختزلة في حروف وكلمات.
+            """,
+            """
+            Letters are not just fixed values, but are interconnected in a series of existential equations that narrate the story of creation from the command (Be) to knowledge (He):
+            
+            **1. The First Equation of Existence:**
+            K + N = A (Command + Light = Perception)
+            
+            **2. The Existential Equations of the Bridges:**
+            A + Y = Response (Perception + Calling)
+            Y + H = Identity (Calling + Presence)
+            H → K (Identity returns to the Source)
+            
+            **3. The Closed Circle:**
+            From K (Be) → to N (Light) → to A (Perception) → to Y (Calling) → to H (Identity) → back to K (Return to Source).
+            
+            This is the cycle of existence from eternity to eternity, condensed into letters and words.
+            """
+        ))
+
+    # =============================================
+    # ٦. دالة الميزان النهائية
+    # =============================================
+    with st.expander(TXT("٦. دالة الميزان النهائية (Python)", "6. The Final Mizan Function (Python)"), expanded=False):
+        st.markdown(TXT(
+            "بعد أن حددنا قيم كل حرف ودوره في المعادلة، نقدم الآن دالة الميزان النهائية التي تدمج كل هذه الحروف في معادلة واحدة لحساب الثبات (S).",
+            "After defining the values and roles of each letter, we now present the final Mizan function that integrates all these letters into a single equation to calculate Stability (S)."
+        ))
+        st.code("""
+import numpy as np
+
+def calc_S(W, B, E,
+          source_constants,      # ك، ن
+          dual_constants,        # ق، ص
+          manifestation_vars,    # أ، ل، م، ر، س، ح، ط
+          connection_vars,       # ع، ي، هـ
+          operator_vars,         # ف، و، ب، ل
+          action_vars):          # ج، خ، د، ذ، ز، ش، ت، ث، ض، ظ، غ
+    """
+    المعادلة النهائية لنظرية الميزان – التصنيف الوجودي السداسي.
+    S = [W × B] × [المصدر / المثبطات] × المشغلات
+    """
+    S = W * B
+    
+    # ١. ثوابت الذات الإلهية (ك، ن) – المصدر
+    source_factor = (source_constants.get('ك', 0.5) * 20 + 
+                     source_constants.get('ن', 0.5) * 50) / 2
+    S *= (0.3 + 0.7 * source_factor / 100)
+    
+    # ٢. ثوابت الازدواج (ق، ص)
+    dual_factor = (dual_constants.get('ق', 0.5) * 100 + 
+                   dual_constants.get('ص', 0.5) * 90) / 2
+    S *= (0.5 + 0.5 * dual_factor / 100)
+    
+    # ٣. حروف التجلي – ترفع W و B
+    man_boost = sum(manifestation_vars.values()) / max(len(manifestation_vars), 1)
+    S *= (0.4 + 0.6 * man_boost)
+    
+    # ٤. حروف الاشتراك (الجسور) – تضبط التوازن
+    conn_balance = sum(connection_vars.values()) / max(len(connection_vars), 1)
+    S *= (0.7 + 0.6 * conn_balance)
+    
+    # ٥. المشغلات – تحدد منطق التفاعل
+    ف = operator_vars.get('ف', 0.5)
+    و = operator_vars.get('و', 0.5)
+    ب = operator_vars.get('ب', 0.5)
+    ل_op = operator_vars.get('ل', 0.5)
+    op_factor = (ف * 80 + و * 6 + ب * 2 + ل_op * 30) / 118
+    S *= (0.7 + 0.6 * op_factor)
+    
+    # ٦. أعمال الخلق – إرادة حرة (±)
+    pos_sum = sum(v for k, v in action_vars.items() if v > 0)
+    neg_sum = sum(abs(v) for k, v in action_vars.items() if v < 0)
+    S *= (1.0 + 0.2 * pos_sum / max(len(action_vars), 1))
+    S *= (1.0 - 0.3 * neg_sum / max(len(action_vars), 1))
+    
+    # ٧. الاستدراج
+    if E > S:
+        S -= 0.1 * (E - S)
+    
+    return np.clip(S, 0.001, 1.0)
+    """, language="python")
+
+    # =============================================
+    # ٧. الخاتمة: تواضع العارفين
+    # =============================================
+    with st.expander(TXT("٧. الخاتمة: تواضع العارفين", "7. Conclusion: The Humility of the Knowers"), expanded=False):
+        st.markdown(TXT(
+            """
+            <div style="background:rgba(20,30,60,0.7); border-radius:15px; padding:25px; margin:15px 0; border:1px solid #FFD700; line-height:2.2; text-align:center;">
+            <h3 style="color:#FFD700;">﴿وَمَا أُوتِيتُم مِّنَ الْعِلْمِ إِلَّا قَلِيلًا﴾ [الإسراء: ٨٥]</h3>
+            
+            <p>هذا ما انتهينا إليه. وهذا ما وفقنا الله إليه. وهو – بلا شك – ليس كل شيء، بل هو أقل القليل من بحر علم الله الذي لا قاع له.</p>
+            
+            <p>ما قدمناه هنا ليس "الحقيقة المطلقة"، بل هو محاولة متواضعة لفهم سنة من سنن الله في خلقه، ولفك شفرة من شفرات كتابه العزيز. إنه جهد بشري، يحتمل الصواب ويحتمل الخطأ.</p>
+            
+            <p>فما كان فيه من صواب، فمن الله وحده، وله الحمد والمنة. وما كان فيه من خطأ، فمن أنفسنا، ونسأل الله أن يغفره لنا. وحسبنا أنا حاولنا، وأننا فتحنا بابًا لعل غيرنا يكمل المسيرة، ويصحح المسار.</p>
+            
+            <p>والله أسأل أن ينفع بهذا العمل كاتبه وقارئه، وأن يجعله خالصًا لوجهه الكريم، وأن يكتب له القبول في الأرض والثواب في السماء.</p>
+            
+            <p style="font-size:1.2em; font-weight:bold;">S = W × B</p>
+            <p style="font-size:0.8em; color:#AAA;">ق = ١٠٠ = الحق = الميزان</p>
+            </div>
+            """,
+            """
+            <div style="background:rgba(20,30,60,0.7); border-radius:15px; padding:25px; margin:15px 0; border:1px solid #FFD700; line-height:2.2; text-align:center;">
+            <h3 style="color:#FFD700;">﴿And you have not been given of knowledge except a little.﴾ [Al-Isra: 85]</h3>
+            
+            <p>This is what we have reached. It is, without doubt, not everything, but the smallest of drops from the endless ocean of Allah's knowledge.</p>
+            
+            <p>What we have presented here is not "the absolute truth", but a humble attempt to understand one of Allah's laws in His creation, and to decode one of the codes of His Mighty Book. It is a human effort, liable to error.</p>
+            
+            <p>Whatever is correct in it is from Allah alone, and to Him belongs all praise. Whatever is wrong is from ourselves, and we ask Allah for His forgiveness. We have tried, and we have opened a door for others to continue the journey.</p>
+            
+            <p style="font-size:1.2em; font-weight:bold;">S = W × B</p>
+            <p style="font-size:0.8em; color:#AAA;">Q = 100 = The Truth = The Balance</p>
+            </div>
+            """
+        ))
+
+def render_new_geometric_lexicon():
+    render_geometric_lexicon()
