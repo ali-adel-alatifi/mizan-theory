@@ -1,7 +1,7 @@
 # mizan/components.py
 """
 وحدة مكونات الواجهة
-تحتوي: دوال عرض جميع التبويبات (16 تبويباً)
+تحتوي: دوال عرض جميع التبويبات الأساسية
 """
 
 import streamlit as st
@@ -22,151 +22,13 @@ from healer import render_healer
 from network import render_network
 from academy import render_academy
 from ahlulbayt import render_ahlulbayt
-from lexicon import render_lexicon
 from the_one_law import render_the_one_law
-from spiritual_energy import render_spiritual_energy
-from prayer_cycle import render_prayer_cycle
 from social_fabric import render_social_fabric
-
-
-# =============================================
-# دالة إصلاح النصوص العربية (مشتركة لجميع الدوال)
-# =============================================
-def fix_rtl_display():
-    """إصلاح مشكلة عرض النصوص العربية في Streamlit"""
-    st.markdown("""
-    <style>
-    /* إجبار كل النصوص على أن تكون من اليمين لليسار */
-    div, p, h1, h2, h3, h4, h5, h6, span, strong, em, li, label, .stMarkdown, .stText {
-        direction: rtl !important;
-        text-align: right !important;
-        unicode-bidi: plaintext !important;
-    }
-    /* العناوين الرئيسية */
-    .stTitle, .stHeader, .stSubheader {
-        direction: rtl !important;
-        text-align: right !important;
-    }
-    /* صناديق المعلومات */
-    .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
-        direction: rtl !important;
-        text-align: right !important;
-    }
-    /* الأزرار والمنزلقات */
-    button, .stSlider {
-        direction: rtl !important;
-    }
-    /* نصوص المخططات */
-    .matplotlib-text {
-        direction: rtl !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-
-# =============================================
-# رسالة الترحيب ودليل المستخدم (النسخة المتقدمة)
-# =============================================
-def render_welcome():
-    fix_rtl_display()
-    with st.expander(TXT("📜 رسالة ترحيب", "📜 Welcome Message"), expanded=True):
-        st.markdown(f"""
-        <div class="message-box">
-        <h2 style="text-align:center;color:#FFD700;">⚖️ {TXT('مختبر الميزان', 'The Mizan Lab')}</h2>
-        <p style="text-align:center;font-style:italic;color:#CCC;font-size:1.1em;">
-        "{TXT('وَالسَّمَاءَ رَفَعَهَا وَوَضَعَ الْمِيزَانَ * أَلَّا تَطْغَوْا فِي الْمِيزَانِ', 'And the heaven He raised and imposed the balance. That you not transgress within the balance.')}"
-        </p>
-        
-        <p style="text-align:center;color:#FFD700;font-style:italic;font-size:1.1em;margin:10px 0;">
-        ﴿وَمَا أُوتِيتُم مِّنَ الْعِلْمِ إِلَّا قَلِيلًا﴾ [الإسراء: ٨٥]
-        </p>
-        
-        <p style="text-align:center;color:#FFD700;font-style:italic;font-size:1.1em;margin:10px 0;">
-        ﴿وَفِي الْأَرْضِ آيَاتٌ لِّلْمُوقِنِينَ * وَفِي أَنفُسِكُمْ ۚ أَفَلَا تُبْصِرُونَ﴾ [الذاريات: ٢٠-٢١]
-        </p>
-        
-        <p>{TXT(
-        'أنت تقف الآن على عتبة مختبر فريد. ليس كمختبرات الكيمياء والفيزياء، بل مختبرٌ ينظر إلى الذرة والمجرة، وإلى القلب والضمير، عبر عدسةٍ واحدة. عدسةٌ تزعم أن للوجود قانوناً واحداً، يسري في نسيج الخلق كما يسري في نسيج الوحي. هذا القانون هو <b>"الميزان"</b>.',
-        'You are standing at the threshold of a unique lab. Not one of chemistry or physics, but a lab that looks at the atom and the galaxy, at the heart and the conscience, through a single lens. A lens that claims existence has one law, flowing through the fabric of creation as it flows through the fabric of revelation. This law is <b>"Al-Mizan"</b>.'
-        )}</p>
-        <p>{TXT(
-        'من الذرة التي تتآلف بقوة الجذب وتستقر بقوة التنافر، إلى الخلية التي تحمي ذاتها وتهاجم غريبها، إلى الكيمياء التي تتحد فيها الذرات وتحتاج إلى "طاقة تنشيط" لتكسر روابطها القديمة (توبتها!)، إلى المجتمعات التي تجمعها القيم وتحميها من الفساد... كل شيء يصرخ بقانونٍ واحد: <b>S = W × B</b>.',
-        'From the atom that unites by attraction and stabilizes by repulsion, to the cell that protects itself and attacks intruders, to chemistry where atoms unite and need "activation energy" to break old bonds (its repentance!), to societies gathered by values and protected from corruption... everything screams one law: <b>S = W x B</b>.'
-        )}</p>
-        <p>{TXT(
-        '<b>W (الولاء لله وأوليائه):</b> قوة الجذب نحو الحق. <b>B (البراءة من الطاغوت وأوليائه):</b> قوة التنافر عن الباطل. <b>S (الثبات الوجودي):</b> حاصل ضربهما. إنها معادلة ضرب لا جمع، لأن القلب لا يجتمع فيه ولاءان، ولأن الثبات لا يقوم إلا على ركنين. هذا هو "الدين القيم" الذي فطر الله الناس عليه، وهذا هو "الإسلام الحنيف" الذي هو الاستجابة الديناميكية لهذا القانون.',
-        '<b>W (Loyalty to Allah & His allies):</b> The force of attraction to truth. <b>B (Disavowal of Taghut & its allies):</b> The force of repulsion from falsehood. <b>S (Existential Stability):</b> Their product. It is multiplication, not addition, because a heart cannot hold two loyalties, and stability only rests on two pillars. This is "Al-Deen Al-Qayyim" upon which Allah created people, and this is "Al-Islam Al-Hanif", the dynamic response to this law.'
-        )}</p>
-        <p>{TXT(
-        'لم تكن هذه المعادلة مجرد نظرية بشرية. لقد جسّدها بشرٌ صدقوا ما عاهدوا الله عليه، رجالاً ونساءً، في كل الظروف والأحوال. <b>محمد</b> صلى الله عليه وعلى آله وسلم، خاتم النبيين وسيد المرسلين، الأسوة العظمى والقدوة المثلى، الذي قال: "أوثق عرى الإيمان: الحب في الله، والبغض في الله". ثم <b>إبراهيم</b> خليل الله، الذي أعلنها في وجه أبيه وقومه: "إنني براء مما تعبدون". و<b>موسى</b> كليم الله، الذي وقف في وجه الطاغوت السياسي. و<b>يوسف</b> الصديق، الذي اختار السجن على المعصية. و<b>أصحاب الكهف</b> الفتية، الذين اعتزلوا مجتمعهم الفاسد. و<b>علي والحسن والحسين</b>، الذين جسّدوا قمم الثبات في أقسى الفتن. و<b>أم موسى</b> التي ألقت بولدها في اليم ثقةً بوعد الله: "إنا رادوه إليك". و<b>آسيا امرأة فرعون</b> التي قالت تحت التعذيب: "رب ابن لي عندك بيتاً في الجنة"، متبرئةً من مُلك الطاغوت. هؤلاء ليسوا من عالم الملائكة. هم بشرٌ مثلنا، أكلوا الطعام ومشوا في الأسواق. ولكنهم عرفوا ما فضلهم الله به، وما أكرمهم به كبشر، فعملوا بهذا القانون، فارتقوا إلى أعلى عليين. وهذه المنصة تدعوك أن تسير على آثارهم.',
-        'This equation was not merely a human theory. It was embodied by humans who were true to their covenant with Allah, men and women, in all circumstances. <b>Muhammad</b> ﷺ, the Seal of the Prophets and Master of the Messengers, the supreme example, who said: "The firmest handhold of faith is: love for the sake of Allah, and hatred for the sake of Allah." Then <b>Abraham</b>, the Friend of Allah, who declared to his father and people: "I am disassociated from what you worship". <b>Moses</b>, the one who spoke with Allah, who stood against the political tyrant. <b>Joseph</b>, the truthful, who chose prison over sin. <b>The People of the Cave</b>, the youths, who isolated themselves from their corrupt society. <b>Ali, Hassan, and Hussein</b>, who embodied the peaks of stability in the harshest trials. And <b>the mother of Moses</b>, who cast her child into the river, trusting Allah\'s promise: "We will return him to you". And <b>Asiya, the wife of Pharaoh</b>, who said under torture: "My Lord, build for me a house in Paradise", disavowing the tyrant\'s kingdom. These were not angels. They were humans like us, who ate food and walked in the markets. But they recognized what Allah had favored them with, and what He honored them with as humans, so they acted upon this law, and thereby ascended to the highest of heights. This platform invites you to walk in their footsteps.'
-        )}</p>
-
-        <p style="color:#FFD700;font-weight:bold;font-size:1.1em;text-align:center;margin:20px 0;">{TXT(
-        'هذه المنصة ليست كتاباً فصلاً ولا تطبيقاً مكتملاً. إنها مختبر مفتوح، متواضع، يخطو خطواته الأولى على طريق طويل من التأمل والبحث. لقد جمعنا فيه ما وهبنا الله من فهم متواضع لسنة من سننه في خلقه، نرجو أن يكون باباً لقلبك لا سجناً لعقلك، ونافذةً على نور لا حاجزاً في وجه الظلمة. وإذا وجدت فيه خيراً، فاعلم أن الله هو الذي ألهم وأعان، وإذا وجدت فيه نقصاً، فاعلم أنه من صنع البشر، وأنه لا يضير الحق نقص في التعبير عنه.',
-        'This platform is neither a definitive book nor a completed app. It is an open, humble lab, taking its first steps on a long path of reflection and inquiry. We have gathered in it what Allah has granted us of a humble understanding of one of His laws in creation, hoping it will be a door for your heart, not a cage for your mind, and a window to light, not a barrier against darkness. If you find good in it, know that Allah inspired and assisted; and if you find deficiency, know that it is from human craft, and the truth is not harmed by deficiency in its expression.'
-        )}</p>
-
-        <p style="text-align:center;color:#FFD700;font-size:1.2em;font-weight:bold;">S = W × B</p>
-        <p style="text-align:center;font-style:italic;color:#AAA;font-size:1.1em;line-height:2.2;">{TXT(
-        'هذا المختبر ليس بديلاً عن الوحي، بل هو شاهد من عالم الشهادة على صدق عالم الغيب. ﴿أَلَا لَهُ الْخَلْقُ وَالْأَمْرُ تَبَارَكَ اللَّهُ رَبُّ الْعَالَمِينَ﴾. إنه تحقيق لقوله تعالى: ﴿سَنُرِيهِمْ آيَاتِنَا فِي الْآفَاقِ وَفِي أَنفُسِهِمْ حَتَّىٰ يَتَبَيَّنَ لَهُمْ أَنَّهُ الْحَقُّ﴾. إنه محاولة متواضعة لنريك كيف يلتقي كتاب الله المسطور بكتابه المنظور، على ميزان واحد. فإن رأيت الحق فيه، فاحمد الله الذي هداك. وإن وجدت فيه نقصاً، فاعلم أنه من صنع البشر، ولا يضير الحق نقص في التعبير عنه.',
-        'This lab is not a substitute for revelation, but a witness from the seen world to the truth of the unseen. ﴿Unquestionably, to Him belongs the creation and the command; blessed is Allah, Lord of the worlds.﴾ It is a fulfillment of His promise: ﴿We will show them Our signs in the horizons and within themselves until it becomes clear to them that it is the truth.﴾ It is a humble attempt to show you how Allah\'s written Book meets His observed Book, on a single balance. If you see truth in it, praise Allah who guided you. If you find deficiency, know that it is human craft, and the truth is not harmed by deficiency in its expression.'
-        )}</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with st.expander(TXT("📖 دليل المستخدم", "📖 User Guide"), expanded=False):
-        st.markdown(TXT("""
-        ### 🎯 كيف تستخدم هذا المختبر؟
-
-        **١. بوصلة الإسلام الحنيف:** أجب عن ١٩ سؤالاً لتعرف موقعك الدقيق.
-        **٢. مختبر الأمة المتكاملة:** استخدم المنزلقات أو الذكاء الاصطناعي.
-        **٣. المشهد الكوني الحي:** شاهد تفاعل النجوم مع قطبي الميزان.
-        **٤. هندسة الصراط:** تتبع مسارك نحو مقام إبراهيم.
-        **٥. الشواهد التاريخية:** قارن بين الدول التاريخية.
-        **٦. المرصد الأخلاقي:** شاهد تطبيق المعادلة على دول العالم.
-        **٧. طبيب القلوب:** احصل على تشخيص وروشتة علاجية.
-        **٨. شبكة الناجين:** تواصل مع المؤمنين الثابتين.
-        **٩. جامعة الميزان:** تعلم النظرية عبر دورات تفاعلية.
-        **١٠. مدرسة آل البيت:** نماذج الثبات في الفتنة.
-        **١١. محاكي المجتمع:** شاهد كيف يترابط الأفراد المتوازنون وينفرط عقد غير المتوازنين.
-        **١٢. القانون الواحد:** تجليات القانون من الذرة إلى المجرة.
-        **١٣. دورة الصلاة:** الاستعانة بالصلاة في الدورة الإلهية.
-        **١٤. الطاقة الروحية:** محاكاة قوانين الطاقة الروحية.
-        **١٥. المعجم الهندسي:** تعرف على الحروف وقيمها وأسرارها.
-        **١٦. الدليل المرجعي:** مراجع متخصصة.
-
-        **المعادلة المركزية:** **S = W × B** (العلاقة **ضرب لا جمع**).
-        """,
-        """
-        ### 🎯 How to Use This Lab
-
-        **1. Compass:** Answer 19 questions.
-        **2. Nation Lab:** Use sliders or AI.
-        **3. Cosmic Scene:** Watch stars interact.
-        **4. Path Geometry:** Track your path.
-        **5. Evidence:** Compare historical nations.
-        **6. Moral Observatory:** Apply the equation to world nations.
-        **7. Healer:** Get diagnosis and prescription.
-        **8. Network:** Connect with steadfast believers.
-        **9. Academy:** Learn the theory via courses.
-        **10. Ahlul Bayt:** Models of stability in strife.
-        **11. Social Fabric:** See how balanced individuals link up.
-        **12. The One Law:** Manifestations from atom to galaxy.
-        **13. Prayer Cycle:** Seeking help through prayer.
-        **14. Spiritual Energy:** Simulate spiritual energy laws.
-        **15. Geometric Lexicon:** Explore letters, values, and secrets.
-        **16. Reference Guide:** Specialized references.
-
-        **Central Equation:** **S = W x B** (multiplication, not addition).
-        """))
-
 
 # =============================================
 # تبويب ١: بوصلة الإسلام الحنيف
 # =============================================
 def render_compass():
-    fix_rtl_display()
     st.header(TXT("🧍 بوصلة الإسلام الحنيف – اكتشف موقعك بدقة", "🧍 Compass – Discover Your Precise Position"))
 
     col_set1, col_set2 = st.columns([3, 1])
@@ -264,7 +126,6 @@ def render_compass():
 # تبويب ٢: مختبر الأمة المتكامل
 # =============================================
 def render_nation_lab():
-    fix_rtl_display()
     st.header(TXT("🏛️ مختبر الأمة – المنزلقات والذكاء الاصطناعي", "🏛️ Nation Lab – Sliders & AI"))
 
     with st.expander(TXT("🎛️ مؤشرات الطاقة الروحية", "🎛️ Spiritual Energy Indicators"), expanded=True):
@@ -443,7 +304,6 @@ def render_nation_lab():
 # تبويب ٣: المشهد الكوني الحي
 # =============================================
 def render_cosmic_scene():
-    fix_rtl_display()
     st.header(TXT("🌌 المشهد الكوني الحي", "🌌 Live Cosmic Scene"))
 
     with st.expander(TXT("⚙️ إعدادات المشهد", "⚙️ Scene Settings"), expanded=False):
@@ -549,10 +409,90 @@ def render_cosmic_scene():
 
 
 # =============================================
-# تبويب ٤: هندسة الصراط
+# تبويب ٥: الشواهد التاريخية
+# =============================================
+def render_evidence():
+    st.header(TXT("📜 الشواهد التاريخية – حين ينطق التاريخ مصدقًا للمعادلة",
+                   "📜 Historical Evidence – When History Bears Witness"))
+
+    selected_nation = st.selectbox(TXT("اختر دولة:", "Select a nation:"), list(HISTORICAL_DATA.keys()))
+
+    if selected_nation:
+        data = HISTORICAL_DATA[selected_nation]
+        W_hist, B_hist, E_hist = data["W"], data["B"], data["E"]
+        S_hist = W_hist * B_hist; gap = E_hist - S_hist
+
+        st.markdown(f"### {selected_nation}")
+        st.markdown(f"**{data['era']}**")
+        st.markdown(data["desc"])
+
+        col_m1, col_m2, col_m3, col_m4, col_m5 = st.columns(5)
+        col_m1.metric("W", f"{W_hist:.2f}"); col_m2.metric("B", f"{B_hist:.2f}")
+        col_m3.metric("S", f"{S_hist:.2f}"); col_m4.metric("E", f"{E_hist:.2f}")
+        col_m5.metric(TXT("فجوة", "Gap"), f"{gap:.2f}")
+
+        fig_hist, (ax_bar, ax_gauge) = plt.subplots(1, 2, figsize=(14, 6), facecolor='#0a0f1e')
+        ax_bar.set_facecolor('#0a0f1e')
+        categories = ['W', 'B', 'S', 'E']; values = [W_hist, B_hist, S_hist, E_hist]
+        colors_bar = ['#FFD700', '#FF5252', '#00FF88', '#00FFFF']
+        bars = ax_bar.bar(categories, values, color=colors_bar, edgecolor='white', linewidth=1.5)
+        for bar, val in zip(bars, values):
+            ax_bar.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.02,
+                       f'{val:.2f}', ha='center', color='white', fontsize=11, fontweight='bold')
+        ax_bar.set_ylim(0, 1.15); ax_bar.set_title(TXT("مؤشرات الدولة", "State Indicators"), color='white', fontsize=13)
+        ax_bar.tick_params(colors='white'); ax_bar.grid(True, alpha=0.2, axis='y')
+
+        ax_gauge.set_facecolor('#0a0f1e')
+        ax_gauge.set_xlim(-1.5, 1.5); ax_gauge.set_ylim(-1.5, 1.5)
+        ax_gauge.set_aspect('equal'); ax_gauge.axis('off')
+        ax_gauge.add_patch(Rectangle((0, 0), 1.4, 1.4, color='#FFD700', alpha=0.2))
+        ax_gauge.add_patch(Rectangle((-1.4, 0), 1.4, 1.4, color='#FF5252', alpha=0.2))
+        ax_gauge.add_patch(Rectangle((-1.4, -1.4), 1.4, 1.4, color='#FFB6C1', alpha=0.2))
+        ax_gauge.add_patch(Rectangle((0, -1.4), 1.4, 1.4, color='#FFA500', alpha=0.2))
+        ax_gauge.axhline(0, color='white', lw=0.5, alpha=0.5); ax_gauge.axvline(0, color='white', lw=0.5, alpha=0.5)
+        b_pos = (B_hist * 2 - 1) * 1.3; w_pos = (W_hist * 2 - 1) * 1.3
+        ax_gauge.scatter([b_pos], [w_pos], s=400, c='#00FFFF', edgecolors='white', linewidth=3, zorder=10)
+        ax_gauge.scatter([1.3], [1.3], s=150, c='#FFD700', marker='*', zorder=10)
+        ax_gauge.text(1.3, 1.4, TXT("إبراهيم", "Abraham"), ha='center', color='#FFD700', fontsize=8)
+        ax_gauge.set_title(TXT("الموقع في فضاء (W, B)", "Position in (W, B) Space"), color='white', fontsize=13)
+        plt.tight_layout(); st.pyplot(fig_hist)
+
+        if gap > 0.4: st.error(TXT(f"⚠️ حالة استدراج: فجوة = {gap:.2f}", f"⚠️ Istidraj: Gap = {gap:.2f}"))
+        elif S_hist > 0.7: st.success(TXT(f"✅ توازن عالٍ: S = {S_hist:.2f}", f"✅ High Balance: S = {S_hist:.2f}"))
+        else: st.info(TXT(f"ℹ️ حالة متوسطة: S = {S_hist:.2f}", f"ℹ️ Moderate: S = {S_hist:.2f}"))
+
+        st.markdown("---"); st.subheader(TXT("💡 الدروس المستفادة", "💡 Lessons Learned"))
+        st.markdown(data["lessons"])
+
+    st.markdown("---")
+    st.subheader(TXT("🔍 مقارنة بين دولتين", "🔍 Compare Two Nations"))
+    col_c1, col_c2 = st.columns(2)
+    with col_c1:
+        nation_a = st.selectbox(TXT("الدولة الأولى:", "First nation:"), list(HISTORICAL_DATA.keys()), key="nation_a")
+    with col_c2:
+        nation_b = st.selectbox(TXT("الدولة الثانية:", "Second nation:"), list(HISTORICAL_DATA.keys()), index=1, key="nation_b")
+
+    if nation_a and nation_b:
+        data_a = HISTORICAL_DATA[nation_a]; data_b = HISTORICAL_DATA[nation_b]
+        fig_comp, ax_comp = plt.subplots(figsize=(10, 6), facecolor='#0a0f1e')
+        ax_comp.set_facecolor('#0a0f1e')
+        x = np.arange(4); width = 0.35; labels = ['W', 'B', 'S', 'E']
+        values_a = [data_a["W"], data_a["B"], data_a["W"]*data_a["B"], data_a["E"]]
+        values_b = [data_b["W"], data_b["B"], data_b["W"]*data_b["B"], data_b["E"]]
+        ax_comp.bar(x - width/2, values_a, width, color='#FFD700', edgecolor='white', linewidth=1.5, label=nation_a[:40])
+        ax_comp.bar(x + width/2, values_b, width, color='#00BFFF', edgecolor='white', linewidth=1.5, label=nation_b[:40])
+        ax_comp.set_xticks(x); ax_comp.set_xticklabels(labels, color='white', fontsize=12)
+        ax_comp.set_ylim(0, 1.15)
+        ax_comp.set_title(TXT("مقارنة المؤشرات", "Indicator Comparison"), color='white', fontsize=13)
+        ax_comp.legend(facecolor='#0a0f1e', edgecolor='white', labelcolor='white', fontsize=10)
+        ax_comp.tick_params(colors='white'); ax_comp.grid(True, alpha=0.2, axis='y')
+        plt.tight_layout(); st.pyplot(fig_comp)
+
+
+# =============================================
+# تبويب ٦: هندسة الصراط
 # =============================================
 def render_path_geometry():
-    fix_rtl_display()
     st.header(TXT("📐 هندسة الصراط – البرهان النبوي والنموذج الإبراهيمي",
                    "📐 Path Geometry – Prophetic Proof & Abrahamic Model"))
 
@@ -689,89 +629,7 @@ def render_path_geometry():
 
 
 # =============================================
-# تبويب ٥: الشواهد التاريخية
-# =============================================
-def render_evidence():
-    fix_rtl_display()
-    st.header(TXT("📜 الشواهد التاريخية – حين ينطق التاريخ مصدقًا للمعادلة",
-                   "📜 Historical Evidence – When History Bears Witness"))
-
-    selected_nation = st.selectbox(TXT("اختر دولة:", "Select a nation:"), list(HISTORICAL_DATA.keys()))
-
-    if selected_nation:
-        data = HISTORICAL_DATA[selected_nation]
-        W_hist, B_hist, E_hist = data["W"], data["B"], data["E"]
-        S_hist = W_hist * B_hist; gap = E_hist - S_hist
-
-        st.markdown(f"### {selected_nation}")
-        st.markdown(f"**{data['era']}**")
-        st.markdown(data["desc"])
-
-        col_m1, col_m2, col_m3, col_m4, col_m5 = st.columns(5)
-        col_m1.metric("W", f"{W_hist:.2f}"); col_m2.metric("B", f"{B_hist:.2f}")
-        col_m3.metric("S", f"{S_hist:.2f}"); col_m4.metric("E", f"{E_hist:.2f}")
-        col_m5.metric(TXT("فجوة", "Gap"), f"{gap:.2f}")
-
-        fig_hist, (ax_bar, ax_gauge) = plt.subplots(1, 2, figsize=(14, 6), facecolor='#0a0f1e')
-        ax_bar.set_facecolor('#0a0f1e')
-        categories = ['W', 'B', 'S', 'E']; values = [W_hist, B_hist, S_hist, E_hist]
-        colors_bar = ['#FFD700', '#FF5252', '#00FF88', '#00FFFF']
-        bars = ax_bar.bar(categories, values, color=colors_bar, edgecolor='white', linewidth=1.5)
-        for bar, val in zip(bars, values):
-            ax_bar.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.02,
-                       f'{val:.2f}', ha='center', color='white', fontsize=11, fontweight='bold')
-        ax_bar.set_ylim(0, 1.15); ax_bar.set_title(TXT("مؤشرات الدولة", "State Indicators"), color='white', fontsize=13)
-        ax_bar.tick_params(colors='white'); ax_bar.grid(True, alpha=0.2, axis='y')
-
-        ax_gauge.set_facecolor('#0a0f1e')
-        ax_gauge.set_xlim(-1.5, 1.5); ax_gauge.set_ylim(-1.5, 1.5)
-        ax_gauge.set_aspect('equal'); ax_gauge.axis('off')
-        ax_gauge.add_patch(Rectangle((0, 0), 1.4, 1.4, color='#FFD700', alpha=0.2))
-        ax_gauge.add_patch(Rectangle((-1.4, 0), 1.4, 1.4, color='#FF5252', alpha=0.2))
-        ax_gauge.add_patch(Rectangle((-1.4, -1.4), 1.4, 1.4, color='#FFB6C1', alpha=0.2))
-        ax_gauge.add_patch(Rectangle((0, -1.4), 1.4, 1.4, color='#FFA500', alpha=0.2))
-        ax_gauge.axhline(0, color='white', lw=0.5, alpha=0.5); ax_gauge.axvline(0, color='white', lw=0.5, alpha=0.5)
-        b_pos = (B_hist * 2 - 1) * 1.3; w_pos = (W_hist * 2 - 1) * 1.3
-        ax_gauge.scatter([b_pos], [w_pos], s=400, c='#00FFFF', edgecolors='white', linewidth=3, zorder=10)
-        ax_gauge.scatter([1.3], [1.3], s=150, c='#FFD700', marker='*', zorder=10)
-        ax_gauge.text(1.3, 1.4, TXT("إبراهيم", "Abraham"), ha='center', color='#FFD700', fontsize=8)
-        ax_gauge.set_title(TXT("الموقع في فضاء (W, B)", "Position in (W, B) Space"), color='white', fontsize=13)
-        plt.tight_layout(); st.pyplot(fig_hist)
-
-        if gap > 0.4: st.error(TXT(f"⚠️ حالة استدراج: فجوة = {gap:.2f}", f"⚠️ Istidraj: Gap = {gap:.2f}"))
-        elif S_hist > 0.7: st.success(TXT(f"✅ توازن عالٍ: S = {S_hist:.2f}", f"✅ High Balance: S = {S_hist:.2f}"))
-        else: st.info(TXT(f"ℹ️ حالة متوسطة: S = {S_hist:.2f}", f"ℹ️ Moderate: S = {S_hist:.2f}"))
-
-        st.markdown("---"); st.subheader(TXT("💡 الدروس المستفادة", "💡 Lessons Learned"))
-        st.markdown(data["lessons"])
-
-    st.markdown("---")
-    st.subheader(TXT("🔍 مقارنة بين دولتين", "🔍 Compare Two Nations"))
-    col_c1, col_c2 = st.columns(2)
-    with col_c1:
-        nation_a = st.selectbox(TXT("الدولة الأولى:", "First nation:"), list(HISTORICAL_DATA.keys()), key="nation_a")
-    with col_c2:
-        nation_b = st.selectbox(TXT("الدولة الثانية:", "Second nation:"), list(HISTORICAL_DATA.keys()), index=1, key="nation_b")
-
-    if nation_a and nation_b:
-        data_a = HISTORICAL_DATA[nation_a]; data_b = HISTORICAL_DATA[nation_b]
-        fig_comp, ax_comp = plt.subplots(figsize=(10, 6), facecolor='#0a0f1e')
-        ax_comp.set_facecolor('#0a0f1e')
-        x = np.arange(4); width = 0.35; labels = ['W', 'B', 'S', 'E']
-        values_a = [data_a["W"], data_a["B"], data_a["W"]*data_a["B"], data_a["E"]]
-        values_b = [data_b["W"], data_b["B"], data_b["W"]*data_b["B"], data_b["E"]]
-        ax_comp.bar(x - width/2, values_a, width, color='#FFD700', edgecolor='white', linewidth=1.5, label=nation_a[:40])
-        ax_comp.bar(x + width/2, values_b, width, color='#00BFFF', edgecolor='white', linewidth=1.5, label=nation_b[:40])
-        ax_comp.set_xticks(x); ax_comp.set_xticklabels(labels, color='white', fontsize=12)
-        ax_comp.set_ylim(0, 1.15)
-        ax_comp.set_title(TXT("مقارنة المؤشرات", "Indicator Comparison"), color='white', fontsize=13)
-        ax_comp.legend(facecolor='#0a0f1e', edgecolor='white', labelcolor='white', fontsize=10)
-        ax_comp.tick_params(colors='white'); ax_comp.grid(True, alpha=0.2, axis='y')
-        plt.tight_layout(); st.pyplot(fig_comp)
-
-
-# =============================================
-# دوال استدعاء التبويبات من الملفات المنفصلة
+# دوال استدعاء التبويبات الجديدة
 # =============================================
 def render_new_observatory():
     render_observatory()
@@ -791,11 +649,5 @@ def render_new_ahlulbayt():
 def render_new_the_one_law():
     render_the_one_law()
 
-def render_new_prayer_cycle():
-    render_prayer_cycle()
-
-def render_new_spiritual_energy():
-    render_spiritual_energy()
-
-def render_new_lexicon():
-    render_lexicon()
+def render_new_social_fabric():
+    render_social_fabric()
